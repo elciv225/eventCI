@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventbrite - Refonte</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <img src="eventbrite-logo.png" alt="Eventbrite Logo">
+            </div>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Rechercher des événements">
+            </div>
+            <div class="location-filter">
+                <input type="text" value="Lagunes">
+                <i class="fas fa-chevron-down"></i>
+                <i class="fas fa-search icon-right"></i>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#">Ventes</a></li>
+                    <li><a href="#">Créer des Événements</a></li>
+                    <li class="dropdown">
+                        <a href="#">Aide <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-content">
+                            <a href="#">Trouver vos billets</a>
+                            <a href="#">Contacter l'organisateur de votre événement</a>
+                        </div>
+                    </li>
+                    <li><a href="#">Trouver mes billets</a></li>
+                    <li><a href="#">Connexion</a></li>
+                    <li><a href="#">Ouvrir un compte</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <p class="pre-heading">Pour ceux</p>
+                    <h1>qui adorent sortir</h1>
+                </div>
+                <div class="hero-image">
+                    <img src="superorganism-concert.jpg" alt="Superorganism Concert" class="main-hero-img">
+                    <p class="image-caption">Superorganism, Great American Music Hall</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="categories-section">
+            <div class="container">
+                <div class="categories-list">
+                    <div class="category-item">
+                        <div class="icon-circle"><i class="fas fa-music"></i></div>
+                        <span>Musique</span>
+                    </div>
+                    <div class="category-item">
+                        <div class="icon-circle"><i class="fas fa-moon"></i></div>
+                        <span>Vie nocturne</span>
+                    </div>
+                    <div class="category-item">
+                        <div class="icon-circle"><i class="fas fa-theater-masks"></i></div>
+                        <span>Arts du spectacle et de la scène</span>
+                    </div>
+                    <div class="category-item">
+                        <div class="icon-circle"><i class="fas fa-champagne-glasses"></i></div>
+                        <span>Fêtes</span>
+                    </div>
+                    <div class="category-item">
+                        <div class="icon-circle"><i class="fas fa-users"></i></div>
+                        <span>Rencontres</span>
+                    </div>
+                    <div class="category-item">
+                        <div class="icon-circle"><i class="fas fa-gamepad"></i></div>
+                        <span>Loisirs</span>
+                    </div>
+                    <div class="category-item">
+                        <div class="icon-circle"><i class="fas fa-briefcase"></i></div>
+                        <span>Affaires</span>
+                    </div>
+                    <div class="category-item">
+                        <div class="icon-circle"><i class="fas fa-utensils"></i></div>
+                        <span>Gastronomie</span>
+                    </div>
+                    </div>
+            </div>
+        </section>
+
+        <section class="browse-events-bar">
+            <div class="container">
+                <p>Parcourez les événements à <a href="#" class="location-link">Lagunes <i class="fas fa-chevron-down"></i></a></p>
+            </div>
+        </section>
+
+        <section class="event-filters">
+            <div class="container">
+                <div class="filter-buttons">
+                    <button class="filter-btn active">Tous</button>
+                    <button class="filter-btn">Pour vous</button>
+                    <button class="filter-btn">En ligne</button>
+                    <button class="filter-btn">Aujourd'hui</button>
+                    <button class="filter-btn">Ce week-end</button>
+                    <button class="filter-btn">Libre</button>
+                    <button class="filter-btn">Musique</button>
+                    <button class="filter-btn">Gastronomie</button>
+                    <button class="filter-btn">Œuvres de bienfaisance</button>
+                    </div>
+            </div>
+        </section>
+
+        <section class="events-in-lagunes">
+            <div class="container">
+                <h2>Événements à Lagunes</h2>
+                <div class="events-grid">
+                    <div class="event-card">
+                        <img src="event-green-belt.jpg" alt="Green Belt & Black Belt">
+                        <div class="event-info">
+                            <p class="sales-end">Les ventes se terminent bientôt</p>
+                            <h3>FORMATION CERTIFIANTE GREEN BELT ET BLACK BEL...</h3>
+                            <p class="date">7 juillet</p>
+                            <p class="price">À partir de 0,00€</p>
+                            <p class="organizer">Sliver Moon Hotel</p>
+                            <p class="attendees"><i class="fas fa-users"></i> 408 abonnés</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <img src="abidjan-stadium.jpg" alt="Abidjan Stadium">
+                        <div class="event-info">
+                            <p class="sales-end">Les ventes se terminent bientôt</p>
+                            <h3>Abidjan Audio Tour: A Journey Through Landmarks and Legacy</h3>
+                            <p class="date">sam. 19 juil., 09:30</p>
+                            <p class="price">À partir de 3,99€</p>
+                            <p class="organizer">AllTours</p>
+                            <p class="attendees"><i class="fas fa-users"></i> 408 abonnés</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <img src="event-seminaire-visa.jpg" alt="Séminaire VISA 2025">
+                        <div class="event-info">
+                            <p class="sales-end">GRANDE PREMIÈRE ! SÉMINAIRE VISA 2025</p>
+                            <h3>Séminaire Visa : Comment monter soi-même son dossier...</h3>
+                            <p class="date">sam. 26 juil., 09:00</p>
+                            <p class="price">À partir de 163,68€</p>
+                            <p class="organizer">Palm Club Hôtel</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <img src="event-port-connect.jpg" alt="Port Connect Africa Conference 2025">
+                        <div class="event-info">
+                            <p class="sales-end">Les ventes se terminent bientôt</p>
+                            <h3>Port Connect Africa Conference 2025</h3>
+                            <p class="date">lundi prochaiN 09:30</p>
+                            <p class="price">Libre</p>
+                            <p class="organizer">Port Connect Africa Conference</p>
+                            <p class="attendees"><i class="fas fa-users"></i> 17 abonnés</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <img src="rdv-celibataires.jpg" alt="RDV des Célibataires">
+                        <div class="event-info">
+                            <h3>RDV DES CÉLIBATAIRES</h3>
+                            <p class="date">sam. 20 sept., 09:00</p>
+                            <p class="price">À partir de 0,00€</p>
+                            <p class="organizer">AGORA KOUMASSI</p>
+                            <p class="attendees"><i class="fas fa-users"></i> 10 abonnés</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <img src="sad-event.jpg" alt="SAD Event">
+                        <div class="event-info">
+                            <h3>SAD</h3>
+                            <p class="date">ven. 12 mars., 09:00</p>
+                            <p class="price">À partir de 3,32€</p>
+                            <p class="organizer">AGORA KOUMASSI</p>
+                            <p class="attendees"><i class="fas fa-users"></i> 10 abonnés</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <img src="festival-brunch.jpg" alt="Festival des brunchs">
+                        <div class="event-info">
+                            <h3>Festival des brunchs</h3>
+                            <p class="date">sam. 27 sept., 09:00</p>
+                            <p class="price">À partir de 9,00€</p>
+                            <p class="organizer">AGORA KOUMASSI</p>
+                            <p class="attendees"><i class="fas fa-users"></i> 18 abonnés</p>
+                        </div>
+                    </div>
+
+                    </div>
+            </div>
+        </section>
+
+        <section class="personalization-section">
+            <div class="container">
+                <button class="close-btn">&times;</button>
+                <h3>Personnalisons un peu les choses</h3>
+                <p>Sélectionnez vos intérêts pour obtenir des suggestions d'événements en fonction de vos goûts.</p>
+                </div>
+        </section>
+
+        <section class="events-below-30">
+            <div class="container">
+                <h2>Événements à 30,00 € et moins</h2>
+                <div class="event-navigation">
+                    <button class="nav-arrow"><i class="fas fa-chevron-left"></i></button>
+                    <button class="nav-arrow"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="event-cards-row">
+                    <div class="event-card">
+                        <img src="abidjan-stadium.jpg" alt="Abidjan Stadium">
+                        <div class="event-info">
+                            <p class="sales-end">Les ventes se terminent bientôt</p>
+                            <h3>Abidjan Audio Tour : A Journey Through Landmarks and Legacy</h3>
+                            <p class="date">sam. 19 juil., 09:30</p>
+                            <p class="price">À partir de 3,99€</p>
+                            <p class="organizer">AllTours</p>
+                            <p class="attendees"><i class="fas fa-users"></i> 408 abonnés</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <img src="ubwa-crypto-meetup.jpg" alt="UBWA Crypto Meetup">
+                        <div class="event-info">
+                            <p class="date">19 JULY 2025</p>
+                            <h3>Meetup UBWA Crypto Jobs</h3>
+                            <p class="time">sam. 19 juil., 09:30</p>
+                            <p class="organizer">GASPARO signature</p>
+                            <p class="price">À partir de 15,00€</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <img src="rdv-celibataires.jpg" alt="RDV des Célibataires">
+                        <div class="event-info">
+                            <h3>RDV DES CÉLIBATAIRES</h3>
+                            <p class="date">sam. 20 sept., 09:00</p>
+                            <p class="organizer">AGORA KOUMASSI</p>
+                            <p class="price">À partir de 0,00€</p>
+                            <p class="attendees"><i class="fas fa-users"></i> 10 abonnés</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <img src="sad-event.jpg" alt="SAD Event">
+                        <div class="event-info">
+                            <h3>SAD</h3>
+                            <p class="date">ven. 12 mars., 09:00</p>
+                            <p class="organizer">AGORA KOUMASSI</p>
+                            <p class="price">À partir de 3,32€</p>
+                            <p class="attendees"><i class="fas fa-users"></i> 10 abonnés</p>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </section>
+
+
+        <section class="popular-destinations">
+            <div class="container">
+                <h2>Destinations les plus populaires</h2>
+                <div class="destination-cards">
+                    <div class="card">
+                        <img src="new-york.jpg" alt="New York">
+                        <h3>New York</h3>
+                    </div>
+                    <div class="card">
+                        <img src="london.jpg" alt="London">
+                        <h3>London</h3>
+                    </div>
+                    <div class="card">
+                        <img src="los-angeles.jpg" alt="Los Angeles">
+                        <h3>Los Angeles</h3>
+                    </div>
+                    <div class="card">
+                        <img src="chicago.jpg" alt="Chicago">
+                        <h3>Chicago</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="popular-cities">
+            <div class="container">
+                <h2>Villes populaires</h2>
+                <div class="city-links">
+                    <a href="#">Choses à faire à Paris</a>
+                    <a href="#">Choses à faire à Lyon</a>
+                    <a href="#">Choses à faire à Nantes</a>
+                    <a href="#">Choses à faire à Marseille</a>
+                    <a href="#">Choses à faire à Nice</a>
+                    <a href="#">Choses à faire à Bordeaux</a>
+                    <a href="#">Choses à faire à Toulouse</a>
+                    <a href="#">Choses à faire à Strasbourg</a>
+                    <a href="#">Choses à faire à Lille</a>
+                    <a href="#">Choses à faire à Montpellier</a>
+                    <a href="#">Choses à faire à Angers</a>
+                    <a href="#">Choses à faire à Rennes</a>
+                    <a href="#">Choses à faire à Saint-Denis</a>
+                    <a href="#">Choses à faire à Saint Omer</a>
+                    <a href="#">Choses à faire à Brest</a>
+                    <a href="#">Choses à faire à Créteil</a>
+                    <a href="#">Choses à faire à Bourges</a>
+                    <a href="#">Choses à faire à Arles</a>
+                    <a href="#">Choses à faire à Saint Etienne</a>
+                    <a href="#">Choses à faire à Bayeux</a>
+                    <a href="#">Choses à faire à Annecy</a>
+                    <a href="#">Choses à faire à Aix-en-Provence</a>
+                    <a href="#">Choses à faire à Nancy</a>
+                    <a href="#">Choses à faire à Tours</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="container footer-content">
+            <div class="footer-column">
+                <h3>Utiliser Eventbrite</h3>
+                <ul>
+                    <li><a href="#">Logiciel de billetterie</a></li>
+                    <li><a href="#">Tarifs</a></li>
+                    <li><a href="#">Plan de salle</a></li>
+                    <li><a href="#">Les possibilités d'Eventbrite</a></li>
+                    <li><a href="#">Carte du site</a></li>
+                    <li><a href="#">Règles de la communauté externe</a></li>
+                    <li><a href="#">Ressources propres du COVID-19</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Planifiez vos événements</h3>
+                <ul>
+                    <li><a href="#">Vendre des billets en ligne</a></li>
+                    <li><a href="#">Gestion d'événements en ligne</a></li>
+                    <li><a href="#">Inscription gratuite à un événement</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Rechercher des événements</h3>
+                <ul>
+                    <li><a href="#">Événements Paris</a></li>
+                    <li><a href="#">Événements Lyon</a></li>
+                    <li><a href="#">Événements Marseille</a></li>
+                    <li><a href="#">Événements Lille</a></li>
+                    <li><a href="#">Événements Toulouse</a></li>
+                    <li><a href="#">Événements Nice</a></li>
+                    <li><a href="#">Événements Bordeaux</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Restons connectés</h3>
+                <ul>
+                    <li><a href="#">Contacter l'assistance</a></li>
+                    <li><a href="#">X</a></li>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">LinkedIn</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">TikTok</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

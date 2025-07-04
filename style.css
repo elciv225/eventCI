@@ -1,0 +1,548 @@
+/* Basic Reset and Body Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color:#EBF5EE;
+    background-color: rgb(202, 201, 198);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header Styling */
+.main-header {
+    background-color: orange;
+    border-bottom: 1px solid #eee;
+    padding: 20px 10;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo img {
+    height: 30px; /* Adjust as needed */
+}
+
+.search-bar, .location-filter {
+    display: flex;
+    align-items: center;
+    background-color: #f2f2f2;
+    border-radius: 4px;
+    padding: 8px 12px;
+    flex-grow: 1;
+}
+
+.search-bar i, .location-filter i {
+    color: #666;
+    margin-right: 8px;
+}
+
+.location-filter .icon-right {
+    margin-left: auto; /* Pushes the icon to the right */
+    margin-right: 0;
+    color: #333; /* Darker color for the specific icon */
+}
+
+.search-bar input, .location-filter input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 1rem;
+    width: 100%;
+}
+.location-filter input {
+    text-align: center; /* Center the text "Lagunes" */
+    font-weight: bold;
+    color: #333;
+}
+
+.main-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.main-nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+
+.main-nav ul li a:hover {
+    color: #d1410c; /* Eventbrite orange */
+}
+
+.main-nav .dropdown {
+    position: relative;
+}
+
+.main-nav .dropdown a i {
+    margin-left: 5px;
+    font-size: 0.8em;
+}
+
+/* Hero Section */
+.hero-section {
+    padding: 50px 0 20px; /* Adjust padding as needed */
+    background-color: #f8f8f8;
+}
+
+.hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+.hero-text {
+    flex: 1;
+    text-align: left;
+    max-width: 45%; /* Adjust width to match image */
+}
+
+.hero-text .pre-heading {
+    font-size: 1.5rem;
+    color: #d1410c; /* Eventbrite orange */
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.hero-text h1 {
+    font-size: 3.5rem; /* Adjust large text size */
+    color: #333;
+    line-height: 1.1;
+    font-weight: 800; /* Extra bold */
+}
+
+.hero-image {
+    flex: 1;
+    position: relative;
+    max-width: 55%; /* Adjust width to match image */
+    text-align: right;
+}
+
+.hero-image .main-hero-img {
+    width: 100%;
+    max-width: 600px; /* Max width for the image */
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.hero-image .image-caption {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+/* Categories Section */
+.categories-section {
+    padding: 30px 0;
+    background-color: #f8f8f8;
+}
+
+.categories-list {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.9rem;
+    transition: transform 0.2s ease;
+}
+
+.category-item:hover {
+    transform: translateY(-5px);
+}
+
+.icon-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.icon-circle i {
+    font-size: 1.8rem;
+    color: #d1410c; /* Eventbrite orange */
+}
+
+/* Browse Events Bar */
+.browse-events-bar {
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.browse-events-bar p {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.browse-events-bar .location-link {
+    color: #007bff; /* Link color */
+    text-decoration: none;
+}
+
+.browse-events-bar .location-link i {
+    margin-left: 5px;
+    font-size: 0.8em;
+}
+
+
+/* Event Filters */
+.event-filters {
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 30px;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-btn {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #555;
+}
+
+.filter-btn:hover {
+    border-color: #d1410c;
+    color: #d1410c;
+}
+
+.filter-btn.active {
+    background-color: #d1410c;
+    color: #fff;
+    border-color: #d1410c;
+}
+
+/* Events Below 30 Euro Section */
+.events-below-30 {
+    padding-bottom: 40px;
+}
+
+.events-below-30 h2 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    font-weight: 600;
+    display: inline-block; /* Allows nav-arrows to be next to it */
+}
+
+.event-navigation {
+    float: right; /* Position arrows to the right */
+    margin-top: 5px;
+}
+
+.nav-arrow {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 0.9rem;
+    color: #555;
+    transition: all 0.3s ease;
+}
+
+.nav-arrow:hover {
+    background-color: #d1410c;
+    color: #fff;
+    border-color: #d1410c;
+}
+
+.event-cards-row {
+    display: flex;
+    overflow-x: auto; /* Allows horizontal scrolling if cards exceed container */
+    gap: 20px;
+    padding-bottom: 15px; /* Space for scrollbar */
+    clear: both; /* Clear float from event-navigation */
+}
+
+.event-card {
+    min-width: 280px; /* Minimum width for each card */
+    max-width: 320px; /* Max width to control size */
+    flex-shrink: 0; /* Prevents cards from shrinking */
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+}
+
+.event-card img {
+    width: 100%;
+    height: 180px; /* Fixed height for event images */
+    object-fit: cover;
+}
+
+.event-info {
+    padding: 15px;
+}
+
+.event-info .sales-end {
+    color: #d1410c;
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.event-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: #333;
+    line-height: 1.3;
+}
+
+.event-info p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.event-info .price {
+    font-weight: bold;
+    color: #333;
+    margin-top: 10px;
+}
+
+.event-info .attendees {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 10px;
+}
+.event-info .attendees i {
+    margin-right: 5px;
+}
+
+
+/* Popular Destinations Section (re-used from previous) */
+.popular-destinations {
+    padding: 40px 0;
+}
+
+.popular-destinations h2 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+.destination-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.destination-cards .card {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.destination-cards .card:hover {
+    transform: translateY(-5px);
+}
+
+.destination-cards .card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.destination-cards .card h3 {
+    padding: 15px;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+/* Popular Cities Section (re-used from previous) */
+.popular-cities {
+    padding: 40px 0;
+}
+
+.popular-cities h2 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+.city-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px 30px;
+}
+
+.city-links a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+}
+
+.city-links a:hover {
+    color: #d1410c;
+}
+
+/* Footer Styling (re-used from previous) */
+.main-footer {
+    background-color: #333;
+    color: #eee;
+    padding: 40px 0;
+    margin-top: 50px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.footer-column h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.footer-column ul {
+    list-style: none;
+}
+
+.footer-column ul li {
+    margin-bottom: 8px;
+}
+
+.footer-column ul li a {
+    text-decoration: none;
+    color: #ccc;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.footer-column ul li a:hover {
+    color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .hero-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    .hero-text, .hero-image {
+        max-width: 100%;
+    }
+    .hero-image .main-hero-img {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .search-bar, .location-filter {
+        width: 100%;
+        flex-grow: unset; /* Remove flex-grow on smaller screens */
+    }
+    .main-nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .destination-cards, .event-cards-row {
+        grid-template-columns: 1fr; /* Stack cards */
+        display: flex; /* Keep flex for horizontal scroll if desired, or remove for simple stacking */
+        flex-direction: column;
+        overflow-x: visible; /* Prevent horizontal scroll on small screens for these sections */
+    }
+    .event-card {
+        min-width: unset; /* Allow cards to take full width */
+        max-width: 100%;
+    }
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .categories-list {
+        justify-content: center;
+    }
+    .hero-text h1 {
+        font-size: 2.5rem;
+    }
+    .event-navigation {
+        float: none;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .logo {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .main-nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+    .filter-buttons {
+        justify-content: center;
+    }
+}
