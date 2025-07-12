@@ -8,38 +8,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <header class="main-header">
-        <div class="container header-content">
-            <div class="logo">
-                <img src="eventbrite-logo.png" alt="Eventbrite Logo">
+  <header class="main-header">
+    <div class="container header-content">
+      <!-- Logo -->
+      <div class="logo">
+        <img src="eventbrite-logo.png" alt="Eventbrite Logo">
+      </div>
+
+      <!-- Barre de recherche -->
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Rechercher des événements">
+      </div>
+
+      <!-- Filtre géographique -->
+      <div class="location-filter">
+        <input type="text" value="Lagunes">
+        <i class="fas fa-chevron-down"></i>
+        <i class="fas fa-search icon-right"></i>
+      </div>
+
+      <!-- Menu de navigation -->
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#">Ventes</a></li>
+          <li><a href="Creer_evement.php">Créer des Événements</a></li>
+          <li class="dropdown">
+            <a href="#">Aide <i class="fas fa-chevron-down"></i></a>
+            <div class="dropdown-content">
+              <a href="#">Trouver vos billets</a>
+              <a href="#">Contacter l'organisateur de votre événement</a>
             </div>
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Rechercher des événements">
-            </div>
-            <div class="location-filter">
-                <input type="text" value="Lagunes">
-                <i class="fas fa-chevron-down"></i>
-                <i class="fas fa-search icon-right"></i>
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="#">Ventes</a></li>
-                    <li><a href="#">Créer des Événements</a></li>
-                    <li class="dropdown">
-                        <a href="#">Aide <i class="fas fa-chevron-down"></i></a>
-                        <div class="dropdown-content">
-                            <a href="#">Trouver vos billets</a>
-                            <a href="#">Contacter l'organisateur de votre événement</a>
-                        </div>
-                    </li>
-                    <li><a href="#">Trouver mes billets</a></li>
-                    <li><a href="#">Connexion</a></li>
-                    <li><a href="#">Ouvrir un compte</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+          </li>
+          <li><a href="#">Trouver mes billets</a></li>
+          <li><a href="#">Connexion</a></li>
+          <li><a href="inscripiton.html">Ouvrir un compte</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
     <main>
         <section class="hero-section">
@@ -49,8 +56,8 @@
                     <h1>qui adorent sortir</h1>
                 </div>
                 <div class="hero-image">
-                    <img src="superorganism-concert.jpg" alt="Superorganism Concert" class="main-hero-img">
-                    <p class="image-caption">Superorganism, Great American Music Hall</p>
+                    <img src="image/514605007_673492552356650_3205532294192245753_n.jpg" alt="Superorganism Concert" class="main-hero-img">
+                    <p class="image-caption">Concert Abidjan 2025</p>
                 </div>
             </div>
         </section>
@@ -121,58 +128,56 @@
                 <h2>Événements à Lagunes</h2>
                 <div class="events-grid">
                     <div class="event-card">
-                        <img src="event-green-belt.jpg" alt="Green Belt & Black Belt">
+                        <img src="image/515947315_674770268895545_4465598997525397108_n.jpg" alt="Green Belt & Black Belt">
                         <div class="event-info">
                             <p class="sales-end">Les ventes se terminent bientôt</p>
-                            <h3>FORMATION CERTIFIANTE GREEN BELT ET BLACK BEL...</h3>
-                            <p class="date">7 juillet</p>
-                            <p class="price">À partir de 0,00€</p>
-                            <p class="organizer">Sliver Moon Hotel</p>
+                            <h3>CROISIERE & BRUNCH</h3>
+                            <p class="date">29 juillet</p>
+                            <p class="price">À partir de 25000f</p>
+                            <p class="organizer">iVORy by BOAT</p>
+                            <p class="attendees"><i class="fas fa-users"></i> 10000 abonnées</p>
+                        </div>
+                    </div>
+                    <div class="event-card">
+                        <img src="image/schadrac loman.jpg" alt="Abidjan Stadium">
+                        <div class="event-info">
+                            <p class="sales-end">Les ventes se terminent bientôt</p>
+                            <h3>Concert live de schadrac Loman</h3>
+                            <p class="date">Dimanche 13 juil 2025, 17h</p>
+                            <p class="price">À partir de 3000</p>
+                            <p class="organizer">Lou</p>
                             <p class="attendees"><i class="fas fa-users"></i> 408 abonnés</p>
                         </div>
                     </div>
                     <div class="event-card">
-                        <img src="abidjan-stadium.jpg" alt="Abidjan Stadium">
+                        <img src="image/rumba.jpg" alt="Séminaire VISA 2025">
                         <div class="event-info">
-                            <p class="sales-end">Les ventes se terminent bientôt</p>
-                            <h3>Abidjan Audio Tour: A Journey Through Landmarks and Legacy</h3>
-                            <p class="date">sam. 19 juil., 09:30</p>
-                            <p class="price">À partir de 3,99€</p>
-                            <p class="organizer">AllTours</p>
-                            <p class="attendees"><i class="fas fa-users"></i> 408 abonnés</p>
-                        </div>
-                    </div>
-                    <div class="event-card">
-                        <img src="event-seminaire-visa.jpg" alt="Séminaire VISA 2025">
-                        <div class="event-info">
-                            <p class="sales-end">GRANDE PREMIÈRE ! SÉMINAIRE VISA 2025</p>
-                            <h3>Séminaire Visa : Comment monter soi-même son dossier...</h3>
+                            <p class="sales-end">GRANDE SOIREE RUMBA </p>
                             <p class="date">sam. 26 juil., 09:00</p>
-                            <p class="price">À partir de 163,68€</p>
+                            <p class="price">À partir de 5000fr</p>
                             <p class="organizer">Palm Club Hôtel</p>
                         </div>
                     </div>
-                    <div class="event-card">
-                        <img src="event-port-connect.jpg" alt="Port Connect Africa Conference 2025">
-                        <div class="event-info">
-                            <p class="sales-end">Les ventes se terminent bientôt</p>
-                            <h3>Port Connect Africa Conference 2025</h3>
-                            <p class="date">lundi prochaiN 09:30</p>
-                            <p class="price">Libre</p>
-                            <p class="organizer">Port Connect Africa Conference</p>
-                            <p class="attendees"><i class="fas fa-users"></i> 17 abonnés</p>
-                        </div>
-                    </div>
-                    <div class="event-card">
-                        <img src="rdv-celibataires.jpg" alt="RDV des Célibataires">
-                        <div class="event-info">
-                            <h3>RDV DES CÉLIBATAIRES</h3>
-                            <p class="date">sam. 20 sept., 09:00</p>
-                            <p class="price">À partir de 0,00€</p>
-                            <p class="organizer">AGORA KOUMASSI</p>
-                            <p class="attendees"><i class="fas fa-users"></i> 10 abonnés</p>
-                        </div>
-                    </div>
+                   <div class="event-card">
+                      <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80" alt="Bouaké Happy Event">
+                     <div class="event-info">
+        <h3>Fête du Bonheur à Bouaké</h3>
+        <p class="date">sam. 24 août, 18:00</p>
+        <p class="price">À partir de 5000fr</p>
+        <p class="organizer">Edmond</p>
+        <p class="attendees"><i class="fas fa-users"></i> 40 abonnés</p>
+    </div>
+</div>
+                  <div class="event-card">
+                   <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="Soirée Abidjan by Night">
+                     <div class="event-info">
+                       <h3>Soirée Abidjan by Night</h3>
+                       <p class="date">sam. 10 août, 20:00</p>
+                       <p class="price">À partir de 5000fr</p>
+                       <p class="organizer">Edmond</p>
+                       <p class="attendees"><i class="fas fa-users"></i> 25 abonnés</p>
+                      </div>
+                   </div>
                     <div class="event-card">
                         <img src="sad-event.jpg" alt="SAD Event">
                         <div class="event-info">
@@ -236,22 +241,22 @@
                         </div>
                     </div>
                     <div class="event-card">
-                        <img src="rdv-celibataires.jpg" alt="RDV des Célibataires">
+                        <img src="image/Rdv des celibataires 12.jpg" alt="RDV des Célibataires">
                         <div class="event-info">
                             <h3>RDV DES CÉLIBATAIRES</h3>
                             <p class="date">sam. 20 sept., 09:00</p>
                             <p class="organizer">AGORA KOUMASSI</p>
-                            <p class="price">À partir de 0,00€</p>
+                            <p class="price">À partir de 10000fr</p>
                             <p class="attendees"><i class="fas fa-users"></i> 10 abonnés</p>
                         </div>
                     </div>
                     <div class="event-card">
-                        <img src="sad-event.jpg" alt="SAD Event">
+                        <img src="image/deborah.jpg" alt="SAD Event">
                         <div class="event-info">
                             <h3>SAD</h3>
-                            <p class="date">ven. 12 mars., 09:00</p>
-                            <p class="organizer">AGORA KOUMASSI</p>
-                            <p class="price">À partir de 3,32€</p>
+                            <p class="date">ven. 14 Aout., 09:00</p>
+                            <p class="organizer">Palais de le culture</p>
+                            <p class="price">À partir de 100000fr</p>
                             <p class="attendees"><i class="fas fa-users"></i> 10 abonnés</p>
                         </div>
                     </div>
@@ -366,4 +371,4 @@
         </div>
     </footer>
 </body>
-</html>
+</html> n
