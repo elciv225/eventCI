@@ -13,13 +13,13 @@ $message = '';
 $errors = []; // Pour stocker les erreurs de validation spécifiques aux champs
 
 // Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['utilisateur']) || !isset($_SESSION['utilisateur']['id'])) {
     $message = '<p class="message error">Vous devez être connecté pour accéder à cette page.</p>';
     // Redirection vers la page de connexion si non connecté
     // header("Location: login.php");
     // exit();
 } else {
-    $loggedInUserId = $_SESSION['user_id'];
+    $loggedInUserId = $_SESSION['utilisateur']['id'];
 
     // --- Récupérer les informations actuelles de l'utilisateur ---
     $sql_fetch = "SELECT Nom, Prenom, Telephone, Email, MotDePasse, Photo, DateNaissance FROM utilisateur WHERE Id_Utilisateur = ?";
@@ -111,7 +111,7 @@ if (!isset($_SESSION['user_id'])) {
                 $updateValues[] = $email;
                 $updateTypes .= 's';
                 // Mettre à jour l'email dans la session si nécessaire
-                $_SESSION['user_email'] = $email;
+                $_SESSION['utilisateur']['email'] = $email;
             }
 
             // Ajouter le nouveau mot de passe haché si défini
@@ -130,7 +130,7 @@ if (!isset($_SESSION['user_id'])) {
 
                 if ($stmt_update = $conn->prepare($sql_update)) {
                     // Utiliser call_user_func_array pour bind_param car les valeurs sont variables
-                 
+
                   $refs = [];
                  foreach ($updateValues as $key => $value) {
                   $refs[$key] = &$updateValues[$key];

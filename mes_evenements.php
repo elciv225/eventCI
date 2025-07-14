@@ -2,13 +2,13 @@
 session_start();
 
 // Vérifier que l'utilisateur est connecté
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_email'])) {
+if (!isset($_SESSION['utilisateur'])) {
     header("Location: connexion.php");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
-$user_email = $_SESSION['user_email'];
+$user_id = $_SESSION['utilisateur']['id'];
+$user_email = $_SESSION['utilisateur']['email'];
 
 require_once 'base.php';
 

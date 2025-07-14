@@ -3,7 +3,7 @@ session_start();
 require_once 'base.php';
 
 // Vérification de l'admin
-if (!isset($_SESSION['is_admin_fixed']) || $_SESSION['is_admin_fixed'] !== true) {
+if ($_SESSION['utilisateurs']['id'] !== -1) {
     header("Location: connexion.php");
     exit("Accès refusé.");
 }

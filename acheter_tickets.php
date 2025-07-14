@@ -3,7 +3,7 @@ require_once 'base.php';
 
 // Vérifier que l'ID du ticket est présent
 if (!isset($_GET['id'])) {
-    die("Aucun ticket sélectionné.");
+    custom_die("Aucun ticket sélectionné.");
 }
 
 $id_ticket = intval($_GET['id']);
@@ -20,7 +20,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-    die("Ticket introuvable.");
+    custom_die("Ticket introuvable.");
 }
 
 $ticket = $result->fetch_assoc();

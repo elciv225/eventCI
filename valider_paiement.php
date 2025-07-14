@@ -4,7 +4,7 @@ require_once 'base.php';
 
 // Vérification des données
 if (!isset($_POST['ticket_id']) || !isset($_POST['paiement'])) {
-    die("Informations de paiement manquantes.");
+    custom_die("Informations de paiement manquantes.");
 }
 
 $ticket_id = intval($_POST['ticket_id']);
@@ -22,14 +22,14 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-    die("Ticket introuvable.");
+    custom_die("Ticket introuvable.");
 }
 
 $ticket = $result->fetch_assoc();
 
 // Étape 2 : vérifier le stock
 if ($ticket['NombreDisponible'] <= 0) {
-    die("Ce ticket est épuisé.");
+    custom_die("Ce ticket est épuisé.");
 }
 
 // Étape 3 : mettre à jour le stock

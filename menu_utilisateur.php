@@ -1,19 +1,22 @@
 <?php
+// Inclure le gestionnaire d'erreurs personnalisé
+require_once __DIR__ . '/error_handler.php';
+
 session_start();
 
 // 🔒 Vérification de session
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_email'])) {
+if (!isset($_SESSION['utilisateur'])) {
     header("Location: connexion.php");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
-$user_email = $_SESSION['user_email'];
+$user_id = $_SESSION['utilisateur']['id'];
+$user_email = $_SESSION['utilisateur']['email'];
 
 // Connexion à la base
 $conn = new mysqli('localhost', 'root', '', 'gestiondebillet');
 if ($conn->connect_error) {
-    die("Erreur de connexion : " . $conn->connect_error);
+    custom_die("Erreur de connexion : " . $conn->connect_error);
 }
 $conn->set_charset("utf8mb4");
 
@@ -629,7 +632,7 @@ $conn->close();
                     <a href="mes_tickets.php">Mes tickets créés</a>
                     <a href="panier.php">Mes achats</a>
                     <a href="mes_evenements.php">Mes événements</a>
-                    <a href="mon_profil.php">Mon profil</a> <a href="mon_panier.php">Mon panier</a> <a href="parametres.php">Paramètres</a> <a href="connexion.php">Déconnexion</a>
+                    <a href="mon_profil.php">Mon profil</a> <a href="mon_panier.php">Mon panier</a> <a href="parametres.php">Paramètres</a> <a href="logout.php">Déconnexion</a>
                 </div>
             </div>
         </nav>
@@ -808,7 +811,7 @@ $conn->close();
                     e.preventDefault();
 
                     const targetId = this.getAttribute('href').substring(1); // Get the ID without '#'
-                    
+
                     // Hide all content sections
                     contentSections.forEach(section => {
                         section.classList.remove('active');
@@ -824,7 +827,7 @@ $conn->close();
                             block: 'start' // Scroll to the top of the section
                         });
                     }
-                    
+
                     dropdown.classList.remove('show'); // Close dropdown after clicking
                 });
             });

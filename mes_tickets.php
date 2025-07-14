@@ -14,8 +14,8 @@ $errors = []; // Pour stocker les erreurs
 
 // --- Récupération de l'ID de l'utilisateur connecté ---
 $loggedInUserId = null;
-if (isset($_SESSION['user_id'])) {
-    $loggedInUserId = $_SESSION['user_id'];
+if (isset($_SESSION['utilisateur']) && isset($_SESSION['utilisateur']['id'])) {
+    $loggedInUserId = $_SESSION['utilisateur']['id'];
 } else {
     // Si l'utilisateur n'est pas connecté, affichez un message d'erreur et arrêtez l'exécution.
     $errors['auth'] = "Vous devez être connecté pour voir vos tickets.";

@@ -13,8 +13,8 @@ $errors = []; // Pour stocker les erreurs spécifiques aux champs
 
 // --- Récupération de l'ID de l'utilisateur connecté ---
 $loggedInUserId = null;
-if (isset($_SESSION['user_id'])) {
-    $loggedInUserId = $_SESSION['user_id'];
+if (isset($_SESSION['utilisateur']) && isset($_SESSION['utilisateur']['id'])) {
+    $loggedInUserId = $_SESSION['utilisateur']['id'];
 } else {
     // Si l'utilisateur n'est pas connecté, affichez un message d'erreur et ne proposez pas le formulaire.
     $errors['auth'] = "Vous devez être connecté pour créer un ticket.";

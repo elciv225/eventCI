@@ -13,7 +13,7 @@ $message = '';
 $errors = [];
 
 // --- Récupération de l'ID de l'utilisateur connecté ---
-$loggedInUserId = $_SESSION['user_id'] ?? null;
+$loggedInUserId = $_SESSION['utilisateur']['id'] ?? null;
 
 if (!$loggedInUserId) {
     // Si l'utilisateur n'est pas connecté, affichez un message d'erreur et ne proposez pas le contenu.

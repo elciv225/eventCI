@@ -11,7 +11,7 @@ $errors = [];
 $evenementId = null;
 
 // Vérifie si l'utilisateur est connecté
-$loggedInUserId = $_SESSION['user_id'] ?? null;
+$loggedInUserId = $_SESSION['utilisateur']['id'] ?? null;
 if (!$loggedInUserId) {
     $errors['auth'] = "Vous devez être connecté pour créer un événement.";
 }

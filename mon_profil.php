@@ -1,6 +1,9 @@
 <?php
 // mon_profil.php
 
+// Inclure le gestionnaire d'erreurs personnalisé
+require_once __DIR__ . '/error_handler.php';
+
 // Démarrer la session. C'est le SEUL session_start() pour cette page.
 // Si vous avez un fichier d'inclusion (comme 'base.php' ou 'connexion.php')
 // qui contient déjà session_start(), RETIREZ ce session_start() d'ici.
@@ -19,20 +22,19 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Vérifie la connexion
 if ($conn->connect_error) {
-    die("Erreur de connexion à la base de données : " . $conn->connect_error);
+    custom_die("Erreur de connexion à la base de données : " . $conn->connect_error);
 }
 
 // Définit le jeu de caractères pour la connexion
 $conn->set_charset("utf8mb4");
 
 // Vérifie si l'utilisateur est connecté
-// Utilisez $_SESSION['Id_Utilisateur'] comme vous le définissez dans connexion.php
-if (!isset($_SESSION['Id_Utilisateur']) || empty($_SESSION['Id_Utilisateur'])) {
+if (!isset($_SESSION['utilisateur']) || empty($_SESSION['utilisateur']['id'])) {
     header('Location: connexion.php'); // Rediriger vers la page de connexion
     exit();
 }
 
-$id_utilisateur_connecte = $_SESSION['Id_Utilisateur'];
+$id_utilisateur_connecte = $_SESSION['utilisateur']['id'];
 
 // Requête SQL pour récupérer les infos du profil en utilisant MySQLi
 // Utilisez un 'LEFT JOIN' si 'Photo' est dans une autre table ou peut être NULL
@@ -40,7 +42,7 @@ $sql = "SELECT Nom, Prenom, DateNaissance, Photo, Telephone, Email, Type_utilisa
 $stmt = $conn->prepare($sql);
 
 if ($stmt === false) {
-    die("Erreur de préparation de la requête : " . $conn->error);
+    custom_die("Erreur de préparation de la requête : " . $conn->error);
 }
 
 // Lie le paramètre
@@ -65,7 +67,7 @@ if (!$utilisateur) {
     // Si l'ID de session ne correspond à aucun utilisateur, invalider la session et rediriger
     session_destroy();
     header('Location: connexion.php');
-    exit("Profil non trouvé ou session invalide.");
+    custom_die("Profil non trouvé ou session invalide.");
 }
 
 // Les includes de menu devraient être faits *après* la balise <body> pour ne pas casser les en-têtes.

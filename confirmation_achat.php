@@ -2,7 +2,7 @@
 require_once 'base.php';
 
 if (!isset($_POST['ticket_id'])) {
-    die("Aucun ticket sélectionné.");
+    custom_die("Aucun ticket sélectionné.");
 }
 
 $ticket_id = intval($_POST['ticket_id']);
@@ -17,7 +17,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-    die("Ticket introuvable.");
+    custom_die("Ticket introuvable.");
 }
 
 $ticket = $result->fetch_assoc();

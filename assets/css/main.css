@@ -1,0 +1,81 @@
+:root {
+    --bg-primary: #f8f8f8; /* Body background */
+    --bg-secondary: #fff; /* Header, card background, icon circle */
+    --bg-tertiary: #f2f2f2; /* Search bar background */
+    --text-primary: #333; /* Main text, headings */
+    --text-secondary: #666; /* Secondary text, icons */
+    --text-tertiary: #555; /* Filter buttons, organizer */
+    --text-highlight: #d1410c; /* Eventbrite orange - primary accent */
+    --text-link: #007bff; /* Blue links */
+    --border-light: #eee; /* Light borders */
+    --border-medium: #ddd; /* Medium borders */
+    --shadow-light: rgba(0,0,0,0.1); /* Light shadows */
+    --shadow-medium: rgba(0,0,0,0.2); /* Medium shadows for dropdown */
+    --personalization-bg: #f0f0f0; /* Personalization section background */
+    --footer-bg: #333; /* Footer background */
+    --footer-text: #eee; /* Footer text */
+    --footer-link: #ccc; /* Footer link */
+
+    /* Message status colors */
+    --color-error: #dc3545; /* Red for errors */
+    --color-success: #28a745; /* Green for success */
+    --color-warning: #ffc107; /* Yellow for warnings */
+    --color-info: #17a2b8; /* Blue for information */
+    --bg-error: rgba(220, 53, 69, 0.1); /* Light red background */
+    --bg-success: rgba(40, 167, 69, 0.1); /* Light green background */
+    --bg-warning: rgba(255, 193, 7, 0.1); /* Light yellow background */
+    --bg-info: rgba(23, 162, 184, 0.1); /* Light blue background */
+}
+
+/* CSS Variables for Dark Mode */
+body[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2a2a2a;
+    --bg-tertiary: #3a3a3a;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --text-tertiary: #c0c0c0;
+    --text-highlight: #ff7043; /* Brighter orange for dark mode */
+    --text-link: #64b5f6; /* Lighter blue links */
+    --border-light: #3a3a3a;
+    --border-medium: #4a4a4a;
+    --shadow-light: rgba(0,0,0,0.3);
+    --shadow-medium: rgba(0,0,0,0.4);
+    --personalization-bg: #333;
+    --footer-bg: #111;
+    --footer-text: #ccc;
+    --footer-link: #999;
+}
+
+/* Basic Reset and Body Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif; /* Using Inter font */
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
+}
+
+/* Add universal transitions for theme-dependent properties */
+*:not([style*="transition"]) {
+    transition-property: background-color, color, border-color, box-shadow, fill, stroke;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+}
+
+/* Ensure elements with existing transitions also have theme transitions */
+[style*="transition"] {
+    transition-property: background-color, color, border-color, box-shadow, fill, stroke, transform, opacity;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+}
+
+a{
+    text-decoration: none;
+}

@@ -3,7 +3,7 @@ session_start();
 require_once 'base.php';
 
 // 🛡️ Sécurisation : vérifier si l'utilisateur est créateur ou administrateur
-$user_id = $_SESSION['user_id'] ?? null;
+$user_id = $_SESSION['utilisateur']['id'] ?? null;
 $is_admin = $_SESSION['is_admin_fixed'] ?? false;
 $evenementId = $_GET['id'] ?? null;
 
@@ -356,7 +356,7 @@ $conn->close();
                     <?php else: ?>
                         <p>Aucune image associée actuellement.</p>
                     <?php endif; ?>
-                    
+
                     <label for="image" style="margin-top: 15px;">Changer l'image (optionnel) :</label>
                     <input type="file" id="image" name="image" accept="image/*">
                     <small>Fichiers acceptés : JPG, JPEG, PNG, GIF (Max 5MB). Laissez vide pour conserver l'image actuelle.</small>
