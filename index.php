@@ -126,13 +126,13 @@ session_start();
                     <div class="event-card-image-wrapper aspect-video">
                         <div class="event-card-carousel" data-carousel>
                             <div class="event-card-image">
-                                <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b6?q=80&w=2574&auto=format&fit=crop" alt="Goût de la ville" />
+                                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2670&auto=format&fit=crop" alt="Goût de la ville" />
                             </div>
                             <div class="event-card-image">
                                 <img src="https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=2574&auto=format&fit=crop" alt="Goût de la ville" />
                             </div>
                             <div class="event-card-image">
-                                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2670&auto=format&fit=crop" alt="Goût de la ville" />
+                                <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b6?q=80&w=2574&auto=format&fit=crop" alt="Goût de la ville" />
                             </div>
                         </div>
                         <button class="carousel-arrow prev">&lt;</button>
@@ -167,17 +167,17 @@ session_start();
                         <button class="carousel-arrow prev">&lt;</button>
                         <button class="carousel-arrow next">&gt;</button>
                     </div>
-                    <a href="#"><div><h3 class="event-card-title">Séance de yoga en plein air</h3>
+                    <a href="?info-event=1"><div><h3 class="event-card-title">Séance de yoga en plein air</h3>
                         <p class="event-card-desc">Rejoignez une séance de yoga relaxante dans le parc.</p></div></a>
                 </div>
                 <div class="event-card">
                     <div class="event-card-image-wrapper aspect-square">
                         <div class="event-card-carousel" data-carousel>
                             <div class="event-card-image">
-                                <img src="https://images.unsplash.com/photo-1587880915128-3879504f26b1?q=80&w=2574&auto=format&fit=crop" alt="Événement de dégustation de vin" />
+                                <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=2670&auto=format&fit=crop" alt="Événement de dégustation de vin" />
                             </div>
                             <div class="event-card-image">
-                                <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=2670&auto=format&fit=crop" alt="Événement de dégustation de vin" />
+                                <img src="https://images.unsplash.com/photo-1587880915128-3879504f26b1?q=80&w=2574&auto=format&fit=crop" alt="Événement de dégustation de vin" />
                             </div>
                             <div class="event-card-image">
                                 <img src="https://images.unsplash.com/photo-1566633806327-68e152aaf26d?q=80&w=2670&auto=format&fit=crop" alt="Événement de dégustation de vin" />
@@ -216,13 +216,13 @@ session_start();
                     <div class="event-card-image-wrapper aspect-square">
                         <div class="event-card-carousel" data-carousel>
                             <div class="event-card-image">
+                                <img src="https://images.unsplash.com/photo-1495446815901-a7297e633e8d?q=80&w=2670&auto=format&fit=crop" alt="Réunion du club de lecture" />
+                            </div>
+                            <div class="event-card-image">
                                 <img src="https://images.unsplash.com/photo-1524103416202-DE46662137a5?q=80&w=2574&auto=format&fit=crop" alt="Réunion du club de lecture" />
                             </div>
                             <div class="event-card-image">
                                 <img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?q=80&w=2670&auto=format&fit=crop" alt="Réunion du club de lecture" />
-                            </div>
-                            <div class="event-card-image">
-                                <img src="https://images.unsplash.com/photo-1495446815901-a7297e633e8d?q=80&w=2670&auto=format&fit=crop" alt="Réunion du club de lecture" />
                             </div>
                         </div>
                         <button class="carousel-arrow prev">&lt;</button>
@@ -236,10 +236,10 @@ session_start();
                     <div class="event-card-image-wrapper aspect-square">
                         <div class="event-card-carousel" data-carousel>
                             <div class="event-card-image">
-                                <img src="https://images.unsplash.com/photo-1549448508-4c541c5317b1?q=80&w=2574&auto=format&fit=crop" alt="Marché des artisans" />
+                                <img src="https://images.unsplash.com/photo-1607082349566-187342175e2f?q=80&w=2670&auto=format&fit=crop" alt="Marché des artisans" />
                             </div>
                             <div class="event-card-image">
-                                <img src="https://images.unsplash.com/photo-1607082349566-187342175e2f?q=80&w=2670&auto=format&fit=crop" alt="Marché des artisans" />
+                                <img src="https://images.unsplash.com/photo-1549448508-4c541c5317b1?q=80&w=2574&auto=format&fit=crop" alt="Marché des artisans" />
                             </div>
                             <div class="event-card-image">
                                 <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=2670&auto=format&fit=crop" alt="Marché des artisans" />
