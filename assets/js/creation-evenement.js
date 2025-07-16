@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const addTicketBtn = document.getElementById('add-ticket-btn');
     const freeTicketCheckbox = document.getElementById('free-ticket');
 
+    // Multiple tickets preview
+    const allTicketsPreview = document.getElementById('all-tickets-preview');
+
+    // Array to store all tickets
+    let savedTickets = [];
+
     // Handle image upload button click
     if (uploadButton && eventImage) {
         uploadButton.addEventListener('click', () => {
@@ -29,12 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Store uploaded files in an array for easier management
+    let uploadedFiles = [];
+
     // Handle image selection and preview
     if (eventImage && imagePreview) {
         eventImage.addEventListener('change', function() {
-            // Clear previous previews
-            imagePreview.innerHTML = '';
-
             if (this.files.length > 0) {
                 // Show the preview container
                 imagePreview.style.display = 'flex';
@@ -49,10 +55,51 @@ document.addEventListener('DOMContentLoaded', () => {
                     const reader = new FileReader();
 
                     reader.addEventListener('load', function() {
+                        // Add file to our array with its data URL
+                        const fileIndex = uploadedFiles.length;
+                        uploadedFiles.push({
+                            file: file,
+                            dataUrl: this.result
+                        });
+
                         // Create a new preview element
                         const previewElement = document.createElement('div');
                         previewElement.className = 'preview-image';
                         previewElement.style.backgroundImage = `url(${this.result})`;
+                        previewElement.dataset.index = fileIndex;
+
+                        // Create delete button
+                        const deleteButton = document.createElement('div');
+                        deleteButton.className = 'preview-image-delete';
+                        deleteButton.innerHTML = '×';
+                        deleteButton.dataset.index = fileIndex;
+
+                        // Add delete functionality
+                        deleteButton.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const index = parseInt(this.dataset.index);
+
+                            // Remove from DOM
+                            const previewToRemove = document.querySelector(`.preview-image[data-index="${index}"]`);
+                            if (previewToRemove) {
+                                previewToRemove.remove();
+                            }
+
+                            // Remove from array (set to null to maintain indices)
+                            uploadedFiles[index] = null;
+
+                            // If no more valid files, show the icon again
+                            const hasValidFiles = uploadedFiles.some(item => item !== null);
+                            if (!hasValidFiles) {
+                                imagePreview.style.display = 'none';
+                                if (imageUploaderIcon) {
+                                    imageUploaderIcon.style.display = 'block';
+                                }
+                            }
+                        });
+
+                        // Add delete button to preview
+                        previewElement.appendChild(deleteButton);
 
                         // Add it to the preview container
                         imagePreview.appendChild(previewElement);
@@ -130,11 +177,65 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTicketPreview();
     }
 
+    // Function to render all saved tickets
+    function renderSavedTickets() {
+        if (savedTickets.length === 0) {
+            allTicketsPreview.innerHTML = `
+                <div class="tickets-preview-empty">
+                    Aucun ticket ajouté
+                </div>
+            `;
+            return;
+        }
+
+        allTicketsPreview.innerHTML = '';
+
+        savedTickets.forEach((ticket, index) => {
+            const ticketElement = document.createElement('div');
+            ticketElement.className = 'ticket-card';
+            ticketElement.innerHTML = `
+                <div class="ticket-header">
+                    <div class="ticket-name">${ticket.name}</div>
+                    <div class="ticket-price">${ticket.price}</div>
+                </div>
+                <div class="ticket-details">
+                    <div class="ticket-quantity">Quantité: ${ticket.quantity}</div>
+                </div>
+                ${ticket.description !== 'Aucune description' ? `<div class="ticket-description">${ticket.description}</div>` : ''}
+            `;
+            allTicketsPreview.appendChild(ticketElement);
+        });
+    }
+
     // Add ticket button functionality
     if (addTicketBtn) {
         addTicketBtn.addEventListener('click', () => {
-            // Here you would normally save the current ticket and reset the form
-            // For now, we'll just reset the form fields
+            // Save the current ticket data
+            const name = ticketName.value || 'Nom du ticket';
+            const quantity = ticketQuantity.value || '0';
+            let price = ticketPrice.value || '0€';
+            const description = ticketDescription.value || 'Aucune description';
+
+            // Check if free ticket is selected
+            if (freeTicketCheckbox && freeTicketCheckbox.checked) {
+                price = 'Gratuit';
+            }
+
+            // Only save if there's at least a name
+            if (name !== 'Nom du ticket') {
+                // Add to saved tickets
+                savedTickets.push({
+                    name,
+                    quantity,
+                    price,
+                    description
+                });
+
+                // Render all saved tickets
+                renderSavedTickets();
+            }
+
+            // Reset the form fields
             ticketName.value = '';
             ticketQuantity.value = '';
             ticketPrice.value = '';
@@ -172,4 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.style.width = '50%';
         stepCounter.textContent = 'Étape 1/2';
     });
+
+    // Initialize the saved tickets display
+    renderSavedTickets();
 });

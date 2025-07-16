@@ -415,7 +415,7 @@ $conn->close();
                                     <button class="carousel-button next">&gt;</button>
                                 <?php endif; ?>
                             <?php else: ?>
-                                <img src="image/default.jpg" alt="Image par défaut" class="carousel-image active">
+                                <img src="image/Didib.jpg" alt="Image par défaut" class="carousel-image active">
                             <?php endif; ?>
                         </div>
                         <div class="card-content">

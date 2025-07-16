@@ -41,7 +41,9 @@
                     <div class="image-uploader-icon" id="imageUploaderIcon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M208,128a80,80,0,1,1-80-80,80.09,80.09,0,0,1,80,80Z" opacity="0.2"></path><path d="M240,128a112,112,0,1,1-112-112,112,112,0,0,1,112,112Zm-48-48a24,24,0,1,0-24-24,24,24,0,0,0,24,24Zm-41.18,90.48-33.34-27.78a8,8,0,0,0-11,0l-56,46.66A8,8,0,0,0,56,200H200a8,8,0,0,0,5.18-14.48Z"></path></svg>
                     </div>
-                    <div id="imagePreview" class="image-preview"></div>
+                    <div class="image-preview-container">
+                        <div id="imagePreview" class="image-preview"></div>
+                    </div>
                     <p class="image-uploader-text">Utilisez une image de haute qualité</p>
                     <input type="file" id="eventImage" name="eventImage[]" accept="image/*" multiple style="display: none;">
                     <button type="button" class="btn btn-secondary" id="uploadButton">Télécharger</button>
@@ -79,11 +81,12 @@
                 <input id="ticket-description" type="text" placeholder=" " class="form-input" />
                 <label class="form-label" for="ticket-description">Description du ticket</label>
             </div>
-            <div id="ticket-preview-container" class="ticket-preview-container">
-                <h3 class="preview-title">Aperçu du ticket</h3>
-                <div id="ticket-preview" class="ticket-preview">
-                    <div class="ticket-preview-empty">
-                        Les détails du ticket apparaîtront ici
+            <!-- Container for multiple ticket previews -->
+            <div id="all-tickets-container" class="all-tickets-container">
+                <h3 class="preview-title">Tickets ajoutés</h3>
+                <div id="all-tickets-preview" class="all-tickets-preview">
+                    <div class="tickets-preview-empty">
+                        Aucun ticket ajouté
                     </div>
                 </div>
             </div>
