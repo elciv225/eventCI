@@ -184,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscription'])) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/form.css">
 </head>
-<body data-theme="dark">
+<body data-theme="dark" class="body-authentification">
 
 <div class="container" id="container">
     <!-- Zone du Carrousel d'image -->
@@ -206,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscription'])) {
             <!-- Formulaire de connexion -->
             <div class="form-container" id="connexion">
                 <form action="" method="post">
-                    <h2>Connexion</h2>
+                    <h2 class="titre">Connexion</h2>
                     <?php if (!empty($message_erreur)): ?>
                     <div class="error-message">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -234,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscription'])) {
                                             d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12-.708.708z"/></svg>
                             </span>
                     </div>
-                    <button type="submit" name="connexion">Se connecter</button>
+                    <button type="submit" name="connexion" class="btn-form">Se connecter</button>
                     <p class="switch-form-text">Pas encore de compte ? <a href="#inscription">S'inscrire</a></p>
                 </form>
             </div>
@@ -242,7 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscription'])) {
             <!-- Formulaire d'inscription -->
             <div class="form-container" id="inscription">
                 <form action="" method="post">
-                    <h2>Créer un compte</h2>
+                    <h2 class="titre">Créer un compte</h2>
                     <?php if (!empty($message_erreur)): ?>
                     <div class="error-message <?php echo (strpos($message_erreur, '✅') !== false) ? 'success-message' : ''; ?>">
                         <?php if (strpos($message_erreur, '✅') !== false): ?>
@@ -308,7 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscription'])) {
                                             d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12-.708.708z"/></svg>
                             </span>
                     </div>
-                    <button type="submit" name="inscription">Créer mon compte</button>
+                    <button type="submit" name="inscription" class="btn-form">Créer mon compte</button>
                     <p class="switch-form-text">Déjà un compte ? <a href="#connexion">Se connecter</a></p>
                 </form>
             </div>

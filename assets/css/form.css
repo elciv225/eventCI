@@ -1,7 +1,7 @@
 @import "main.css";
 
 /* Styles de base */
-body {
+.body-authentification {
     font-family: 'Inter', sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
@@ -145,7 +145,7 @@ body {
     }
 }
 
-h2 {
+.titre {
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 2rem;
@@ -241,7 +241,7 @@ h2 {
     color: var(--text-tertiary);
 }
 
-button {
+.btn-form {
     border-radius: 8px;
     border: none;
     background-color: var(--text-highlight);
@@ -256,11 +256,11 @@ button {
     transition: background-color 0.2s ease, transform 80ms ease-in;
 }
 
-button:hover {
+.btn-form:hover {
     background-color: #e65a28;
 }
 
-button:active {
+.btn-form:active {
     transform: scale(0.98);
 }
 
@@ -315,7 +315,7 @@ button:active {
         padding: 30px 20px;
     }
 
-    h2 {
+    .titre {
         font-size: 1.8rem;
     }
 }
