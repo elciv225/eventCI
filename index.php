@@ -2,6 +2,35 @@
 session_start();
 
 // On va récuperer tous les évènement
+
+// Variables pour les messages
+$success_message = '';
+$error_message = '';
+
+// Récupérer les messages de session s'ils existent
+if (isset($_SESSION['success_message'])) {
+    $success_message = $_SESSION['success_message'];
+    unset($_SESSION['success_message']);
+}
+
+if (isset($_SESSION['error_message'])) {
+    $error_message = $_SESSION['error_message'];
+    unset($_SESSION['error_message']);
+}
+
+// Récupérer la page courante
+$page = $_GET['page'] ?? 'accueil';
+
+// Récupérer les informations de l'utilisateur connecté
+$user_info = null;
+if (isset($_SESSION['utilisateur']) && !empty($_SESSION['utilisateur']['id'])) {
+    // Utiliser directement les informations de l'utilisateur depuis la session
+    $user_info = [
+        'Nom' => $_SESSION['utilisateur']['nom'] ?? '',
+        'Prenom' => $_SESSION['utilisateur']['prenom'] ?? '',
+        'Photo' => $_SESSION['utilisateur']['photo'] ?? ''
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -30,9 +59,21 @@ session_start();
                 </svg>
                 <h2>Evently</h2>
             </div>
+            <button class="mobile-menu-toggle" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <nav class="header-nav">
-                <a href="#">Explorer</a>
-                <a href="?page=creation-evenement">Créer</a>
+                <a href="?page=accueil" <?php echo ($page === 'accueil' || $page === '') ? 'class="active"' : ''; ?>>Accueil</a>
+                <a href="?page=recherche" <?php echo ($page === 'recherche') ? 'class="active"' : ''; ?>>Explorer</a>
+                <?php if ($user_info): ?>
+                    <a href="?page=mes-ticket" <?php echo ($page === 'mes-ticket') ? 'class="active"' : ''; ?>>Mes tickets</a>
+                    <a href="?page=mon-profil" <?php echo ($page === 'mon-profil') ? 'class="active"' : ''; ?>>Mon Profil</a>
+                    <a href="?page=creation-evenement" <?php echo ($page === 'creation-evenement') ? 'class="active"' : ''; ?>>Créer</a>
+                <?php else: ?>
+                    <a href="authentification.php" class="login-button">Connexion / Inscription</a>
+                <?php endif; ?>
             </nav>
         </div>
         <div class="header-right">
@@ -51,14 +92,52 @@ session_start();
                     <path d="M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.84,104.84,0,0,0-52.91,37A104,104,0,0,0,136,224a103.09,103.09,0,0,0,62.52-20.88,104.84,104.84,0,0,0,37-52.91A8,8,0,0,0,233.54,142.23ZM188.9,190.34A88,88,0,0,1,65.66,67.11a89,89,0,0,1,31.4-26A106,106,0,0,0,96,56,104.11,104.11,0,0,0,200,160a106,106,0,0,0,14.92-1.06A89,89,0,0,1,188.9,190.34Z"></path>
                 </svg>
             </button>
-            <div class="profile-pic"
-                 style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCzg14wleDglhrpOM32buaCFnSBoEvEJyU3BYLkrsf2JxZlT6ohRZEcKu32iyCBZrbkT8-phgtNUDVk7Tw44tldQFCJOBwsdAcH3XYm_JQDztSURWJv60VA4YYeRmhuhxz8lV_HWsKqshQe7Atm5b4DtZVTUC1AJDKe8YZLm_RM3S51R0MVVbYSopsjksHdciQaU0udO_kqmibaYxffLEMfGTsDU7k2DpxzHPflxQCr5QQ4xiNsEDO8lbl_ak5fV-SsPJo6ISJv0opO");'></div>
+
+            <?php if ($user_info): ?>
+                <div class="user-menu">
+                    <?php if (!empty($user_info['Photo'])): ?>
+                        <div class="profile-pic"
+                             style='background-image: url("<?php echo htmlspecialchars($user_info['Photo']); ?>");'></div>
+                    <?php else: ?>
+                        <div class="profile-pic profile-initials">
+                            <?php
+                            $initials = '';
+                            if (!empty($user_info['Prenom'])) $initials .= strtoupper(substr($user_info['Prenom'], 0, 1));
+                            if (!empty($user_info['Nom'])) $initials .= strtoupper(substr($user_info['Nom'], 0, 1));
+                            echo htmlspecialchars($initials);
+                            ?>
+                        </div>
+                    <?php endif; ?>
+                    <div class="user-dropdown">
+                        <div class="user-info">
+                            <span class="user-name"><?php echo htmlspecialchars($user_info['Prenom'] . ' ' . $user_info['Nom']); ?></span>
+                        </div>
+                        <nav class="user-nav">
+                            <a href="?page=creation-evenement">Créer un événement</a>
+                            <a href="mes_tickets.php">Mes tickets</a>
+                            <a href="mon_profil.php">Mon profil</a>
+                            <a href="authentification.php?logout=1">Déconnexion</a>
+                        </nav>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="auth-menu">
+                    <div class="auth-dropdown">
+                        <nav class="auth-nav">
+                            <a href="authentification.php#connexion">Se connecter</a>
+                            <a href="authentification.php#inscription">S'inscrire</a>
+                        </nav>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </header>
 
+    <!-- Mobile menu overlay -->
+    <div class="mobile-menu-overlay"></div>
+
     <!-- Main Content -->
     <?php // switch avec les gets
-    $page = $_GET['page'] ?? 'accueil';
     switch ($page) {
         case '':
             include 'public/accueil.php';
@@ -77,5 +156,37 @@ session_start();
 </div>
 
 <script src="assets/js/accueil.js"></script>
+
+<!-- Popup structure -->
+<div class="popup-overlay">
+    <div class="popup-container">
+        <div class="popup-header">
+            <div class="popup-icon"></div>
+            <div class="popup-title"></div>
+            <button class="popup-close" aria-label="Fermer">×</button>
+        </div>
+        <div class="popup-content"></div>
+        <div class="popup-actions">
+            <button class="popup-button popup-button-primary">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- Include popup CSS and JS -->
+<link rel="stylesheet" href="assets/css/popup.css">
+<script src="assets/js/popup.js"></script>
+
+<!-- Display messages from session if they exist -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        <?php if (!empty($success_message)): ?>
+        showSuccessPopup('<?php echo addslashes($success_message); ?>');
+        <?php endif; ?>
+
+        <?php if (!empty($error_message)): ?>
+        showErrorPopup('<?php echo addslashes($error_message); ?>');
+        <?php endif; ?>
+    });
+</script>
 </body>
 </html>

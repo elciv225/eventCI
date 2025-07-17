@@ -1,4 +1,47 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // --- User Menu Dropdown Logic ---
+    const userMenu = document.querySelector('.user-menu');
+    const authMenu = document.querySelector('.auth-menu');
+
+    // Handle user menu dropdown (when logged in)
+    if (userMenu) {
+        const userDropdown = userMenu.querySelector('.user-dropdown');
+
+        userMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userDropdown.classList.toggle('active');
+        });
+    }
+
+    // Handle auth menu dropdown (when not logged in)
+    if (authMenu) {
+        const authDropdown = authMenu.querySelector('.auth-dropdown');
+        const loginButton = document.querySelector('.header-nav .login-button');
+
+        if (loginButton) {
+            loginButton.addEventListener('click', function(e) {
+                // Don't stop propagation here to allow the mobile menu to close when clicked
+                // Just prevent default to avoid navigating away immediately
+                e.preventDefault();
+                window.location.href = this.getAttribute('href');
+            });
+        }
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        const userDropdown = document.querySelector('.user-dropdown');
+        const authDropdown = document.querySelector('.auth-dropdown');
+
+        if (userDropdown && !e.target.closest('.user-menu')) {
+            userDropdown.classList.remove('active');
+        }
+
+        if (authDropdown && !e.target.closest('.auth-menu')) {
+            authDropdown.classList.remove('active');
+        }
+    });
+
     // --- Theme Toggle Logic ---
     const themeToggleBtn = document.getElementById('theme-toggle');
     const themeIcon = document.getElementById('theme-icon');
@@ -25,6 +68,48 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentTheme === 'light') {
             themeIcon.innerHTML = '<path d="M128,56a72,72,0,1,0,72,72A72.08,72.08,0,0,0,128,56Zm0,128a56,56,0,1,1,56-56A56.06,56.06,0,0,1,128,184ZM128,24A8,8,0,0,0,136,16V8a8,8,0,0,0-16,0v8A8,8,0,0,0,128,24Zm0,208a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-8A8,8,0,0,0,128,232ZM248,128a8,8,0,0,0,8-8v-8a8,8,0,0,0-16,0v8A8,8,0,0,0,248,128ZM16,120a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-8A8,8,0,0,0,16,120ZM208,72a8,8,0,0,0,5.66-2.34l5.66-5.66a8,8,0,0,0-11.32-11.31l-5.65,5.65A8,8,0,0,0,208,72Zm-160,0a8,8,0,0,0,5.66-13.65L48,52.69A8,8,0,0,0,36.69,64l5.65,5.66A8,8,0,0,0,48,72Zm160,112a8,8,0,0,0-5.66,13.66l5.66,5.65a8,8,0,0,0,11.31-11.31l-5.65-5.66A8,8,0,0,0,208,184ZM42.34,189.66l5.66-5.66a8,8,0,0,0-11.32-11.31L31,178.34a8,8,0,0,0,11.31,11.31Z"></path>';
         }
+    }
+
+    // --- Mobile Menu Toggle Logic ---
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const mobileMenuOverlay = document.querySelector('.mobile-menu-overlay');
+
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', function() {
+            document.body.classList.toggle('mobile-menu-open');
+            // The CSS transitions will handle the animation automatically
+        });
+
+        // Close mobile menu when clicking on the overlay
+        if (mobileMenuOverlay) {
+            mobileMenuOverlay.addEventListener('click', function() {
+                document.body.classList.remove('mobile-menu-open');
+                // The CSS transitions will handle the animation automatically
+            });
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (document.body.classList.contains('mobile-menu-open') && 
+                !event.target.closest('.header-nav') && 
+                !event.target.closest('.mobile-menu-toggle') &&
+                !event.target.closest('.mobile-menu-overlay')) {
+                document.body.classList.remove('mobile-menu-open');
+                // The CSS transitions will handle the animation automatically
+            }
+        });
+
+        // Close mobile menu when clicking on a nav link
+        const navLinks = document.querySelectorAll('.header-nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                // Don't close menu immediately for login button to allow dropdown
+                if (!this.classList.contains('login-button')) {
+                    document.body.classList.remove('mobile-menu-open');
+                    // The CSS transitions will handle the animation automatically
+                }
+            });
+        });
     }
 
     // --- Card Carousel Logic ---

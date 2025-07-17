@@ -12,8 +12,6 @@
     max-width: 1280px;
     margin: 0 auto;
     padding: 0 2rem;
-    display: flex;
-    justify-content: center;
 }
 
 /* Header */
@@ -31,6 +29,12 @@ header {
     display: flex;
     align-items: center;
     gap: 2rem;
+}
+
+.header-left .header-nav{
+    display: flex;
+    gap: 1rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .logo-container {
@@ -55,7 +59,7 @@ header nav a {
     transition: color 0.2s ease;
 }
 
-header nav a:hover {
+header nav a:hover, header nav a.active {
     color: var(--text-highlight);
 }
 
@@ -520,6 +524,13 @@ main {
 
     .header-nav, .desktop-search {
         display: flex;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Desktop-specific styling for login button */
+    .header-nav .login-button {
+        margin-left: 0.5rem;
     }
 }
 
@@ -531,9 +542,159 @@ main {
     /* Show arrows on desktop too */
 }
 
+/* Mobile menu toggle button */
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: 1rem;
+    z-index: 1000;
+}
+
+.mobile-menu-toggle span {
+    display: block;
+    width: 24px;
+    height: 3px;
+    margin: 5px 0;
+    background-color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+/* Mobile menu open state */
+body.mobile-menu-open .mobile-menu-toggle span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+body.mobile-menu-open .mobile-menu-toggle span:nth-child(2) {
+    opacity: 0;
+}
+
+body.mobile-menu-open .mobile-menu-toggle span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Overlay for mobile menu */
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 78px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+body.mobile-menu-open .mobile-menu-overlay {
+    display: block;
+    opacity: 1;
+}
+
+body.mobile-menu-open .header-nav {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 78px;
+    left: 0;
+    width: 80%;
+    height: calc(100vh - 78px);
+    background-color: var(--bg-secondary);
+    padding: 1rem;
+    box-shadow: 0 4px 6px var(--shadow-light);
+    z-index: 999;
+    transform: translateX(0);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scaleY(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scaleY(1);
+    }
+}
+
+body.mobile-menu-open .header-nav a {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-light);
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideInMenuItem 0.4s forwards;
+}
+
+body.mobile-menu-open .header-nav a:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+body.mobile-menu-open .header-nav a:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+body.mobile-menu-open .header-nav a:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+body.mobile-menu-open .header-nav a:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+body.mobile-menu-open .header-nav a:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+body.mobile-menu-open .header-nav a:last-child {
+    border-bottom: none;
+}
+
+@keyframes slideInMenuItem {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 @media (max-width: 767px) {
-    .header-nav, .desktop-search {
+    .header-nav {
+        position: fixed;
+        top: 78px;
+        left: 0;
+        width: 80%;
+        height: calc(100vh - 78px);
+        background-color: var(--bg-secondary);
+        padding: 1rem;
+        box-shadow: 0 4px 6px var(--shadow-light);
+        z-index: 999;
+        transform: translateX(-100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        flex-direction: column;
+    }
+
+    .header-nav a {
+        opacity: 0;
+        transform: translateX(-20px);
+        transition: none;
+    }
+
+    .desktop-search {
         display: none;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mobile-menu-toggle {
+        display: block;
     }
 
     /* Reduce padding for mobile devices */
@@ -591,4 +752,171 @@ main {
     .event-card-image {
         aspect-ratio: 16 / 9;
     }
+
+    /* Responsive styles for user and auth dropdowns */
+    .user-dropdown, .auth-dropdown {
+        position: fixed;
+        top: 80px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        min-width: 100%;
+        border-radius: 0;
+        box-shadow: 0 4px 8px var(--shadow-light);
+        z-index: 1001;
+    }
+}
+
+/* Styles pour le menu utilisateur */
+.user-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #333;
+    font-size: 16px;
+}
+
+.profile-initials {
+    background-color: var(--text-link);
+    color: white;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow-light);
+    padding: 12px;
+    min-width: 200px;
+    z-index: 1000;
+    display: none;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, display 0s 0.3s;
+}
+
+.user-dropdown.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.user-info {
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.user-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.user-nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-nav a {
+    padding: 8px 0;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.user-nav a:hover {
+    color: var(--text-link);
+}
+
+.login-button {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: var(--text-link);
+    color: white !important;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 0;
+}
+
+.login-button:hover {
+    background-color: var(--text-highlight);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Specific styling for login button in mobile menu */
+body.mobile-menu-open .header-nav .login-button {
+    margin-top: 0.5rem;
+    width: 100%;
+    text-align: center;
+}
+
+/* Styles pour le menu d'authentification */
+.auth-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.auth-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow-light);
+    padding: 12px;
+    min-width: 200px;
+    z-index: 1000;
+    display: none;
+    margin-top: 8px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, display 0s 0.3s;
+}
+
+.auth-dropdown.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.auth-nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-nav a {
+    padding: 8px 0;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.auth-nav a:hover {
+    color: var(--text-link);
 }

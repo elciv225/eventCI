@@ -4,12 +4,27 @@ require_once 'config/base.php';
 if (!isset($conn)) {
     custom_die("Vérifier l'import de la base.php");
 }
+
+// Traitement de la déconnexion
+if (isset($_GET['logout'])) {
+    // Détruire toutes les variables de session
+    $_SESSION = array();
+    // Détruire la session
+    session_destroy();
+    // Rediriger vers la page d'accueil
+    header("Location: index.php");
+    exit();
+}
 // Identifiants admin fixes
 $admin_username = "admin"; // À changer pour un nom d'utilisateur sécurisé
 $admin_password_hash = password_hash("admin", PASSWORD_DEFAULT); // CHANGEZ CECI !
 
 // Initialiser les messages d'erreur
 $message_erreur = '';
+
+if ($conn->connect_error) {
+    custom_die("Erreur de connexion : " . $conn->connect_error);
+}
 
 // Récupérer les messages d'erreur depuis la session
 if (isset($_SESSION['error'])) {
@@ -27,26 +42,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['connexion'])) {
 
     // Vérification de l'administrateur
     if ($email === $admin_username && password_verify($password, $admin_password_hash)) {
-        $_SESSION['utilisateur']['id'] = -1; // Un ID fictif pour l'admin (non issu de la BDD)
-        $_SESSION['utilisateur']['email'] = $admin_username; // Ou un email générique pour l'admin
-        $_SESSION['is_admin_fixed'] = true; // Variable spécifique pour marquer l'admin fixe
+        $_SESSION['utilisateur']['id'] = -1;
+        $_SESSION['utilisateur']['email'] = $admin_username;
+        $_SESSION['is_admin_fixed'] = true;
         header("Location: menu_admin.php");
         exit();
     } else {
         if (!empty($email) && !empty($password)) {
-            $stmt = $conn->prepare("SELECT Id_Utilisateur, Email, MotDePasse FROM utilisateur WHERE Email = ?");
+            $stmt = $conn->prepare("SELECT Id_Utilisateur, Email, MotDePasse, Nom, Prenom, DateNaissance, Photo, Telephone, Type_utilisateur FROM utilisateur WHERE Email = ?");
             if ($stmt) {
                 $stmt->bind_param("s", $email);
                 $stmt->execute();
                 $stmt->store_result();
+
                 if ($stmt->num_rows === 1) {
-                    $stmt->bind_result($id, $email_db, $motdepasse_clair);
+                    $stmt->bind_result($id, $email_db, $motdepasse_hash, $nom, $prenom, $dateNaissance, $photo, $telephone, $type_utilisateur);
                     $stmt->fetch();
-                    if ($password === $motdepasse_clair) {
+
+                    // CORRECTION : password_verify(mot_de_passe_clair, hash_stocké)
+                    if (password_verify($password, $motdepasse_hash)) {
                         session_regenerate_id(true);
                         $_SESSION['utilisateur']['id'] = $id;
                         $_SESSION['utilisateur']['email'] = $email_db;
-                        header("Location: menu_utilisateur.php");
+                        $_SESSION['utilisateur']['nom'] = $nom;
+                        $_SESSION['utilisateur']['prenom'] = $prenom;
+                        $_SESSION['utilisateur']['dateNaissance'] = $dateNaissance;
+                        $_SESSION['utilisateur']['photo'] = $photo;
+                        $_SESSION['utilisateur']['telephone'] = $telephone;
+                        $_SESSION['utilisateur']['type_utilisateur'] = $type_utilisateur;
+
+                        header("Location: index.php?page=accueil");
                         exit();
                     } else {
                         $_SESSION['error'] = "Mot de passe incorrect.";
@@ -64,14 +89,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['connexion'])) {
                 header("Location: authentification.php#connexion");
                 exit();
             }
-            $conn->close();
         } else {
             $_SESSION['error'] = "Veuillez remplir tous les champs.";
             header("Location: authentification.php#connexion");
             exit();
         }
     }
-
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscription'])) {
@@ -134,12 +157,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscription'])) {
 
         // Si aucun message d'erreur n'a été généré par l'upload ou la validation de mot de passe
         if (empty($message_erreur)) {
-            // Connexion avec MySQLi (Gardée telle quelle, mais PDO est recommandé)
-            $conn = new mysqli('localhost', 'root', '', 'gestiondebillet');
-
-            if ($conn->connect_error) {
-                custom_die("Erreur de connexion : " . $conn->connect_error);
-            }
 
             $conn->set_charset("utf8mb4");
 
@@ -208,13 +225,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscription'])) {
                 <form action="" method="post">
                     <h2 class="titre">Connexion</h2>
                     <?php if (!empty($message_erreur)): ?>
-                    <div class="error-message">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-                        </svg>
-                        <?php echo $message_erreur; ?>
-                    </div>
+                        <div class="error-message">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+                            </svg>
+                            <?php echo $message_erreur; ?>
+                        </div>
                     <?php endif; ?>
                     <div class="form-group">
                         <input id="email-signin" name="email" type="email" required placeholder=" "/>
@@ -244,20 +262,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscription'])) {
                 <form action="" method="post">
                     <h2 class="titre">Créer un compte</h2>
                     <?php if (!empty($message_erreur)): ?>
-                    <div class="error-message <?php echo (strpos($message_erreur, '✅') !== false) ? 'success-message' : ''; ?>">
-                        <?php if (strpos($message_erreur, '✅') !== false): ?>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                            <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
-                        </svg>
-                        <?php else: ?>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-                        </svg>
-                        <?php endif; ?>
-                        <?php echo $message_erreur; ?>
-                    </div>
+                        <div class="error-message <?php echo (strpos($message_erreur, '✅') !== false) ? 'success-message' : ''; ?>">
+                            <?php if (strpos($message_erreur, '✅') !== false): ?>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                                </svg>
+                            <?php else: ?>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+                                </svg>
+                            <?php endif; ?>
+                            <?php echo $message_erreur; ?>
+                        </div>
                     <?php endif; ?>
                     <label class="photo-uploader" for="photo" id="photoUploader">
                             <span class="photo-uploader-icon">
