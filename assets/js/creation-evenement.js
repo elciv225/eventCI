@@ -342,6 +342,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 eventDateFin.classList.remove('error');
             }
 
+            // Validation supplémentaire pour les dates
+            if (eventDateDebut.value && eventDateFin.value) {
+                const dateDebut = new Date(eventDateDebut.value);
+                const dateFin = new Date(eventDateFin.value);
+                const now = new Date();
+
+                // Vérifier que la date de fin est après la date de début
+                if (dateFin <= dateDebut) {
+                    eventDateFin.classList.add('error');
+                    isValid = false;
+                    showFormValidationErrors('La date de fin doit être postérieure à la date de début.');
+                    return;
+                }
+
+                // Vérifier que les dates ne sont pas dans le passé
+                if (dateDebut < now) {
+                    eventDateDebut.classList.add('error');
+                    isValid = false;
+                    showFormValidationErrors('La date de début ne peut pas être dans le passé.');
+                    return;
+                }
+            }
+
             if (!idVille.value) {
                 idVille.classList.add('error');
                 isValid = false;
@@ -357,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (!isValid) {
-                showErrorPopup('Veuillez remplir tous les champs obligatoires.');
+                showFormValidationErrors('Veuillez remplir tous les champs obligatoires.');
                 return;
             }
 

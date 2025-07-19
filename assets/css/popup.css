@@ -133,13 +133,28 @@
     animation: popupFadeIn 0.3s ease forwards;
 }
 
+/* Form validation styles */
+.validation-error-list {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--color-error, #dc3545);
+}
+
+.validation-error-list li {
+    margin-bottom: 8px;
+}
+
+.validation-error-list li:last-child {
+    margin-bottom: 0;
+}
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
     .popup-container {
         width: 95%;
         padding: 15px;
     }
-    
+
     .popup-title {
         font-size: 16px;
     }

@@ -191,6 +191,14 @@ $page_content = ob_get_clean();
         <?php elseif (!empty($error_message)): ?>
         showErrorPopup('<?php echo addslashes($error_message); ?>');
         <?php endif; ?>
+
+        <?php if (isset($_SESSION['form_errors']) && !empty($_SESSION['form_errors'])): ?>
+        showFormValidationErrors(<?php echo json_encode($_SESSION['form_errors']); ?>, 'Erreur de validation');
+        <?php 
+        // Supprimer les erreurs de la session après les avoir affichées
+        unset($_SESSION['form_errors']);
+        ?>
+        <?php endif; ?>
     });
 </script>
 </body>

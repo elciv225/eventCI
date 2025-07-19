@@ -6,9 +6,7 @@
 
 // La connexion $conn est supposée être disponible via l'inclusion depuis index.php
 if (!isset($conn)) {
-    // Si ce fichier est appelé directement, il manquera la connexion.
-    // Assurez-vous que index.php gère l'inclusion de base.php
-    require_once __DIR__ . 'config/base.php';
+    require_once __DIR__ . '/config/base.php';
 }
 
 $evenementId = null;
@@ -62,6 +60,51 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['creer-evenement-ticke
     $dateFin = $_POST['dateFin'] ?? '';
     $idVille = (int)($_POST['idVille'] ?? 0);
     $idCategorieEvenement = (int)($_POST['idCategorieEvenement'] ?? 0);
+
+    // Validation des dates
+    $errors = [];
+
+    // Vérifier si les dates sont vides
+    if (empty($dateDebut)) {
+        $errors[] = "La date de début est requise";
+    }
+
+    if (empty($dateFin)) {
+        $errors[] = "La date de fin est requise";
+    }
+
+    // Vérifier le format des dates
+    if (!empty($dateDebut) && !strtotime($dateDebut)) {
+        $errors[] = "Le format de la date de début est invalide";
+    }
+
+    if (!empty($dateFin) && !strtotime($dateFin)) {
+        $errors[] = "Le format de la date de fin est invalide";
+    }
+
+    // Vérifier que la date de fin est après la date de début
+    if (!empty($dateDebut) && !empty($dateFin) && strtotime($dateDebut) && strtotime($dateFin)) {
+        $dtDebut = new DateTime($dateDebut);
+        $dtFin = new DateTime($dateFin);
+
+        if ($dtFin <= $dtDebut) {
+            $errors[] = "La date de fin doit être postérieure à la date de début";
+        }
+
+        // Vérifier que les dates ne sont pas dans le passé
+        $now = new DateTime();
+        if ($dtDebut < $now) {
+            $errors[] = "La date de début ne peut pas être dans le passé";
+        }
+    }
+
+    // Si des erreurs sont détectées, afficher un message et arrêter le traitement
+    if (!empty($errors)) {
+        // Stocker les erreurs dans la session pour l'affichage
+        $_SESSION['form_errors'] = $errors;
+        header('Location: index.php?page=creation-evenement');
+        exit;
+    }
 
     // Récupération des tickets (JSON depuis le champ caché)
     $ticketsJson = $_POST['tickets'] ?? '[]';

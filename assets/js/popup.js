@@ -217,3 +217,63 @@ function showWarningPopup(message, title = 'Attention', callback = null) {
 function showInfoPopup(message, title = 'Information', callback = null) {
     showPopup(message, 'info', title, callback);
 }
+
+/**
+ * Show a form validation error popup with a list of errors
+ * @param {Array|string} errors - Array of error messages or a single error message string
+ * @param {string} title - The title of the popup
+ * @param {Function} callback - Optional callback function
+ */
+function showFormValidationErrors(errors, title = 'Erreur de validation', callback = null) {
+    let errorMessage;
+
+    if (Array.isArray(errors)) {
+        // Create a list of errors
+        errorMessage = '<ul class="validation-error-list">';
+        errors.forEach(error => {
+            errorMessage += `<li>${error}</li>`;
+        });
+        errorMessage += '</ul>';
+    } else {
+        // Single error message or HTML string
+        errorMessage = errors;
+    }
+
+    // Use the error popup with custom HTML content
+    const popupOverlay = document.querySelector('.popup-overlay');
+    if (!popupOverlay) return;
+
+    const popupContainer = popupOverlay.querySelector('.popup-container');
+    const popupIcon = popupOverlay.querySelector('.popup-icon');
+    const popupTitle = popupOverlay.querySelector('.popup-title');
+    const popupContent = popupOverlay.querySelector('.popup-content');
+    const popupButton = popupOverlay.querySelector('.popup-button');
+
+    // Remove previous type classes
+    popupContainer.classList.remove('popup-success', 'popup-error', 'popup-warning', 'popup-info');
+
+    // Set the type class
+    popupContainer.classList.add('popup-error');
+
+    // Set the icon for error
+    popupIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+
+    // Set the title and content
+    popupTitle.textContent = title;
+    popupContent.innerHTML = errorMessage; // Use innerHTML to render HTML content
+
+    // Store the callback
+    if (callback) {
+        popupButton._callback = callback;
+    } else {
+        popupButton._callback = null;
+    }
+
+    // Show the popup
+    popupOverlay.classList.add('active');
+
+    // Focus the button for accessibility
+    setTimeout(() => {
+        popupButton.focus();
+    }, 100);
+}
