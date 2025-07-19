@@ -107,8 +107,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscription'])) {
     $confirmerMotDePasse = $_POST['confirmer_mot_de_passe'] ?? '';
 
     // Chemin où les photos seront stockées
-    $uploadDir = 'uploads/'; // Assurez-vous que ce dossier existe et est inscriptible !
+    $uploadDir = 'uploads/photos_profil/'; // Assurez-vous que ce dossier existe et est inscriptible !
     $photoFileName = ''; // Initialise le nom du fichier photo
+
+    // Vérifier si le répertoire existe, sinon le créer
+    if (!is_dir($uploadDir)) {
+        if (!mkdir($uploadDir, 0755, true)) {
+            $_SESSION['error'] = "❌ Impossible de créer le dossier pour les photos de profil.";
+            header("Location: authentification.php#inscription");
+            exit();
+        }
+    }
 
     // 1. Vérification des champs obligatoires
     if (empty($nom) || empty($prenom) || empty($dateNaissance) || empty($telephone) || empty($email) || empty($motDePasse) || empty($confirmerMotDePasse)) {

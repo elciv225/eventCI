@@ -123,12 +123,24 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateTicketPreview() {
         const name = ticketName.value || 'Nom du ticket';
         const quantity = ticketQuantity.value || '0';
-        let price = ticketPrice.value || '0€';
+        let price = ticketPrice.value || '0';
         const description = ticketDescription.value || 'Aucune description';
 
         // Check if free ticket is selected
         if (freeTicketCheckbox && freeTicketCheckbox.checked) {
             price = 'Gratuit';
+            // Make sure the price value is 0
+            ticketPrice.value = '0';
+        } else {
+            // Remove any non-numeric characters except decimal point for validation
+            const numericPrice = price.replace(/[^\d.]/g, '');
+            // Ensure it's a valid number
+            if (isNaN(parseFloat(numericPrice))) {
+                price = '0€';
+            } else {
+                // Format with currency symbol for display
+                price = numericPrice + '€';
+            }
         }
 
         // Create ticket preview HTML
@@ -146,7 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         // Update the preview
-        ticketPreview.innerHTML = ticketHTML;
+        if (ticketPreview) {
+            ticketPreview.innerHTML = ticketHTML;
+        }
     }
 
     // Add event listeners to ticket form fields
@@ -163,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (this.checked) {
                     ticketPrice.disabled = true;
                     ticketPrice.placeholder = 'Gratuit';
+                    ticketPrice.value = '0'; // Set value to 0 when checked
                 } else {
                     ticketPrice.disabled = false;
                     ticketPrice.placeholder = ' ';
@@ -179,6 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to render all saved tickets
     function renderSavedTickets() {
+        if (!allTicketsPreview) return;
+
         if (savedTickets.length === 0) {
             allTicketsPreview.innerHTML = `
                 <div class="tickets-preview-empty">
@@ -213,12 +230,21 @@ document.addEventListener('DOMContentLoaded', () => {
             // Save the current ticket data
             const name = ticketName.value || 'Nom du ticket';
             const quantity = ticketQuantity.value || '0';
-            let price = ticketPrice.value || '0€';
+            let price = ticketPrice.value || '0';
             const description = ticketDescription.value || 'Aucune description';
 
             // Check if free ticket is selected
             if (freeTicketCheckbox && freeTicketCheckbox.checked) {
                 price = 'Gratuit';
+                // Make sure the price value is 0 for database storage
+                ticketPrice.value = '0';
+            } else {
+                // Remove any non-numeric characters except decimal point
+                price = price.replace(/[^\d.]/g, '');
+                // Ensure it's a valid number
+                if (isNaN(parseFloat(price))) {
+                    price = '0';
+                }
             }
 
             // Only save if there's at least a name
@@ -255,119 +281,121 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Reset the preview
-            ticketPreview.innerHTML = `
-                <div class="ticket-preview-empty">
-                    Les détails du ticket apparaîtront ici
-                </div>
-            `;
+            if (ticketPreview) {
+                ticketPreview.innerHTML = `
+                    <div class="ticket-preview-empty">
+                        Les détails du ticket apparaîtront ici
+                    </div>
+                `;
+            }
 
             // Focus on the first field
             ticketName.focus();
         });
     }
 
-    nextBtn.addEventListener('click', () => {
-        // Validation de l'étape 1
-        const eventTitle = document.getElementById('event-title');
-        const eventDescription = document.getElementById('event-description');
-        const eventLocation = document.getElementById('event-location');
-        const eventDate = document.getElementById('event-date');
-        const eventTime = document.getElementById('event-time');
-        const idVille = document.getElementById('idVille');
-        const idCategorieEvenement = document.getElementById('idCategorieEvenement');
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            // Validation de l'étape 1
+            const eventTitle = document.getElementById('event-title');
+            const eventDescription = document.getElementById('event-description');
+            const eventLocation = document.getElementById('event-location');
+            const eventDateDebut = document.getElementById('event-date-debut');
+            const eventDateFin = document.getElementById('event-date-fin');
+            const idVille = document.getElementById('idVille');
+            const idCategorieEvenement = document.getElementById('idCategorieEvenement');
 
-        let isValid = true;
+            let isValid = true;
 
-        if (!eventTitle.value) {
-            eventTitle.classList.add('error');
-            isValid = false;
-        } else {
-            eventTitle.classList.remove('error');
-        }
-
-        if (!eventDescription.value) {
-            eventDescription.classList.add('error');
-            isValid = false;
-        } else {
-            eventDescription.classList.remove('error');
-        }
-
-        if (!eventLocation.value) {
-            eventLocation.classList.add('error');
-            isValid = false;
-        } else {
-            eventLocation.classList.remove('error');
-        }
-
-        if (!eventDate.value) {
-            eventDate.classList.add('error');
-            isValid = false;
-        } else {
-            eventDate.classList.remove('error');
-        }
-
-        if (!eventTime.value) {
-            eventTime.classList.add('error');
-            isValid = false;
-        } else {
-            eventTime.classList.remove('error');
-        }
-
-        if (!idVille.value) {
-            idVille.classList.add('error');
-            isValid = false;
-        } else {
-            idVille.classList.remove('error');
-        }
-
-        if (!idCategorieEvenement.value) {
-            idCategorieEvenement.classList.add('error');
-            isValid = false;
-        } else {
-            idCategorieEvenement.classList.remove('error');
-        }
-
-        if (!isValid) {
-            showErrorPopup('Veuillez remplir tous les champs obligatoires.');
-            return;
-        }
-
-        formStep1.classList.remove('active');
-        formStep2.classList.add('active');
-        progressBar.style.width = '100%';
-        stepCounter.textContent = 'Étape 2/2';
-    });
-
-    prevBtn.addEventListener('click', () => {
-        formStep2.classList.remove('active');
-        formStep1.classList.add('active');
-        progressBar.style.width = '50%';
-        stepCounter.textContent = 'Étape 1/2';
-    });
-
-    // Validation du formulaire avant soumission
-    const eventForm = document.getElementById('event-form');
-    if (eventForm) {
-        eventForm.addEventListener('submit', function(e) {
-            // Vérifier qu'au moins un ticket a été ajouté
-            if (savedTickets.length === 0) {
-                e.preventDefault();
-                alert('Veuillez ajouter au moins un ticket avant de publier l\'événement.');
-                return false;
+            if (!eventTitle.value) {
+                eventTitle.classList.add('error');
+                isValid = false;
+            } else {
+                eventTitle.classList.remove('error');
             }
 
-            // Désactiver le bouton de soumission pour éviter les soumissions multiples
-            const submitButton = this.querySelector('button[type="submit"]');
-            if (submitButton) {
-                submitButton.disabled = true;
-                submitButton.textContent = 'Traitement en cours...';
+            if (!eventDescription.value) {
+                eventDescription.classList.add('error');
+                isValid = false;
+            } else {
+                eventDescription.classList.remove('error');
             }
 
-            // Laisser le formulaire se soumettre normalement
-            return true;
+            if (!eventLocation.value) {
+                eventLocation.classList.add('error');
+                isValid = false;
+            } else {
+                eventLocation.classList.remove('error');
+            }
+
+            if (!eventDateDebut.value) {
+                eventDateDebut.classList.add('error');
+                isValid = false;
+            } else {
+                eventDateDebut.classList.remove('error');
+            }
+
+            if (!eventDateFin.value) {
+                eventDateFin.classList.add('error');
+                isValid = false;
+            } else {
+                eventDateFin.classList.remove('error');
+            }
+
+            if (!idVille.value) {
+                idVille.classList.add('error');
+                isValid = false;
+            } else {
+                idVille.classList.remove('error');
+            }
+
+            if (!idCategorieEvenement.value) {
+                idCategorieEvenement.classList.add('error');
+                isValid = false;
+            } else {
+                idCategorieEvenement.classList.remove('error');
+            }
+
+            if (!isValid) {
+                showErrorPopup('Veuillez remplir tous les champs obligatoires.');
+                return;
+            }
+
+            formStep1.classList.remove('active');
+            formStep2.classList.add('active');
+            progressBar.style.width = '100%';
+            stepCounter.textContent = 'Étape 2/2';
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            formStep2.classList.remove('active');
+            formStep1.classList.add('active');
+            progressBar.style.width = '50%';
+            stepCounter.textContent = 'Étape 1/2';
         });
     }
 
     // Initialize the saved tickets display
-    renderSavedTickets();
+    // Load tickets from hidden field if they exist
+    const ticketsDataField = document.getElementById('tickets-data');
+    if (ticketsDataField && ticketsDataField.value && ticketsDataField.value !== '[]') {
+        try {
+            savedTickets = JSON.parse(ticketsDataField.value);
+            renderSavedTickets();
+
+            // If there are tickets, show step 2 automatically
+            if (savedTickets.length > 0 && formStep1 && formStep2 && progressBar && stepCounter) {
+                formStep1.classList.remove('active');
+                formStep2.classList.add('active');
+                progressBar.style.width = '100%';
+                stepCounter.textContent = 'Étape 2/2';
+            }
+        } catch (e) {
+            console.error('Error parsing tickets data:', e);
+        }
+    } else {
+        renderSavedTickets();
+    }
 });

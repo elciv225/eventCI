@@ -209,6 +209,7 @@
     color: var(--text-primary);
     box-sizing: border-box;
     font-size: 1rem;
+    font-family: inherit;
 }
 
 /* Floating label effect */
