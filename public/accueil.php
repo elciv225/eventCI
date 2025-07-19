@@ -80,9 +80,56 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
         </div>
     </div>
     <div class="filter-section">
-        <button class="filter-btn">Date</button>
-        <button class="filter-btn">Catégorie</button>
-        <button class="filter-btn">Lieu</button>
+        <!-- Section Date -->
+        <div class="filter-group">
+            <h3 class="filter-group-title">Date</h3>
+            <div class="filter-buttons">
+                <button class="filter-btn">Aujourd'hui</button>
+                <button class="filter-btn">Cette semaine</button>
+                <button class="filter-btn">Ce mois-ci</button>
+                <button class="filter-btn">Dans un mois</button>
+            </div>
+        </div>
+
+        <!-- Section Catégorie -->
+        <div class="filter-group">
+            <h3 class="filter-group-title">Catégorie</h3>
+            <div class="filter-buttons">
+                <?php
+                // Récupérer les catégories depuis la base de données
+                $categories_query = "SELECT Id_CategorieEvenement, Libelle FROM categorieevenement ORDER BY Libelle";
+                $categories_result = $conn->query($categories_query);
+
+                if ($categories_result && $categories_result->num_rows > 0) {
+                    while ($category = $categories_result->fetch_assoc()) {
+                        echo '<button class="filter-btn" data-category-id="' . $category['Id_CategorieEvenement'] . '">' . htmlspecialchars($category['Libelle']) . '</button>';
+                    }
+                } else {
+                    echo '<button class="filter-btn">Aucune catégorie</button>';
+                }
+                ?>
+            </div>
+        </div>
+
+        <!-- Section Ville -->
+        <div class="filter-group">
+            <h3 class="filter-group-title">Ville</h3>
+            <div class="filter-buttons">
+                <?php
+                // Récupérer les villes depuis la base de données
+                $cities_query = "SELECT Id_Ville, Libelle FROM ville ORDER BY Libelle";
+                $cities_result = $conn->query($cities_query);
+
+                if ($cities_result && $cities_result->num_rows > 0) {
+                    while ($city = $cities_result->fetch_assoc()) {
+                        echo '<button class="filter-btn" data-city-id="' . $city['Id_Ville'] . '">' . htmlspecialchars($city['Libelle']) . '</button>';
+                    }
+                } else {
+                    echo '<button class="filter-btn">Aucune ville</button>';
+                }
+                ?>
+            </div>
+        </div>
     </div>
 
     <!-- Section Événements à venir -->
@@ -95,15 +142,10 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
 
             <?php if (empty($upcoming_events)): ?>
                 <div class="event-card event-card-horizontal">
-                    <div class="event-card-image-wrapper aspect-video">
-                        <img src="../assets/images/default-event.jpg" alt="Aucun événement disponible"/>
+                    <div class="event-card-empty">
+                        <h3 class="event-card-title">Aucun événement à venir</h3>
+                        <p class="event-card-desc">Il n'y a rien pour l'instant. Revenez bientôt pour découvrir nos prochains événements.</p>
                     </div>
-                    <a href="#">
-                        <div>
-                            <h3 class="event-card-title">Aucun événement à venir</h3>
-                            <p class="event-card-desc">Revenez bientôt pour découvrir nos prochains événements.</p>
-                        </div>
-                    </a>
                 </div>
             <?php else: ?>
                 <?php foreach ($upcoming_events as $event): ?>
@@ -146,15 +188,10 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
         <div class="events-grid" id="recommended-grid" data-section-carousel>
             <?php if (empty($recommended_events)): ?>
                 <div class="event-card">
-                    <div class="event-card-image-wrapper aspect-square">
-                        <img src="../assets/images/default-event.jpg" alt="Aucun événement disponible"/>
+                    <div class="event-card-empty">
+                        <h3 class="event-card-title">Aucun événement recommandé</h3>
+                        <p class="event-card-desc">Il n'y a rien pour l'instant. Consultez plus tard pour des recommandations.</p>
                     </div>
-                    <a href="#">
-                        <div>
-                            <h3 class="event-card-title">Aucun événement recommandé</h3>
-                            <p class="event-card-desc">Nous n'avons pas de recommandations pour le moment.</p>
-                        </div>
-                    </a>
                 </div>
             <?php else: ?>
                 <?php foreach ($recommended_events as $event): ?>

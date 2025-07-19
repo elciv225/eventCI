@@ -1,374 +1,191 @@
-<!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eventbrite - Refonte</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+            rel="stylesheet"
+            as="style"
+            onload="this.rel='stylesheet'"
+            href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
+    />
+
+    <title>Stitch Design</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 </head>
 <body>
-  <header class="main-header">
-    <div class="container header-content">
-      <!-- Logo -->
-      <div class="logo">
-        <img src="eventbrite-logo.png" alt="Eventbrite Logo">
-      </div>
-
-      <!-- Barre de recherche -->
-      <div class="search-bar">
-        <i class="fas fa-search"></i>
-        <input type="text" placeholder="Rechercher des événements">
-      </div>
-
-      <!-- Filtre géographique -->
-      <div class="location-filter">
-        <input type="text" value="Lagunes">
-        <i class="fas fa-chevron-down"></i>
-        <i class="fas fa-search icon-right"></i>
-      </div>
-
-      <!-- Menu de navigation -->
-      <nav class="main-nav">
-        <ul>
-          <li><a href="#">Ventes</a></li>
-          <li><a href="Creer_evement.php">Créer des Événements</a></li>
-          <li class="dropdown">
-            <a href="#">Aide <i class="fas fa-chevron-down"></i></a>
-            <div class="dropdown-content">
-              <a href="#">Trouver vos billets</a>
-              <a href="#">Contacter l'organisateur de votre événement</a>
-            </div>
-          </li>
-          <li><a href="#">Trouver mes billets</a></li>
-          <li><a href="#">Connexion</a></li>
-          <li><a href="inscripiton.html">Ouvrir un compte</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-    <main>
-        <section class="hero-section">
-            <div class="container hero-content">
-                <div class="hero-text">
-                    <p class="pre-heading">Pour ceux</p>
-                    <h1>qui adorent sortir</h1>
+<div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
+    <div class="layout-container flex h-full grow flex-col">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f1f2f4] px-10 py-3">
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-4 text-[#121416]">
+                    <div class="size-4">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z"
+                                    fill="currentColor"
+                            ></path>
+                            <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z"
+                                    fill="currentColor"
+                            ></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-[#121416] text-lg font-bold leading-tight tracking-[-0.015em]">Evently</h2>
                 </div>
-                <div class="hero-image">
-                    <img src="image/514605007_673492552356650_3205532294192245753_n.jpg" alt="Superorganism Concert" class="main-hero-img">
-                    <p class="image-caption">Concert Abidjan 2025</p>
+                <div class="flex items-center gap-9">
+                    <a class="text-[#121416] text-sm font-medium leading-normal" href="#">Explore</a>
+                    <a class="text-[#121416] text-sm font-medium leading-normal" href="#">Create</a>
                 </div>
             </div>
-        </section>
-
-        <section class="categories-section">
-            <div class="container">
-                <div class="categories-list">
-                    <div class="category-item">
-                        <div class="icon-circle"><i class="fas fa-music"></i></div>
-                        <span>Musique</span>
+            <div class="flex flex-1 justify-end gap-8">
+                <label class="flex flex-col min-w-40 !h-10 max-w-64">
+                    <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
+                        <div
+                                class="text-[#6a7681] flex border-none bg-[#f1f2f4] items-center justify-center pl-4 rounded-l-xl border-r-0"
+                                data-icon="MagnifyingGlass"
+                                data-size="24px"
+                                data-weight="regular"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path
+                                        d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
+                                ></path>
+                            </svg>
+                        </div>
+                        <input
+                                placeholder="Search"
+                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#121416] focus:outline-0 focus:ring-0 border-none bg-[#f1f2f4] focus:border-none h-full placeholder:text-[#6a7681] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                                value=""
+                        />
                     </div>
-                    <div class="category-item">
-                        <div class="icon-circle"><i class="fas fa-moon"></i></div>
-                        <span>Vie nocturne</span>
+                </label>
+                <button
+                        class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 bg-[#f1f2f4] text-[#121416] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+                >
+                    <div class="text-[#121416]" data-icon="Bell" data-size="20px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                            <path
+                                    d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"
+                            ></path>
+                        </svg>
                     </div>
-                    <div class="category-item">
-                        <div class="icon-circle"><i class="fas fa-theater-masks"></i></div>
-                        <span>Arts du spectacle et de la scène</span>
-                    </div>
-                    <div class="category-item">
-                        <div class="icon-circle"><i class="fas fa-champagne-glasses"></i></div>
-                        <span>Fêtes</span>
-                    </div>
-                    <div class="category-item">
-                        <div class="icon-circle"><i class="fas fa-users"></i></div>
-                        <span>Rencontres</span>
-                    </div>
-                    <div class="category-item">
-                        <div class="icon-circle"><i class="fas fa-gamepad"></i></div>
-                        <span>Loisirs</span>
-                    </div>
-                    <div class="category-item">
-                        <div class="icon-circle"><i class="fas fa-briefcase"></i></div>
-                        <span>Affaires</span>
-                    </div>
-                    <div class="category-item">
-                        <div class="icon-circle"><i class="fas fa-utensils"></i></div>
-                        <span>Gastronomie</span>
-                    </div>
-                    </div>
+                </button>
+                <div
+                        class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDUiUdzlcpKcM5DR_iz3FxtC5qGsd4cYA7KDhbKP2sFI9d3rT0Cm3oiL15Vc-d-KrTTNfKMB1cPL3aBZQk1xVeUBknYrOnP8DMdJZd4brNY5eirEofDnWEYcDD9Ga5yB6i9-8xipjuQMs2a983F_pCkuvBMTdneJIshAlkQqnsf9NAiQb0sKfFUTf5qvYa5IxcHDG2K74O5iGlopaskMQ_ggErF3WYzlRN4P54eIhWuBCRorAr-eybWRJcoW5Lmv0GUu2EZ62FuC1eO");'
+                ></div>
             </div>
-        </section>
-
-        <section class="browse-events-bar">
-            <div class="container">
-                <p>Parcourez les événements à <a href="#" class="location-link">Lagunes <i class="fas fa-chevron-down"></i></a></p>
-            </div>
-        </section>
-
-        <section class="event-filters">
-            <div class="container">
-                <div class="filter-buttons">
-                    <button class="filter-btn active">Tous</button>
-                    <button class="filter-btn">Pour vous</button>
-                    <button class="filter-btn">En ligne</button>
-                    <button class="filter-btn">Aujourd'hui</button>
-                    <button class="filter-btn">Ce week-end</button>
-                    <button class="filter-btn">Libre</button>
-                    <button class="filter-btn">Musique</button>
-                    <button class="filter-btn">Gastronomie</button>
-                    <button class="filter-btn">Œuvres de bienfaisance</button>
-                    </div>
-            </div>
-        </section>
-
-        <section class="events-in-lagunes">
-            <div class="container">
-                <h2>Événements à Lagunes</h2>
-                <div class="events-grid">
-                    <div class="event-card">
-                        <img src="image/515947315_674770268895545_4465598997525397108_n.jpg" alt="Green Belt & Black Belt">
-                        <div class="event-info">
-                            <p class="sales-end">Les ventes se terminent bientôt</p>
-                            <h3>CROISIERE & BRUNCH</h3>
-                            <p class="date">29 juillet</p>
-                            <p class="price">À partir de 25000f</p>
-                            <p class="organizer">iVORy by BOAT</p>
-                            <p class="attendees"><i class="fas fa-users"></i> 10000 abonnées</p>
+        </header>
+        <div class="px-40 flex flex-1 justify-center py-5">
+            <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+                <div class="px-4 py-3">
+                    <label class="flex flex-col min-w-40 h-12 w-full">
+                        <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
+                            <div
+                                    class="text-[#6a7681] flex border-none bg-[#f1f2f4] items-center justify-center pl-4 rounded-l-xl border-r-0"
+                                    data-icon="MagnifyingGlass"
+                                    data-size="24px"
+                                    data-weight="regular"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                    <path
+                                            d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
+                                    ></path>
+                                </svg>
+                            </div>
+                            <input
+                                    placeholder="Search events"
+                                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#121416] focus:outline-0 focus:ring-0 border-none bg-[#f1f2f4] focus:border-none h-full placeholder:text-[#6a7681] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                                    value=""
+                            />
                         </div>
-                    </div>
-                    <div class="event-card">
-                        <img src="image/schadrac loman.jpg" alt="Abidjan Stadium">
-                        <div class="event-info">
-                            <p class="sales-end">Les ventes se terminent bientôt</p>
-                            <h3>Concert live de schadrac Loman</h3>
-                            <p class="date">Dimanche 13 juil 2025, 17h</p>
-                            <p class="price">À partir de 3000</p>
-                            <p class="organizer">Lou</p>
-                            <p class="attendees"><i class="fas fa-users"></i> 408 abonnés</p>
-                        </div>
-                    </div>
-                    <div class="event-card">
-                        <img src="image/rumba.jpg" alt="Séminaire VISA 2025">
-                        <div class="event-info">
-                            <p class="sales-end">GRANDE SOIREE RUMBA </p>
-                            <p class="date">sam. 26 juil., 09:00</p>
-                            <p class="price">À partir de 5000fr</p>
-                            <p class="organizer">Palm Club Hôtel</p>
-                        </div>
-                    </div>
-                   <div class="event-card">
-                      <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80" alt="Bouaké Happy Event">
-                     <div class="event-info">
-        <h3>Fête du Bonheur à Bouaké</h3>
-        <p class="date">sam. 24 août, 18:00</p>
-        <p class="price">À partir de 5000fr</p>
-        <p class="organizer">Edmond</p>
-        <p class="attendees"><i class="fas fa-users"></i> 40 abonnés</p>
-    </div>
-</div>
-                  <div class="event-card">
-                   <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="Soirée Abidjan by Night">
-                     <div class="event-info">
-                       <h3>Soirée Abidjan by Night</h3>
-                       <p class="date">sam. 10 août, 20:00</p>
-                       <p class="price">À partir de 5000fr</p>
-                       <p class="organizer">Edmond</p>
-                       <p class="attendees"><i class="fas fa-users"></i> 25 abonnés</p>
-                      </div>
-                   </div>
-                    <div class="event-card">
-                        <img src="sad-event.jpg" alt="SAD Event">
-                        <div class="event-info">
-                            <h3>SAD</h3>
-                            <p class="date">ven. 12 mars., 09:00</p>
-                            <p class="price">À partir de 3,32€</p>
-                            <p class="organizer">AGORA KOUMASSI</p>
-                            <p class="attendees"><i class="fas fa-users"></i> 10 abonnés</p>
-                        </div>
-                    </div>
-                    <div class="event-card">
-                        <img src="festival-brunch.jpg" alt="Festival des brunchs">
-                        <div class="event-info">
-                            <h3>Festival des brunchs</h3>
-                            <p class="date">sam. 27 sept., 09:00</p>
-                            <p class="price">À partir de 9,00€</p>
-                            <p class="organizer">AGORA KOUMASSI</p>
-                            <p class="attendees"><i class="fas fa-users"></i> 18 abonnés</p>
-                        </div>
-                    </div>
-
-                    </div>
-            </div>
-        </section>
-
-        <section class="personalization-section">
-            <div class="container">
-                <button class="close-btn">&times;</button>
-                <h3>Personnalisons un peu les choses</h3>
-                <p>Sélectionnez vos intérêts pour obtenir des suggestions d'événements en fonction de vos goûts.</p>
+                    </label>
                 </div>
-        </section>
-
-        <section class="events-below-30">
-            <div class="container">
-                <h2>Événements à 30,00 € et moins</h2>
-                <div class="event-navigation">
-                    <button class="nav-arrow"><i class="fas fa-chevron-left"></i></button>
-                    <button class="nav-arrow"><i class="fas fa-chevron-right"></i></button>
+                <div class="flex gap-3 p-3 flex-wrap pr-4">
+                    <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#f1f2f4] pl-4 pr-2">
+                        <p class="text-[#121416] text-sm font-medium leading-normal">Date</p>
+                        <div class="text-[#121416]" data-icon="CaretDown" data-size="20px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#f1f2f4] pl-4 pr-2">
+                        <p class="text-[#121416] text-sm font-medium leading-normal">Category</p>
+                        <div class="text-[#121416]" data-icon="CaretDown" data-size="20px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#f1f2f4] pl-4 pr-2">
+                        <p class="text-[#121416] text-sm font-medium leading-normal">Location</p>
+                        <div class="text-[#121416]" data-icon="CaretDown" data-size="20px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#f1f2f4] pl-4 pr-2">
+                        <p class="text-[#121416] text-sm font-medium leading-normal">Online/In-person</p>
+                        <div class="text-[#121416]" data-icon="CaretDown" data-size="20px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
+                            </svg>
+                        </div>
+                    </button>
                 </div>
-                <div class="event-cards-row">
-                    <div class="event-card">
-                        <img src="abidjan-stadium.jpg" alt="Abidjan Stadium">
-                        <div class="event-info">
-                            <p class="sales-end">Les ventes se terminent bientôt</p>
-                            <h3>Abidjan Audio Tour : A Journey Through Landmarks and Legacy</h3>
-                            <p class="date">sam. 19 juil., 09:30</p>
-                            <p class="price">À partir de 3,99€</p>
-                            <p class="organizer">AllTours</p>
-                            <p class="attendees"><i class="fas fa-users"></i> 408 abonnés</p>
+                <h2 class="text-[#121416] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Upcoming Events</h2>
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
+                    <div class="flex flex-col gap-3 pb-3">
+                        <div
+                                class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBjR8CpQhdNavYbCee_OiqfeOe7uIOpA2-ecvyVwgiKP7W5pND5ohgiqphlwOQUynszvH5M8fqF2uIfxJ3jUff1UNg3DJGTeWGHchGzB7cqAFNuY8QNwr1-BwVAajObMEzEPTPTxUwP6AOgvjCCO45fTd0chakWbxC8nySIE1MLVcsca5Psze2cG2sWJlt-Ax9W_CDEkkU7age3YgDVsGE7TDDFMu_q4z3EiusUeNotR_-R41Qz3DycOFPqhgaiIJFjo9HxPKULzFi8");'
+                        ></div>
+                        <div>
+                            <p class="text-[#121416] text-base font-medium leading-normal">Tech Conference 2024</p>
+                            <p class="text-[#6a7681] text-sm font-normal leading-normal">July 15, 2024 · Convention Center</p>
                         </div>
                     </div>
-                    <div class="event-card">
-                        <img src="ubwa-crypto-meetup.jpg" alt="UBWA Crypto Meetup">
-                        <div class="event-info">
-                            <p class="date">19 JULY 2025</p>
-                            <h3>Meetup UBWA Crypto Jobs</h3>
-                            <p class="time">sam. 19 juil., 09:30</p>
-                            <p class="organizer">GASPARO signature</p>
-                            <p class="price">À partir de 15,00€</p>
+                    <div class="flex flex-col gap-3 pb-3">
+                        <div
+                                class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDI7DqEkyq--44SvVcwmLeejJpyDnIzCZnXXvYbQmxzrq8RhuwuE6lHkynl6QApWN-yLfQ8yCdBS4OJkwsICyUUGoiVPFC_xxBAS-Qaf0b2ZQqJGrjsSaWR2GsDOB8-H25IGDRHBKg0L9hUMSLbMy5atqR0WAM1MFENmGCFPMUS5SCCWK77QefMNm_VmSWbNy2TCKEfqETafhh5ILi1tG52vpB2HM0D8QPm8BxzHFpj_uFgDBcb2GZGBB4aPOSwMPBN99sOvORw9n3G");'
+                        ></div>
+                        <div>
+                            <p class="text-[#121416] text-base font-medium leading-normal">Summer Music Festival</p>
+                            <p class="text-[#6a7681] text-sm font-normal leading-normal">August 5, 2024 · Central Park</p>
                         </div>
                     </div>
-                    <div class="event-card">
-                        <img src="image/Rdv des celibataires 12.jpg" alt="RDV des Célibataires">
-                        <div class="event-info">
-                            <h3>RDV DES CÉLIBATAIRES</h3>
-                            <p class="date">sam. 20 sept., 09:00</p>
-                            <p class="organizer">AGORA KOUMASSI</p>
-                            <p class="price">À partir de 10000fr</p>
-                            <p class="attendees"><i class="fas fa-users"></i> 10 abonnés</p>
+                    <div class="flex flex-col gap-3 pb-3">
+                        <div
+                                class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuChJZMMdb3w9b_ZLrTQxnWQKlf5CwNUQh5_K5YE4T_lQjM75lorEwWN_J6VUN9VLm88Eyo6gkM0BqnW0Vez8ze1BEcfJb3iJ3FtE00N8O337TQbbVHX1ljacSqfdWCJuG9OjYVvJD3hTKP3PeIOfF3pYrwTzWd2Q8Y1hQ0PShpZUsghRti4CAzhISJjZ_8TSL6EEllMwI-5KL96YnTK1GFf-BvKhMYdKSAvVzBswHlsaKkgCY9sLo65TqFD7BqdfkY294l-NbE8V_tH");'
+                        ></div>
+                        <div>
+                            <p class="text-[#121416] text-base font-medium leading-normal">Art Exhibition</p>
+                            <p class="text-[#6a7681] text-sm font-normal leading-normal">September 20, 2024 · Art Gallery</p>
                         </div>
                     </div>
-                    <div class="event-card">
-                        <img src="image/deborah.jpg" alt="SAD Event">
-                        <div class="event-info">
-                            <h3>SAD</h3>
-                            <p class="date">ven. 14 Aout., 09:00</p>
-                            <p class="organizer">Palais de le culture</p>
-                            <p class="price">À partir de 100000fr</p>
-                            <p class="attendees"><i class="fas fa-users"></i> 10 abonnés</p>
+                    <div class="flex flex-col gap-3 pb-3">
+                        <div
+                                class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAb1v1ECczrqS-kioJBV-L2ntauqgjT7hzRBEBjWpW-nV_n4mWBmZ9c9eOLX_If3vWALa_ksVG6gLd_nMG_DlLf1qlYH3K1FLHFARGY_i0dh4vgiNUB470-_sjTQoAme_x3uSG2MwWPJ81pboUWL9hd_ShsbMCOI1z4IlJrAccUzGndokD32IkDfoJ5O3ZWYwvvcg-HioOLra4x4j2-kTZNoPxKLKgHiuML2POax5-yGonYao3EA9dnDVhEJADPW2z0_iEo31a0phNr");'
+                        ></div>
+                        <div>
+                            <p class="text-[#121416] text-base font-medium leading-normal">Food &amp; Wine Tasting</p>
+                            <p class="text-[#6a7681] text-sm font-normal leading-normal">October 10, 2024 · Downtown</p>
                         </div>
-                    </div>
-                    </div>
-            </div>
-        </section>
-
-
-        <section class="popular-destinations">
-            <div class="container">
-                <h2>Destinations les plus populaires</h2>
-                <div class="destination-cards">
-                    <div class="card">
-                        <img src="new-york.jpg" alt="New York">
-                        <h3>New York</h3>
-                    </div>
-                    <div class="card">
-                        <img src="london.jpg" alt="London">
-                        <h3>London</h3>
-                    </div>
-                    <div class="card">
-                        <img src="los-angeles.jpg" alt="Los Angeles">
-                        <h3>Los Angeles</h3>
-                    </div>
-                    <div class="card">
-                        <img src="chicago.jpg" alt="Chicago">
-                        <h3>Chicago</h3>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <section class="popular-cities">
-            <div class="container">
-                <h2>Villes populaires</h2>
-                <div class="city-links">
-                    <a href="#">Choses à faire à Paris</a>
-                    <a href="#">Choses à faire à Lyon</a>
-                    <a href="#">Choses à faire à Nantes</a>
-                    <a href="#">Choses à faire à Marseille</a>
-                    <a href="#">Choses à faire à Nice</a>
-                    <a href="#">Choses à faire à Bordeaux</a>
-                    <a href="#">Choses à faire à Toulouse</a>
-                    <a href="#">Choses à faire à Strasbourg</a>
-                    <a href="#">Choses à faire à Lille</a>
-                    <a href="#">Choses à faire à Montpellier</a>
-                    <a href="#">Choses à faire à Angers</a>
-                    <a href="#">Choses à faire à Rennes</a>
-                    <a href="#">Choses à faire à Saint-Denis</a>
-                    <a href="#">Choses à faire à Saint Omer</a>
-                    <a href="#">Choses à faire à Brest</a>
-                    <a href="#">Choses à faire à Créteil</a>
-                    <a href="#">Choses à faire à Bourges</a>
-                    <a href="#">Choses à faire à Arles</a>
-                    <a href="#">Choses à faire à Saint Etienne</a>
-                    <a href="#">Choses à faire à Bayeux</a>
-                    <a href="#">Choses à faire à Annecy</a>
-                    <a href="#">Choses à faire à Aix-en-Provence</a>
-                    <a href="#">Choses à faire à Nancy</a>
-                    <a href="#">Choses à faire à Tours</a>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="main-footer">
-        <div class="container footer-content">
-            <div class="footer-column">
-                <h3>Utiliser Eventbrite</h3>
-                <ul>
-                    <li><a href="#">Logiciel de billetterie</a></li>
-                    <li><a href="#">Tarifs</a></li>
-                    <li><a href="#">Plan de salle</a></li>
-                    <li><a href="#">Les possibilités d'Eventbrite</a></li>
-                    <li><a href="#">Carte du site</a></li>
-                    <li><a href="#">Règles de la communauté externe</a></li>
-                    <li><a href="#">Ressources propres du COVID-19</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>Planifiez vos événements</h3>
-                <ul>
-                    <li><a href="#">Vendre des billets en ligne</a></li>
-                    <li><a href="#">Gestion d'événements en ligne</a></li>
-                    <li><a href="#">Inscription gratuite à un événement</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>Rechercher des événements</h3>
-                <ul>
-                    <li><a href="#">Événements Paris</a></li>
-                    <li><a href="#">Événements Lyon</a></li>
-                    <li><a href="#">Événements Marseille</a></li>
-                    <li><a href="#">Événements Lille</a></li>
-                    <li><a href="#">Événements Toulouse</a></li>
-                    <li><a href="#">Événements Nice</a></li>
-                    <li><a href="#">Événements Bordeaux</a></li>
-                </ul>
-            </div>
-            <div class="footer-column">
-                <h3>Restons connectés</h3>
-                <ul>
-                    <li><a href="#">Contacter l'assistance</a></li>
-                    <li><a href="#">X</a></li>
-                    <li><a href="#">Facebook</a></li>
-                    <li><a href="#">LinkedIn</a></li>
-                    <li><a href="#">Instagram</a></li>
-                    <li><a href="#">TikTok</a></li>
-                </ul>
             </div>
         </div>
-    </footer>
+    </div>
+</div>
 </body>
-</html> n
+</html>

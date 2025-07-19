@@ -134,9 +134,26 @@ main {
 
 .filter-section {
     display: flex;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 1.5rem;
     padding: 1rem;
+}
+
+.filter-group {
+    width: 100%;
+}
+
+.filter-group-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+.filter-buttons {
+    display: flex;
     flex-wrap: wrap;
+    gap: 0.75rem;
 }
 
 .filter-btn {
@@ -150,9 +167,22 @@ main {
     transition: all 0.2s ease;
 }
 
-.filter-btn:hover {
+.filter-btn:hover, .filter-btn.active {
     background-color: var(--text-highlight);
     color: white;
+}
+
+/* Responsive styles for filter section */
+@media (min-width: 768px) {
+    .filter-section {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .filter-group {
+        width: auto;
+        min-width: 200px;
+    }
 }
 
 /* Sections */
@@ -462,6 +492,28 @@ main {
 .event-card-desc {
     color: var(--text-secondary);
     font-size: 0.875rem;
+}
+
+/* Empty event card styling */
+.event-card-empty {
+    background-color: var(--bg-tertiary);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.event-card-empty .event-card-title {
+    margin-bottom: 0.5rem;
+}
+
+.event-card-empty .event-card-desc {
+    color: var(--text-tertiary);
 }
 
 /* Card text container transition */
