@@ -44,8 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['connexion'])) {
     if ($email === $admin_username && password_verify($password, $admin_password_hash)) {
         $_SESSION['utilisateur']['id'] = -1;
         $_SESSION['utilisateur']['email'] = $admin_username;
-        $_SESSION['is_admin_fixed'] = true;
-        header("Location: menu_admin.php");
+        header("Location: admin/index.php");
         exit();
     } else {
         if (!empty($email) && !empty($password)) {
@@ -244,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inscription'])) {
                         </div>
                     <?php endif; ?>
                     <div class="form-group">
-                        <input id="email-signin" name="email" type="email" required placeholder=" "/>
+                        <input id="email-signin" name="email" type="text" required placeholder=" "/>
                         <label for="email-signin">Adresse email</label>
                     </div>
                     <div class="form-group password-wrapper">
