@@ -1,6 +1,7 @@
 {
     "require": {
         "phpmailer/phpmailer": "^6.10",
-        "fpdf/fpdf": "^1.86"
+        "fpdf/fpdf": "^1.86",
+        "endroid/qr-code": "^6.0"
     }
 }

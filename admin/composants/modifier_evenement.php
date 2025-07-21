@@ -161,7 +161,6 @@ if (isset($_GET['msg']) && $_GET['msg'] == 'success') {
     $message = "✅ Événement modifié avec succès.";
 }
 
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -354,7 +353,7 @@ $conn->close();
                     <?php else: ?>
                         <p>Aucune image associée actuellement.</p>
                     <?php endif; ?>
-                    
+
                     <label for="image" style="margin-top: 15px;">Changer l'image (optionnel) :</label>
                     <input type="file" id="image" name="image" accept="image/*">
                     <small>Fichiers acceptés : JPG, JPEG, PNG, GIF (Max 5MB). Laissez vide pour conserver l'image actuelle.</small>

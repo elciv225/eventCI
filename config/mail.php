@@ -1,5 +1,6 @@
 <?php
 require_once 'vendor/autoload.php';
+require_once 'qrcode.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -11,9 +12,9 @@ use PHPMailer\PHPMailer\Exception;
 class MailConfig {
     const SMTP_HOST = 'smtp.gmail.com';
     const SMTP_PORT = 587;
-    const SMTP_USERNAME = 'votre-email@gmail.com';
-    const SMTP_PASSWORD = 'votre-mot-de-passe-app';
-    const FROM_EMAIL = 'votre-email@gmail.com';
+    const SMTP_USERNAME = 'eventci2025@gmail.com'; // Doit être l'adresse email complète
+    const SMTP_PASSWORD = 'cprw cujr qjpm ucwc'; // Mots de passe des applications Google
+    const FROM_EMAIL = 'eventci2025@gmail.com'; // Email
     const FROM_NAME = 'EventCI';
     const CHARSET = 'UTF-8';
 }
@@ -70,14 +71,14 @@ function getEmailTemplate($title, $content, $footerText = '') {
                 padding: 0;
                 box-sizing: border-box;
             }
-            
+
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 line-height: 1.6;
                 color: #333;
                 background-color: #f4f4f4;
             }
-            
+
             .email-container {
                 max-width: 600px;
                 margin: 20px auto;
@@ -86,41 +87,41 @@ function getEmailTemplate($title, $content, $footerText = '') {
                 overflow: hidden;
                 box-shadow: 0 0 20px rgba(0,0,0,0.1);
             }
-            
+
             .header {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
                 padding: 30px;
                 text-align: center;
             }
-            
+
             .header h1 {
                 font-size: 28px;
                 margin-bottom: 10px;
                 font-weight: 300;
             }
-            
+
             .content {
                 padding: 40px 30px;
             }
-            
+
             .content h2 {
                 color: #667eea;
                 margin-bottom: 20px;
                 font-size: 24px;
             }
-            
+
             .content h3 {
                 color: #555;
                 margin: 25px 0 15px 0;
                 font-size: 18px;
             }
-            
+
             .content p {
                 margin-bottom: 15px;
                 color: #666;
             }
-            
+
             .btn {
                 display: inline-block;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -133,11 +134,11 @@ function getEmailTemplate($title, $content, $footerText = '') {
                 text-align: center;
                 transition: transform 0.2s ease;
             }
-            
+
             .btn:hover {
                 transform: translateY(-2px);
             }
-            
+
             .info-box {
                 background-color: #f8f9ff;
                 border-left: 4px solid #667eea;
@@ -145,7 +146,7 @@ function getEmailTemplate($title, $content, $footerText = '') {
                 margin: 20px 0;
                 border-radius: 0 5px 5px 0;
             }
-            
+
             .footer {
                 background-color: #f8f9fa;
                 padding: 20px;
@@ -154,24 +155,24 @@ function getEmailTemplate($title, $content, $footerText = '') {
                 color: #6c757d;
                 font-size: 12px;
             }
-            
+
             .divider {
                 height: 2px;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 margin: 30px 0;
                 border-radius: 1px;
             }
-            
+
             @media only screen and (max-width: 600px) {
                 .email-container {
                     margin: 10px;
                     border-radius: 0;
                 }
-                
+
                 .content, .header {
                     padding: 20px;
                 }
-                
+
                 .header h1 {
                     font-size: 24px;
                 }
@@ -230,197 +231,121 @@ function sendSimpleEmail($to, $subject, $title, $content, $replyTo = null) {
  * @return bool Succès de l'envoi
  */
 function sendWelcomeEmail($to, $username, $activationLink = null) {
-    $title = "Bienvenue !";
-    $subject = "Bienvenue sur notre plateforme, " . $username . " !";
+    $title = "Bienvenue sur l'application";
+    $subject = "Bienvenue sur EventCI, " . $username . " !";
 
     $content = "
-        <h2>Bonjour " . htmlspecialchars($username) . " !</h2>
-        <p>Nous sommes ravis de vous accueillir sur notre plateforme.</p>
-        
-        <div class='info-box'>
-            <h3>Prochaines étapes :</h3>
-            <p>• Complétez votre profil</p>
-            <p>• Explorez nos fonctionnalités</p>
-            <p>• Rejoignez notre communauté</p>
+        <h2 style='color: var(--text-highlight);'>Bonjour " . htmlspecialchars($username) . " !</h2>
+        <p style='color: var(--text-primary);'>Nous sommes ravis de vous accueillir sur EventCI, votre plateforme de billetterie en ligne.</p>
+
+        <div class='info-box' style='background-color: var(--bg-tertiary); border-left: 4px solid var(--text-highlight); padding: 20px; margin: 20px 0; border-radius: 0 5px 5px 0;'>
+            <h3 style='color: var(--text-tertiary);'>Prochaines étapes :</h3>
+            <p style='color: var(--text-secondary);'>• Complétez votre profil</p>
+            <p style='color: var(--text-secondary);'>• Découvrez les événements disponibles</p>
+            <p style='color: var(--text-secondary);'>• Achetez vos premiers tickets</p>
         </div>";
 
     if ($activationLink) {
         $content .= "
-        <p>Pour commencer, veuillez activer votre compte en cliquant sur le bouton ci-dessous :</p>
+        <p style='color: var(--text-primary);'>Pour commencer, veuillez activer votre compte en cliquant sur le bouton ci-dessous :</p>
         <div style='text-align: center;'>
-            <a href='" . htmlspecialchars($activationLink) . "' class='btn'>Activer mon compte</a>
+            <a href='" . htmlspecialchars($activationLink) . "' class='btn' style='display: inline-block; background: var(--text-highlight); color: white !important; padding: 15px 30px; text-decoration: none; border-radius: 25px; margin: 20px 0; font-weight: bold; text-align: center;'>Activer mon compte</a>
         </div>";
     }
 
     $content .= "
-        <div class='divider'></div>
-        <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
-        <p><strong>L'équipe</strong></p>";
+        <div class='divider' style='height: 2px; background: var(--text-highlight); margin: 30px 0; border-radius: 1px;'></div>
+        <p style='color: var(--text-primary);'>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
+        <p style='color: var(--text-primary);'><strong>L'équipe EventCI</strong></p>";
 
     return sendSimpleEmail($to, $subject, $title, $content);
 }
 
 /**
- * Envoie un email de notification
+ * Envoie un email de reçu de commande de ticket
  * @param string $to Email destinataire
- * @param string $notificationTitle Titre de la notification
- * @param string $message Message de la notification
- * @param string $actionUrl URL d'action (optionnel)
- * @param string $actionText Texte du bouton d'action (optionnel)
+ * @param string $username Nom d'utilisateur
+ * @param array $ticketData Données du ticket acheté
+ * @param string $viewTicketUrl URL pour voir le ticket (optionnel)
  * @return bool Succès de l'envoi
  */
-function sendNotificationEmail($to, $notificationTitle, $message, $actionUrl = null, $actionText = 'Voir détails') {
-    $title = "Notification";
-    $subject = $notificationTitle;
+function sendTicketReceiptEmail($to, $username, $ticketData, $viewTicketUrl = null) {
+    $title = "Reçu de commande de ticket";
+    $subject = "Confirmation de votre achat de ticket - EventCI";
+
+    // Formatage de la date d'achat
+    $dateAchat = isset($ticketData['DateAchat']) ? new DateTime($ticketData['DateAchat']) : new DateTime();
+    $dateAchatFormatted = $dateAchat->format('d/m/Y à H:i');
+
+    // Formatage du prix
+    $prix = isset($ticketData['Prix']) ? $ticketData['Prix'] : 0;
+    $prixFormatted = number_format($prix, 2, ',', ' ') . ' €';
 
     $content = "
-        <h2>" . htmlspecialchars($notificationTitle) . "</h2>
-        <p>" . nl2br(htmlspecialchars($message)) . "</p>";
+        <h2 style='color: var(--text-highlight);'>Merci pour votre achat, " . htmlspecialchars($username) . " !</h2>
+        <p style='color: var(--text-primary);'>Votre commande a été confirmée et votre ticket est prêt.</p>
 
-    if ($actionUrl && $actionText) {
+        <div class='info-box' style='background-color: var(--bg-tertiary); border-left: 4px solid var(--text-highlight); padding: 20px; margin: 20px 0; border-radius: 0 5px 5px 0;'>
+            <h3 style='color: var(--text-tertiary);'>Détails de votre ticket :</h3>
+            <p style='color: var(--text-secondary);'><strong>Événement :</strong> " . htmlspecialchars($ticketData['Titre_Evenement'] ?? 'N/A') . "</p>
+            <p style='color: var(--text-secondary);'><strong>Type de ticket :</strong> " . htmlspecialchars($ticketData['Titre_Ticket'] ?? 'N/A') . "</p>
+            <p style='color: var(--text-secondary);'><strong>Date de l'événement :</strong> " . htmlspecialchars($ticketData['Date_Evenement'] ?? 'N/A') . "</p>
+            <p style='color: var(--text-secondary);'><strong>Lieu :</strong> " . htmlspecialchars($ticketData['Lieu'] ?? 'N/A') . "</p>
+            <p style='color: var(--text-secondary);'><strong>Prix :</strong> " . $prixFormatted . "</p>
+            <p style='color: var(--text-secondary);'><strong>Date d'achat :</strong> " . $dateAchatFormatted . "</p>
+            <p style='color: var(--text-secondary);'><strong>Numéro de commande :</strong> " . htmlspecialchars($ticketData['Id_Achat'] ?? 'N/A') . "</p>
+        </div>";
+
+    if ($viewTicketUrl) {
         $content .= "
-        <div style='text-align: center; margin: 30px 0;'>
-            <a href='" . htmlspecialchars($actionUrl) . "' class='btn'>" . htmlspecialchars($actionText) . "</a>
+        <div style='text-align: center;'>
+            <a href='" . htmlspecialchars($viewTicketUrl) . "' class='btn' style='display: inline-block; background: var(--text-highlight); color: white !important; padding: 15px 30px; text-decoration: none; border-radius: 25px; margin: 20px 0; font-weight: bold; text-align: center;'>Voir mon ticket</a>
         </div>";
     }
 
-    return sendSimpleEmail($to, $subject, $title, $content);
-}
-
-/**
- * Envoie un email de réinitialisation de mot de passe
- * @param string $to Email destinataire
- * @param string $username Nom d'utilisateur
- * @param string $resetLink Lien de réinitialisation
- * @param int $expiryMinutes Durée de validité en minutes
- * @return bool Succès de l'envoi
- */
-function sendPasswordResetEmail($to, $username, $resetLink, $expiryMinutes = 30) {
-    $title = "Réinitialisation de mot de passe";
-    $subject = "Réinitialisation de votre mot de passe";
-
-    $content = "
-        <h2>Réinitialisation de mot de passe</h2>
-        <p>Bonjour " . htmlspecialchars($username) . ",</p>
-        <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
-        
-        <div class='info-box'>
-            <p><strong>Important :</strong> Ce lien est valide pendant {$expiryMinutes} minutes seulement.</p>
-        </div>
-        
-        <div style='text-align: center; margin: 30px 0;'>
-            <a href='" . htmlspecialchars($resetLink) . "' class='btn'>Réinitialiser mon mot de passe</a>
-        </div>
-        
-        <p>Si vous n'avez pas demandé cette réinitialisation, ignorez simplement cet email.</p>
-        <p>Pour votre sécurité, ne partagez jamais ce lien avec personne.</p>";
+    $content .= "
+        <div class='divider' style='height: 2px; background: var(--text-highlight); margin: 30px 0; border-radius: 1px;'></div>
+        <p style='color: var(--text-primary);'>Conservez précieusement ce reçu, il pourra vous être demandé lors de l'événement.</p>
+        <p style='color: var(--text-primary);'>Si vous avez des questions concernant votre achat, n'hésitez pas à nous contacter.</p>
+        <p style='color: var(--text-primary);'><strong>L'équipe EventCI</strong></p>";
 
     return sendSimpleEmail($to, $subject, $title, $content);
-}
-
-/**
- * Envoie un email avec plusieurs destinataires
- * @param array $recipients Liste des emails destinataires
- * @param string $subject Sujet
- * @param string $title Titre
- * @param string $content Contenu HTML
- * @param bool $useBcc Utiliser BCC pour masquer les destinataires
- * @return array Résultats de l'envoi [succès => int, échecs => array]
- */
-function sendBulkEmail($recipients, $subject, $title, $content, $useBcc = true) {
-    $results = ['success' => 0, 'failures' => []];
-
-    try {
-        $mail = initMailer();
-        $mail->Subject = $subject;
-        $mail->Body = getEmailTemplate($title, $content);
-
-        foreach ($recipients as $email) {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $results['failures'][] = $email . ' (email invalide)';
-                continue;
-            }
-
-            try {
-                if ($useBcc) {
-                    $mail->addBCC($email);
-                } else {
-                    $mail->addAddress($email);
-                }
-            } catch (Exception $e) {
-                $results['failures'][] = $email . ' (' . $e->getMessage() . ')';
-            }
-        }
-
-        if ($mail->send()) {
-            $results['success'] = count($recipients) - count($results['failures']);
-        } else {
-            foreach ($recipients as $email) {
-                if (!in_array($email, array_map(function($f) { return explode(' ', $f)[0]; }, $results['failures']))) {
-                    $results['failures'][] = $email . ' (erreur d\'envoi)';
-                }
-            }
-        }
-
-    } catch (Exception $e) {
-        error_log("Erreur envoi bulk: " . $e->getMessage());
-        foreach ($recipients as $email) {
-            $results['failures'][] = $email . ' (erreur système)';
-        }
-    }
-
-    return $results;
 }
 
 /**
  * Exemple d'utilisation
  */
 function exempleUtilisation() {
-    // Email simple
-    $success = sendSimpleEmail(
-        'destinataire@example.com',
-        'Test Email',
-        'Email de test',
-        '<p>Ceci est un test de notre système d\'email.</p>'
-    );
-
     // Email de bienvenue
     $success = sendWelcomeEmail(
-        'nouvel.utilisateur@example.com',
+        'elielassy06@gmail.com',
         'Jean Dupont',
-        'https://monsite.com/activation?token=123456'
+        'https://eventci.com/activation?token=123456'
     );
 
-    // Email de notification
-    $success = sendNotificationEmail(
-        'user@example.com',
-        'Nouvelle commande reçue',
-        'Vous avez reçu une nouvelle commande #12345',
-        'https://monsite.com/commandes/12345',
-        'Voir la commande'
-    );
+    // Email de reçu de ticket
+    $ticketData = [
+        'Id_Achat' => 12345,
+        'Titre_Evenement' => 'Concert de Jazz',
+        'Titre_Ticket' => 'Place VIP',
+        'Date_Evenement' => '15/12/2023 à 20:00',
+        'Lieu' => 'Salle de concert, Paris',
+        'Prix' => 45.00,
+        'DateAchat' => '2023-11-25 14:30:00'
+    ];
 
-    // Email de réinitialisation
-    $success = sendPasswordResetEmail(
-        'user@example.com',
+    $success = sendTicketReceiptEmail(
+        'elielassy06@gmail.com',
         'Jean Dupont',
-        'https://monsite.com/reset?token=abcdef',
-        60
+        $ticketData,
+        'https://eventci.com/ticket?id=12345'
     );
 
-    // Envoi en masse
-    $recipients = ['user1@example.com', 'user2@example.com', 'user3@example.com'];
-    $results = sendBulkEmail(
-        $recipients,
-        'Newsletter mensuelle',
-        'Notre newsletter',
-        '<h2>Actualités du mois</h2><p>Voici les dernières nouvelles...</p>'
-    );
-
-    echo "Envois réussis: " . $results['success'] . "\n";
-    echo "Échecs: " . count($results['failures']) . "\n";
+    if ($success) {
+        echo "Emails envoyés avec succès!\n";
+    } else {
+        echo "Erreur lors de l'envoi des emails.\n";
+    }
 }
 
-// Décommenter pour tester
-// exempleUtilisation();
 ?>

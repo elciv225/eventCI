@@ -52,7 +52,6 @@ while ($row = $res->fetch_assoc()) {
     $totalUtilisateurs[] = $row['nb'];
 }
 
-$conn->close();
 
 ?>
 <!DOCTYPE html>
