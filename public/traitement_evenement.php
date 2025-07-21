@@ -12,8 +12,15 @@ if (!isset($_SESSION['utilisateur']) || empty($_SESSION['utilisateur']['id'])) {
 }
 
 // Vérifier si le formulaire a été soumis
-if ($_SERVER["REQUEST_METHOD"] !== "POST" || !isset($_POST['event_id'])) {
+if (!isset($_POST['modifier_evenement'])) {
     $_SESSION['error_message'] = 'Requête invalide.';
+    header('Location: index.php?page=profil');
+    exit;
+}
+
+// Vérifier si l'ID de l'événement est fourni
+if (!isset($_POST['event_id']) || empty($_POST['event_id'])) {
+    $_SESSION['error_message'] = 'ID de l\'événement non fourni.';
     header('Location: index.php?page=profil');
     exit;
 }
@@ -132,6 +139,40 @@ try {
         throw new Exception("Erreur lors de la mise à jour de l'événement: " . $stmt_update->error);
     }
     $stmt_update->close();
+
+    // Traitement des tickets
+    if (isset($_POST['tickets']) && !empty($_POST['tickets'])) {
+        $tickets = json_decode($_POST['tickets'], true);
+
+        if (is_array($tickets) && !empty($tickets)) {
+            // D'abord, supprimer tous les tickets existants pour cet événement
+            $stmt_delete_tickets = $conn->prepare("DELETE FROM ticketevenement WHERE Id_Evenement = ?");
+            $stmt_delete_tickets->bind_param("i", $eventId);
+            if (!$stmt_delete_tickets->execute()) {
+                throw new Exception("Erreur lors de la suppression des tickets existants: " . $stmt_delete_tickets->error);
+            }
+            $stmt_delete_tickets->close();
+
+            // Ensuite, insérer les nouveaux tickets
+            $stmt_ticket = $conn->prepare("INSERT INTO ticketevenement (Titre, Description, Prix, NombreDisponible, Id_Evenement) VALUES (?, ?, ?, ?, ?)");
+            foreach ($tickets as $ticket) {
+                $ticketTitre = trim($ticket['name']);
+                $ticketDesc = trim($ticket['description'] ?? '');
+                $ticketPrix = 0.00;
+                if (isset($ticket['price']) && $ticket['price'] !== 'Gratuit' && !empty($ticket['price'])) {
+                    $prixStr = preg_replace('/[^\d.,]/', '', $ticket['price']);
+                    $prixStr = str_replace(',', '.', $prixStr);
+                    $ticketPrix = floatval($prixStr);
+                }
+                $ticketQuantite = (int)$ticket['quantity'];
+                $stmt_ticket->bind_param("ssdii", $ticketTitre, $ticketDesc, $ticketPrix, $ticketQuantite, $eventId);
+                if (!$stmt_ticket->execute()) {
+                    throw new Exception("Erreur lors de l'insertion du ticket '$ticketTitre': " . $stmt_ticket->error);
+                }
+            }
+            $stmt_ticket->close();
+        }
+    }
 
     // Suppression des images sélectionnées
     if (!empty($imagesToRemove)) {

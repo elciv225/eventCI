@@ -4,7 +4,8 @@
 
 /* Conteneur principal de la page de profil */
 .profile-page-container {
-    max-width: 900px;
+    width: 100%;
+    max-width: 1280px;
     margin: 2rem auto;
     padding: 0 1rem;
     display: flex;
@@ -19,6 +20,74 @@
     align-items: center;
     text-align: center;
     gap: 0.5rem;
+    padding: 0 1rem;
+}
+
+@media (max-width: 767px) {
+    .profile-page-container {
+        padding: 0 12px;
+        margin: 1rem auto;
+        gap: 1.5rem;
+    }
+
+    .profile-header-section .profile-pic-large {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profile-header-section .profile-name {
+        font-size: 1.5rem;
+    }
+
+    .profile-header-section .profile-initials-large {
+        font-size: 2.5rem;
+    }
+
+    /* Make events grid take full width on mobile */
+    .events-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding-bottom: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .events-grid .event-card {
+        width: 100%;
+    }
+
+    /* Make tabs scrollable horizontally */
+    .tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+        scrollbar-width: none;
+    }
+
+    .tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-button {
+        padding: 0.75rem 0.15rem;
+        font-size: 0.9rem;
+        display: inline-block;
+    }
+
+    /* Make stats cards smaller */
+    .stat-card {
+        padding: 1rem 0.75rem;
+    }
+
+    .stat-card .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.75rem;
+    }
 }
 
 .profile-header-section .profile-pic-large {
@@ -125,6 +194,13 @@
     gap: 1.5rem;
     border-bottom: 1px solid var(--border-medium);
     margin-bottom: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none; /* Firefox */
+}
+
+.tabs::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
 }
 
 .tab-button {
@@ -233,6 +309,135 @@
     border: 1px dashed var(--border-medium);
 }
 
+/* Styles pour les tickets */
+.tickets-list {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: var(--bg-tertiary);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.tickets-list p {
+    text-align: center;
+    color: var(--text-secondary);
+    margin: 1rem 0;
+}
+
+.ticket-item {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px var(--shadow-light);
+}
+
+.ticket-item:last-child {
+    margin-bottom: 0;
+}
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.ticket-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.ticket-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.edit-ticket-btn,
+.delete-ticket-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.edit-ticket-btn {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+.delete-ticket-btn {
+    background-color: var(--color-error);
+    color: white;
+}
+
+.edit-ticket-btn:hover {
+    background-color: var(--border-medium);
+}
+
+.delete-ticket-btn:hover {
+    background-color: #c82333;
+}
+
+.ticket-details {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.ticket-details p {
+    margin: 0 0 0.5rem 0;
+}
+
+.ticket-info {
+    display: flex;
+    gap: 1rem;
+    font-weight: 500;
+}
+
+/* Styles pour les onglets dans le modal d'édition d'événement */
+.modal-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-medium);
+    margin-bottom: 1.5rem;
+}
+
+.modal-tab {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.modal-tab:hover {
+    color: var(--text-primary);
+}
+
+.modal-tab.active {
+    color: var(--text-highlight);
+    border-bottom-color: var(--text-highlight);
+}
+
+.modal-tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-tab-content.active {
+    display: block;
+}
+
 /* Styles pour les boutons d'édition sur les cartes d'événements */
 .edit-event-btn {
     position: absolute;
@@ -250,7 +455,7 @@
     cursor: pointer;
     opacity: 0.9;
     transition: all 0.2s ease;
-    z-index: 10;
+    z-index: 30;
 }
 
 .edit-event-btn:hover {
@@ -270,7 +475,7 @@
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
+    overflow: hidden; /* Prevent scrolling in the overlay */
     background-color: rgba(0,0,0,0.6);
     padding-top: 60px;
 }
@@ -280,14 +485,42 @@
     margin: 5% auto;
     padding: 0;
     border: 1px solid var(--border-medium);
-    width: 90%;
+    width: 95%;
     max-width: 600px; /* Augmenté pour le modal d'édition d'événement */
-    max-height: 80vh; /* Limiter la hauteur à 80% de la hauteur de la fenêtre */
+    max-height: 90vh; /* Limiter la hauteur à 90% de la hauteur de la fenêtre */
     border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     animation: slideIn 0.3s ease-out;
     display: flex;
     flex-direction: column;
+}
+
+@media (max-width: 767px) {
+    .modal {
+        padding-top: 20px;
+    }
+
+    .modal-content {
+        width: 98%;
+        margin: 2% auto;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+
+    .current-images-container, .new-images-preview {
+        justify-content: center;
+    }
 }
 
 @keyframes slideIn {
@@ -373,6 +606,18 @@
     padding: 1.5rem;
 }
 
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
 .form-group {
     margin-bottom: 1.25rem;
 }
@@ -388,7 +633,11 @@
 .form-group input[type="email"],
 .form-group input[type="tel"],
 .form-group input[type="date"],
-.form-group input[type="file"] {
+.form-group input[type="file"],
+.form-group input[type="password"],
+.form-group input[type="datetime-local"],
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 0.75rem;
     background-color: var(--bg-tertiary);
@@ -399,7 +648,14 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.form-group input:focus {
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--text-highlight);
     box-shadow: 0 0 0 3px rgba(209, 65, 12, 0.2);
@@ -442,4 +698,114 @@
 .btn-secondary:hover {
     background-color: var(--border-light);
     transform: translateY(-2px);
+}
+
+/* Events grid for profile page */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .events-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .events-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .events-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Fix for event card text visibility in all tabs */
+#active-tab .event-card a > div,
+#en-attente-tab .event-card a > div,
+#past-tab .event-card a > div {
+    opacity: 1 !important; /* Override the opacity:0 from accueil.css */
+}
+
+/* Ensure edit button is always visible */
+.edit-event-btn {
+    opacity: 1 !important;
+}
+
+/* Add position relative to event-card to make absolute positioning work */
+.event-card {
+    position: relative;
+}
+
+/* Styles for image previews in modals */
+.image-preview {
+    margin-top: 10px;
+    max-width: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px dashed var(--border-medium);
+    padding: 5px;
+    text-align: center;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-tertiary);
+}
+
+.image-preview img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    display: block;
+    object-fit: contain;
+}
+
+.new-images-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.new-images-preview .preview-item {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.new-images-preview .preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.new-images-preview .remove-preview {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.new-images-preview .remove-preview:hover {
+    background-color: rgba(255, 0, 0, 0.8);
 }

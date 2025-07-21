@@ -523,13 +523,6 @@ main {
     will-change: opacity;
 }
 
-/* Add z-index to event card links */
-.event-card a {
-    position: relative;
-    z-index: 20; /* Higher z-index to ensure links are clickable */
-    display: block;
-}
-
 /* Grille d'événements */
 .events-grid {
     display: grid;

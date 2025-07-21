@@ -161,7 +161,7 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                             <button class="carousel-arrow prev">&lt;</button>
                             <button class="carousel-arrow next">&gt;</button>
                         </div>
-                        <a href="?info-event=<?php echo $event['Id_Evenement']; ?>">
+                        <a href="?page=details&info-event=<?php echo $event['Id_Evenement']; ?>">
                             <div>
                                 <h3 class="event-card-title"><?php echo htmlspecialchars($event['Titre']); ?></h3>
                                 <p class="event-card-desc">
@@ -206,7 +206,7 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                             <button class="carousel-arrow prev">&lt;</button>
                             <button class="carousel-arrow next">&gt;</button>
                         </div>
-                        <a href="?info-event=<?php echo $event['Id_Evenement']; ?>">
+                        <a href="?page=details&info-event=<?php echo $event['Id_Evenement']; ?>">
                             <div>
                                 <h3 class="event-card-title"><?php echo htmlspecialchars($event['Titre']); ?></h3>
                                 <p class="event-card-desc">
