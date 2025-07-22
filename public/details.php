@@ -5,65 +5,69 @@ if (!isset($conn)) {
     require_once __DIR__ . '/../config/base.php';
 }
 
-// Pour les besoins de la démo, utilisons des données statiques
-$event_id = isset($_GET['id']) ? intval($_GET['id']) : 1;
+// Récupérer l'ID de l'événement depuis l'URL
+$event_id = isset($_GET['id']) ? intval($_GET['id']) : (isset($_GET['info-event']) ? intval($_GET['info-event']) : 0);
 
-// Données de l'événement (simulées)
-$event = [
-    'Id_Evenement' => $event_id,
-    'Titre' => 'Concert de musique classique',
-    'Description' => "Un magnifique concert de musique classique avec les plus grands compositeurs.\n\nAu programme : Mozart, Beethoven, Bach et bien d'autres surprises musicales.",
-    'Adresse' => '123 Avenue de la Musique, 75001 Paris',
-    'DateDebut' => '2023-12-15 19:30:00',
-    'DateFin' => '2023-12-15 22:00:00',
-    'categorie' => 'Concert-spectacle',
-    'ville' => 'Paris',
-    'Id_Utilisateur' => 1,
-    'Nom' => 'Dupont',
-    'Prenom' => 'Jean',
-    'Photo' => ''
-];
+if ($event_id <= 0) {
+    // Rediriger vers la page d'accueil si aucun ID valide n'est fourni
+    header('Location: ?page=accueil');
+    exit;
+}
 
-// Images de l'événement (simulées)
-$images = [
-    [
-        'Id_ImageEvenement' => 1,
-        'Titre' => 'Image principale',
-        'Description' => 'Vue de la salle de concert',
-        'Lien' => 'assets/images/default-event.jpg'
-    ],
-    [
-        'Id_ImageEvenement' => 2,
-        'Titre' => 'Image secondaire',
-        'Description' => 'Les musiciens en répétition',
-        'Lien' => 'assets/images/default-event.jpg'
-    ]
-];
+// Récupérer les données de l'événement depuis la base de données
+$event_query = "SELECT 
+                e.Id_Evenement, e.Titre, e.Description, e.Adresse, e.DateDebut, e.DateFin,
+                c.Libelle AS categorie, 
+                v.Libelle AS ville,
+                u.Id_Utilisateur, u.Nom, u.Prenom, u.Photo
+              FROM evenement e
+              LEFT JOIN categorieevenement c ON e.Id_CategorieEvenement = c.Id_CategorieEvenement
+              LEFT JOIN ville v ON e.Id_Ville = v.Id_Ville
+              LEFT JOIN utilisateur u ON e.Id_Utilisateur = u.Id_Utilisateur
+              WHERE e.Id_Evenement = ?";
 
-// Tickets disponibles (simulés)
-$tickets = [
-    [
-        'Id_TicketEvenement' => 1,
-        'Titre' => 'Place Standard',
-        'Description' => 'Accès à la salle principale',
-        'Prix' => 25.00,
-        'NombreDisponible' => 150
-    ],
-    [
-        'Id_TicketEvenement' => 2,
-        'Titre' => 'Place VIP',
-        'Description' => 'Accès privilégié avec cocktail de bienvenue',
-        'Prix' => 50.00,
-        'NombreDisponible' => 30
-    ],
-    [
-        'Id_TicketEvenement' => 3,
-        'Titre' => 'Pack Famille',
-        'Description' => '4 places à tarif réduit',
-        'Prix' => 80.00,
-        'NombreDisponible' => 20
-    ]
-];
+$stmt = $conn->prepare($event_query);
+$stmt->bind_param("i", $event_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    // Rediriger vers la page d'accueil si l'événement n'existe pas
+    header('Location: ?page=accueil');
+    exit;
+}
+
+$event = $result->fetch_assoc();
+
+// Récupérer les images de l'événement
+$images_query = "SELECT Id_ImageEvenement, Titre, Description, Lien 
+                FROM imageevenement 
+                WHERE Id_Evenement = ?";
+
+$stmt = $conn->prepare($images_query);
+$stmt->bind_param("i", $event_id);
+$stmt->execute();
+$images_result = $stmt->get_result();
+
+$images = [];
+while ($image = $images_result->fetch_assoc()) {
+    $images[] = $image;
+}
+
+// Récupérer les tickets disponibles pour cet événement
+$tickets_query = "SELECT Id_TicketEvenement, Titre, Description, Prix, NombreDisponible 
+                 FROM ticketevenement 
+                 WHERE Id_Evenement = ?";
+
+$stmt = $conn->prepare($tickets_query);
+$stmt->bind_param("i", $event_id);
+$stmt->execute();
+$tickets_result = $stmt->get_result();
+
+$tickets = [];
+while ($ticket = $tickets_result->fetch_assoc()) {
+    $tickets[] = $ticket;
+}
 
 // Formater les dates
 $date_debut = new DateTime($event['DateDebut']);

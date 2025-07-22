@@ -66,6 +66,9 @@ switch ($page) {
     case 'ticket':
         include 'public/ticket.php';
         break;
+    case 'confirmation':
+        include 'public/confirmation.php';
+        break;
     default:
         ob_end_clean();
         header('Location: 404.php');

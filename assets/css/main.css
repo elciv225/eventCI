@@ -434,3 +434,7 @@ body[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
 .content-scrollbar::-webkit-scrollbar-thumb:hover {
     background: var(--text-highlight);
 }
+
+.event-card-meta{
+    color: var(--text-primary);
+}

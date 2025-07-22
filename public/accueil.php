@@ -67,71 +67,20 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
 ?>
 
 <main class="page-container">
-    <!-- Section de recherche (inchangée) -->
+    <!-- Section de recherche -->
     <div class="mobile-search-section">
-        <div class="search-container"><input type="text" placeholder="Rechercher des événements"
-                                             class="search-input" style="height: 3rem; padding-left: 3rem;"/>
-            <div class="search-icon" style="left: 1rem;">
+        <form action="?page=recherche" method="get" class="search-container">
+            <input type="hidden" name="page" value="recherche">
+            <input type="text" name="query" placeholder="Rechercher des événements"
+                   class="search-input" style="height: 3rem; padding-left: 3rem;"/>
+            <button type="submit" class="search-icon" style="left: 1rem; background: none; border: none; cursor: pointer;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                      viewBox="0 0 256 256">
                     <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
                 </svg>
-            </div>
-        </div>
+            </button>
+        </form>
     </div>
-    <div class="filter-section">
-        <!-- Section Date -->
-        <div class="filter-group">
-            <h3 class="filter-group-title">Date</h3>
-            <div class="filter-buttons">
-                <button class="filter-btn">Aujourd'hui</button>
-                <button class="filter-btn">Cette semaine</button>
-                <button class="filter-btn">Ce mois-ci</button>
-                <button class="filter-btn">Dans un mois</button>
-            </div>
-        </div>
-
-        <!-- Section Catégorie -->
-        <div class="filter-group">
-            <h3 class="filter-group-title">Catégorie</h3>
-            <div class="filter-buttons">
-                <?php
-                // Récupérer les catégories depuis la base de données
-                $categories_query = "SELECT Id_CategorieEvenement, Libelle FROM categorieevenement ORDER BY Libelle";
-                $categories_result = $conn->query($categories_query);
-
-                if ($categories_result && $categories_result->num_rows > 0) {
-                    while ($category = $categories_result->fetch_assoc()) {
-                        echo '<button class="filter-btn" data-category-id="' . $category['Id_CategorieEvenement'] . '">' . htmlspecialchars($category['Libelle']) . '</button>';
-                    }
-                } else {
-                    echo '<button class="filter-btn">Aucune catégorie</button>';
-                }
-                ?>
-            </div>
-        </div>
-
-        <!-- Section Ville -->
-        <div class="filter-group">
-            <h3 class="filter-group-title">Ville</h3>
-            <div class="filter-buttons">
-                <?php
-                // Récupérer les villes depuis la base de données
-                $cities_query = "SELECT Id_Ville, Libelle FROM ville ORDER BY Libelle";
-                $cities_result = $conn->query($cities_query);
-
-                if ($cities_result && $cities_result->num_rows > 0) {
-                    while ($city = $cities_result->fetch_assoc()) {
-                        echo '<button class="filter-btn" data-city-id="' . $city['Id_Ville'] . '">' . htmlspecialchars($city['Libelle']) . '</button>';
-                    }
-                } else {
-                    echo '<button class="filter-btn">Aucune ville</button>';
-                }
-                ?>
-            </div>
-        </div>
-    </div>
-
     <!-- Section Événements à venir -->
     <section class="events-section">
         <!-- Titre modifié comme demandé -->
@@ -144,7 +93,8 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                 <div class="event-card event-card-horizontal">
                     <div class="event-card-empty">
                         <h3 class="event-card-title">Aucun événement à venir</h3>
-                        <p class="event-card-desc">Il n'y a rien pour l'instant. Revenez bientôt pour découvrir nos prochains événements.</p>
+                        <p class="event-card-desc">Il n'y a rien pour l'instant. Revenez bientôt pour découvrir nos
+                            prochains événements.</p>
                     </div>
                 </div>
             <?php else: ?>
@@ -170,9 +120,10 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                                     echo (strlen($desc) > 100) ? substr($desc, 0, 97) . '...' : $desc;
                                     ?>
                                 </p>
-                                <p class="event-card-meta">
-                                    <span class="event-category"><?php echo htmlspecialchars($event['categorie']); ?></span> |
-                                    <span class="event-location"><?php echo htmlspecialchars($event['ville']); ?></span>
+                                <p class="event-card-meta" style="color: var(--text-primary)">
+                                    <span class="event-category"><?php echo htmlspecialchars($event['categorie']); ?></span>
+                                    |
+                                    <span class="event-location" ><?php echo htmlspecialchars($event['ville']); ?></span>
                                 </p>
                             </div>
                         </a>
@@ -190,7 +141,8 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                 <div class="event-card">
                     <div class="event-card-empty">
                         <h3 class="event-card-title">Aucun événement recommandé</h3>
-                        <p class="event-card-desc">Il n'y a rien pour l'instant. Consultez plus tard pour des recommandations.</p>
+                        <p class="event-card-desc">Il n'y a rien pour l'instant. Consultez plus tard pour des
+                            recommandations.</p>
                     </div>
                 </div>
             <?php else: ?>
@@ -216,7 +168,8 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                                     ?>
                                 </p>
                                 <p class="event-card-meta">
-                                    <span class="event-category"><?php echo htmlspecialchars($event['categorie']); ?></span> |
+                                    <span class="event-category"><?php echo htmlspecialchars($event['categorie']); ?></span>
+                                    |
                                     <span class="event-location"><?php echo htmlspecialchars($event['ville']); ?></span>
                                 </p>
                             </div>

@@ -66,6 +66,20 @@ header nav a:hover, header nav a.active {
 .search-container {
     position: relative;
     width: 16rem;
+    display: flex;
+    justify-content: center;
+}
+
+body .search-container{
+    width: 80%;
+    margin-bottom: 1rem;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    transition: all 0.3s ease;
 }
 
 .search-input {
@@ -74,26 +88,44 @@ header nav a:hover, header nav a.active {
     color: var(--text-primary);
     border-radius: 8px;
     width: 100%;
-    height: 2.5rem;
-    padding-left: 2.5rem;
+    height: 3rem;
+    padding-left: 3rem;
     padding-right: 1rem;
+    transition: all 0.3s ease;
+    font-size: 1rem;
 }
 
 .search-input:focus {
     outline: none;
     border-color: var(--text-highlight);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
 }
 
 .search-input::placeholder {
     color: var(--text-tertiary);
+    transition: color 0.3s ease;
+}
+
+.search-input:focus::placeholder {
+    color: transparent;
 }
 
 .search-icon {
     position: absolute;
-    left: 0.75rem;
+    left: 1rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-tertiary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.search-input:focus + .search-icon,
+.search-icon:hover {
+    color: var(--text-highlight);
 }
 
 .icon-btn {
@@ -136,7 +168,11 @@ main {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    padding: 1rem;
+    padding: 1.5rem;
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
 }
 
 .filter-group {
@@ -148,6 +184,7 @@ main {
     font-weight: 600;
     margin-bottom: 0.75rem;
     color: var(--text-primary);
+    display: block;
 }
 
 .filter-buttons {
@@ -156,20 +193,31 @@ main {
     gap: 0.75rem;
 }
 
-.filter-btn {
+.filter-btn, .filter-link {
     background-color: var(--bg-tertiary);
     color: var(--text-secondary);
     border-radius: 20px;
-    padding: 0 1rem;
-    height: 2.25rem;
+    padding: 0.5rem 1rem;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
 }
 
-.filter-btn:hover, .filter-btn.active {
+.filter-btn:hover, .filter-btn.active, .filter-link:hover, .filter-link.active {
     background-color: var(--text-highlight);
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.filter-link.active {
+    background-color: #d8e1ff;
+    color: #4a5568;
 }
 
 /* Responsive styles for filter section */
@@ -193,7 +241,7 @@ main {
 .section-title {
     font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin: 1rem auto;
 }
 
 .horizontal-scroll-container {
@@ -225,11 +273,17 @@ main {
     text-decoration: none;
     display: block;
     color: inherit;
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
 }
 
 .event-card:hover {
-    /* Removed transform and box-shadow for hover effect */
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
+
 
 .event-card-horizontal {
     flex-shrink: 0;
@@ -487,20 +541,34 @@ main {
     color: var(--text-primary);
     font-weight: 500;
     font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.event-card:hover .event-card-title {
+    color: var(--text-highlight);
 }
 
 .event-card-desc {
     color: var(--text-secondary);
     font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.event-card-date {
+    color: var(--text-tertiary);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
 }
 
 /* Empty event card styling */
 .event-card-empty {
-    background-color: var(--bg-tertiary);
     border-radius: 12px;
     padding: 2rem;
     text-align: center;
     height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -518,9 +586,40 @@ main {
 
 /* Card text container transition */
 .event-card a > div {
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    will-change: opacity;
+    opacity: 1;
+    transition: all 0.3s ease;
+    will-change: opacity, transform;
+    transform: translateY(0);
+}
+
+.event-card:hover a > div {
+    transform: translateY(-5px);
+}
+
+/* No results styling */
+.no-results {
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin: 2rem 0;
+}
+
+.no-results h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.no-results p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.no-results .see-more-link {
+    display: inline-block;
+    margin-top: 1rem;
 }
 
 /* Grille d'événements */
@@ -792,6 +891,10 @@ body.mobile-menu-open .header-nav a:last-child {
 
     .search-container {
         width: 100%;
+    }
+    body .search-container{
+        width: 100%;
+        margin-bottom: 2rem;
     }
 
     .event-card-image {
