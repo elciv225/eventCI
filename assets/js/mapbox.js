@@ -7,7 +7,8 @@ let searchTimeout;
 
 const input = document.getElementById('event-location');
 const suggestionsContainer = document.getElementById('geocoder-container');
-const hiddenInput = document.querySelector('input[name="position"]');
+const latitudeInput = document.querySelector('input[name="latitude"]');
+const longitudeInput = document.querySelector('input[name="longitude"]');
 
 // Position par défaut à Abidjan si géolocalisation échoue
 const defaultCenter = [-4.0267, 5.3364]; // Abidjan, Côte d'Ivoire
@@ -50,12 +51,14 @@ function setupMap(center) {
         .addTo(map);
 
     // Stocke la position initiale
-    hiddenInput.value = center.join(',');
+    longitudeInput.value = center[0];
+    latitudeInput.value = center[1];
 
     // Event listener pour le drag du marqueur
     marker.on('dragend', () => {
         const lngLat = marker.getLngLat();
-        hiddenInput.value = `${lngLat.lng},${lngLat.lat}`;
+        longitudeInput.value = lngLat.lng;
+        latitudeInput.value = lngLat.lat;
         reverseGeocode(lngLat.lng, lngLat.lat);
     });
 }
@@ -373,8 +376,9 @@ function selectSuggestion(suggestion) {
     marker.setLngLat(coords);
     map.flyTo({center: coords, zoom: 16});
 
-    // Mettre à jour le champ caché
-    hiddenInput.value = coords.join(',');
+    // Mettre à jour les champs cachés
+    longitudeInput.value = coords[0];
+    latitudeInput.value = coords[1];
 
     // Cacher les suggestions
     hideSuggestions();

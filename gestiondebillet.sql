@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `achat`
     PRIMARY KEY (`Id_Achat`),
     KEY `Id_Utilisateur` (`Id_Utilisateur`),
     KEY `Id_TicketEvenement` (`Id_TicketEvenement`)
-) ENGINE = MyISAM
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `administrateur`
     `DateCreation` datetime DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`Email_admin`),
     UNIQUE KEY `Email_admin` (`Email_admin`)
-) ENGINE = MyISAM
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -61,8 +61,7 @@ CREATE TABLE IF NOT EXISTS `categorieevenement`
     `Id_CategorieEvenement` int NOT NULL AUTO_INCREMENT,
     `Libelle`               varchar(50) DEFAULT NULL,
     PRIMARY KEY (`Id_CategorieEvenement`)
-) ENGINE = MyISAM
-  AUTO_INCREMENT = 11
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -99,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `commentaireevenement`
     PRIMARY KEY (`Id_Commentaire`),
     KEY `Id_Utilisateur` (`Id_Utilisateur`),
     KEY `Id_Evenement` (`Id_Evenement`)
-) ENGINE = MyISAM
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -117,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `creer`
     `DateCreation`   datetime DEFAULT NULL,
     PRIMARY KEY (`Id_Utilisateur`, `Id_Evenement`),
     KEY `Id_Evenement` (`Id_Evenement`)
-) ENGINE = MyISAM
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -139,10 +138,12 @@ CREATE TABLE IF NOT EXISTS `evenement`
     `DateFin`               datetime                                DEFAULT NULL,
     `Id_CategorieEvenement` int NOT NULL,
     `statut_approbation`    enum ('en_attente','approuve','rejete') DEFAULT 'en_attente',
+    `Latitude`              decimal(10, 8)                          DEFAULT NULL,
+    `Longitude`             decimal(11, 8)                          DEFAULT NULL,
     PRIMARY KEY (`Id_Evenement`),
     KEY `Id_CategorieEvenement` (`Id_CategorieEvenement`),
     KEY `Id_Evenement` (`Id_Evenement`)
-) ENGINE = MyISAM
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -162,8 +163,7 @@ CREATE TABLE IF NOT EXISTS `imageevenement`
     `Id_Evenement`      int NOT NULL,
     PRIMARY KEY (`Id_ImageEvenement`),
     KEY `Id_Evenement` (`Id_Evenement`)
-) ENGINE = MyISAM
-  AUTO_INCREMENT = 28
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS `noteevenement`
     PRIMARY KEY (`Id_Note`),
     UNIQUE KEY `Id_Utilisateur` (`Id_Utilisateur`, `Id_Evenement`),
     KEY `Id_Evenement` (`Id_Evenement`)
-) ENGINE = MyISAM
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -201,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `ticketevenement`
     `Id_Evenement`       int NOT NULL,
     PRIMARY KEY (`Id_TicketEvenement`),
     KEY `Id_Evenement` (`Id_Evenement`)
-) ENGINE = MyISAM
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
@@ -225,17 +225,11 @@ CREATE TABLE IF NOT EXISTS `utilisateur`
     `Type_utilisateur` enum ('client','admin') NOT NULL DEFAULT 'client',
     PRIMARY KEY (`Id_Utilisateur`),
     UNIQUE KEY `Email` (`Email`)
-) ENGINE = MyISAM
-  AUTO_INCREMENT = 10
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
-
---
--- Déchargement des données de la table `ville`
---
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;

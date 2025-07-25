@@ -10,22 +10,50 @@ $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $date_filter = isset($_GET['date']) ? $_GET['date'] : '';
 $category_id = isset($_GET['category']) ? intval($_GET['category']) : 0;
 $city_id = isset($_GET['city']) ? intval($_GET['city']) : 0;
+$distance_filter = isset($_GET['distance']) ? intval($_GET['distance']) : 100; // Distance en km, par défaut 100km
+
+// Coordonnées de référence (Abidjan par défaut)
+$ref_lat = isset($_GET['lat']) ? floatval($_GET['lat']) : 5.3364;
+$ref_lng = isset($_GET['lng']) ? floatval($_GET['lng']) : -4.0267;
 
 // Construire la requête SQL de base
 $sql_base = "SELECT 
-                e.Id_Evenement, e.Titre, e.Description, e.DateDebut, e.DateFin,
+                e.Id_Evenement, e.Titre, e.Description, e.DateDebut, e.DateFin, e.Adresse,
+                e.Latitude, e.Longitude,
                 MIN(i.Lien) AS image_lien,
                 c.Libelle AS categorie, 
-                v.Libelle AS ville
+                e.Adresse AS ville,
+                CASE 
+                    WHEN e.Latitude IS NOT NULL AND e.Longitude IS NOT NULL THEN
+                        6371 * 2 * ASIN(SQRT(
+                            POWER(SIN((RADIANS(?) - RADIANS(e.Latitude)) / 2), 2) +
+                            COS(RADIANS(?)) * COS(RADIANS(e.Latitude)) *
+                            POWER(SIN((RADIANS(?) - RADIANS(e.Longitude)) / 2), 2)
+                        ))
+                    ELSE NULL
+                END AS distance
              FROM evenement e
              LEFT JOIN imageevenement i ON e.Id_Evenement = i.Id_Evenement
              LEFT JOIN categorieevenement c ON e.Id_CategorieEvenement = c.Id_CategorieEvenement
-             LEFT JOIN ville v ON e.Id_Ville = v.Id_Ville
              WHERE e.statut_approbation = 'approuve'";
 
 // Ajouter les conditions de recherche
-$params = [];
-$types = "";
+$params = [$ref_lat, $ref_lat, $ref_lng]; // Paramètres pour le calcul de distance
+$types = "ddd"; // Types pour les paramètres de distance (double)
+
+// Filtre de distance (seulement pour les événements avec coordonnées)
+$sql_base .= " AND (e.Latitude IS NULL OR e.Longitude IS NULL OR (
+    6371 * 2 * ASIN(SQRT(
+        POWER(SIN((RADIANS(?) - RADIANS(e.Latitude)) / 2), 2) +
+        COS(RADIANS(?)) * COS(RADIANS(e.Latitude)) *
+        POWER(SIN((RADIANS(?) - RADIANS(e.Longitude)) / 2), 2)
+    )) <= ?
+))";
+$params[] = $ref_lat;
+$params[] = $ref_lat;
+$params[] = $ref_lng;
+$params[] = $distance_filter;
+$types .= "dddi";
 
 // Recherche par texte
 if (!empty($query)) {
@@ -78,15 +106,15 @@ if ($category_id > 0) {
     $types .= "i";
 }
 
-// Filtre par ville
-if ($city_id > 0) {
-    $sql_base .= " AND e.Id_Ville = ?";
-    $params[] = $city_id;
-    $types .= "i";
-}
+// Filtre par ville - désactivé car la table ville n'est plus utilisée
+// if ($city_id > 0) {
+//     $sql_base .= " AND e.Id_Ville = ?";
+//     $params[] = $city_id;
+//     $types .= "i";
+// }
 
 // Finaliser la requête
-$sql_base .= " GROUP BY e.Id_Evenement, e.Titre, e.Description, e.DateDebut, e.DateFin, c.Libelle, v.Libelle
+$sql_base .= " GROUP BY e.Id_Evenement, e.Titre, e.Description, e.DateDebut, e.DateFin, c.Libelle, e.Adresse
                ORDER BY e.DateDebut ASC";
 
 // Exécuter la requête
@@ -117,15 +145,16 @@ if ($categories_result && $categories_result->num_rows > 0) {
     }
 }
 
-// Villes
-$cities_query = "SELECT Id_Ville, Libelle FROM ville ORDER BY Libelle";
-$cities_result = $conn->query($cities_query);
-$cities = [];
-if ($cities_result && $cities_result->num_rows > 0) {
-    while ($city = $cities_result->fetch_assoc()) {
-        $cities[] = $city;
-    }
-}
+// Villes - désactivé car la table ville n'est plus utilisée
+// $cities_query = "SELECT Id_Ville, Libelle FROM ville ORDER BY Libelle";
+// $cities_result = $conn->query($cities_query);
+// $cities = [];
+// if ($cities_result && $cities_result->num_rows > 0) {
+//     while ($city = $cities_result->fetch_assoc()) {
+//         $cities[] = $city;
+//     }
+// }
+$cities = []; // Tableau vide pour éviter les erreurs
 
 // Titre de la page en fonction des filtres
 $page_title = "Résultats de recherche";
@@ -188,18 +217,18 @@ if (!empty($query)) {
                     </div>
                 </div>
 
-                <!-- Section Ville (afficher seulement quelques villes) -->
-                <div class="filter-group">
+                <!-- Section Ville désactivée car la table ville n'est plus utilisée -->
+                <!-- <div class="filter-group">
                     <span class="filter-group-title">Ville:</span>
                     <div class="filter-buttons">
                         <?php 
-                        $displayed_cities = array_slice($cities, 0, 5); // Limiter à 5 villes
-                        foreach ($displayed_cities as $city): 
+                        // $displayed_cities = array_slice($cities, 0, 5); // Limiter à 5 villes
+                        // foreach ($displayed_cities as $city): 
                         ?>
-                            <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo !empty($date_filter) ? '&date='.$date_filter : ''; ?><?php echo $category_id > 0 ? '&category='.$category_id : ''; ?>&city=<?php echo $city['Id_Ville']; ?>" class="filter-link <?php echo $city_id == $city['Id_Ville'] ? 'active' : ''; ?>"><?php echo htmlspecialchars($city['Libelle']); ?></a>
-                        <?php endforeach; ?>
+                            <a href="?page=recherche<?php // echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php // echo !empty($date_filter) ? '&date='.$date_filter : ''; ?><?php // echo $category_id > 0 ? '&category='.$category_id : ''; ?>&city=<?php // echo $city['Id_Ville']; ?>" class="filter-link <?php // echo $city_id == $city['Id_Ville'] ? 'active' : ''; ?>"><?php // echo htmlspecialchars($city['Libelle']); ?></a>
+                        <?php // endforeach; ?>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <!-- Formulaire de recherche -->
@@ -211,9 +240,10 @@ if (!empty($query)) {
                 <?php if ($category_id > 0): ?>
                     <input type="hidden" name="category" value="<?php echo $category_id; ?>">
                 <?php endif; ?>
-                <?php if ($city_id > 0): ?>
+                <?php /* Filtre ville désactivé
+                if ($city_id > 0): ?>
                     <input type="hidden" name="city" value="<?php echo $city_id; ?>">
-                <?php endif; ?>
+                <?php endif; */ ?>
                 <div class="search-input-wrapper">
                     <input type="text" name="query" value="<?php echo htmlspecialchars($query); ?>" placeholder="Rechercher des événements" class="search-input">
                     <button type="submit" class="search-icon">
@@ -223,6 +253,12 @@ if (!empty($query)) {
                     </button>
                 </div>
             </form>
+        </div>
+
+        <!-- Carte des événements -->
+        <div class="map-container">
+            <h2 class="section-subtitle">Événements à proximité (rayon de <?php echo $distance_filter; ?> km)</h2>
+            <div id="search-map" class="search-map"></div>
         </div>
 
         <!-- Résultats de recherche -->
@@ -236,7 +272,11 @@ if (!empty($query)) {
             <?php else: ?>
                 <div class="events-grid">
                     <?php foreach ($events as $event): ?>
-                        <div class="event-card">
+                        <div class="event-card" data-event-id="<?php echo $event['Id_Evenement']; ?>" 
+                             <?php if (!empty($event['Latitude']) && !empty($event['Longitude'])): ?>
+                             data-lat="<?php echo $event['Latitude']; ?>" 
+                             data-lng="<?php echo $event['Longitude']; ?>"
+                             <?php endif; ?>>
                             <div class="event-card-image-wrapper aspect-square">
                                 <div class="event-card-carousel" data-carousel>
                                     <div class="event-card-image">
@@ -245,6 +285,9 @@ if (!empty($query)) {
                                 </div>
                                 <button class="carousel-arrow prev">&lt;</button>
                                 <button class="carousel-arrow next">&gt;</button>
+                                <?php if (!empty($event['distance'])): ?>
+                                <div class="event-distance"><?php echo round($event['distance'], 1); ?> km</div>
+                                <?php endif; ?>
                             </div>
                             <a href="?page=details&id=<?php echo $event['Id_Evenement']; ?>">
                                 <div>
@@ -275,3 +318,146 @@ if (!empty($query)) {
         </div>
     </section>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser la carte
+    const mapContainer = document.getElementById('search-map');
+    if (!mapContainer) return;
+
+    // Coordonnées de référence
+    const refLat = <?php echo $ref_lat; ?>;
+    const refLng = <?php echo $ref_lng; ?>;
+
+    // Initialiser la carte Mapbox
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZWxpZWwwNiIsImEiOiJjbWRqMjJsMHAwYmxuMmpzNW1xbmlldXA1In0.7S97Hn4TRZp-q6X3TW2UuQ';
+    const map = new mapboxgl.Map({
+        container: 'search-map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [refLng, refLat],
+        zoom: 10
+    });
+
+    // Ajouter un marqueur pour la position de référence
+    new mapboxgl.Marker({
+        color: '#FF0000'
+    })
+    .setLngLat([refLng, refLat])
+    .addTo(map);
+
+    // Ajouter un cercle pour le rayon de recherche
+    map.on('load', function() {
+        map.addSource('radius', {
+            'type': 'geojson',
+            'data': {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [refLng, refLat]
+                },
+                'properties': {
+                    'radius': <?php echo $distance_filter; ?> * 1000 // Convertir en mètres
+                }
+            }
+        });
+
+        map.addLayer({
+            'id': 'radius-circle',
+            'type': 'circle',
+            'source': 'radius',
+            'paint': {
+                'circle-radius': ['get', 'radius'],
+                'circle-color': 'rgba(0, 100, 255, 0.1)',
+                'circle-stroke-width': 2,
+                'circle-stroke-color': 'rgba(0, 100, 255, 0.6)',
+                'circle-pitch-alignment': 'map',
+                'circle-stroke-opacity': 0.8
+            }
+        });
+
+        // Ajuster la vue pour inclure le cercle
+        const bounds = new mapboxgl.LngLatBounds();
+        bounds.extend([refLng, refLat]);
+
+        // Étendre les limites pour inclure le rayon
+        const radiusInDegrees = <?php echo $distance_filter; ?> / 111; // Approximation: 1 degré ≈ 111 km
+        bounds.extend([refLng + radiusInDegrees, refLat + radiusInDegrees]);
+        bounds.extend([refLng - radiusInDegrees, refLat - radiusInDegrees]);
+
+        map.fitBounds(bounds, {
+            padding: 50
+        });
+    });
+
+    // Collecter les événements avec coordonnées
+    const eventCards = document.querySelectorAll('.event-card[data-lat][data-lng]');
+    const events = [];
+
+    eventCards.forEach(card => {
+        const id = card.getAttribute('data-event-id');
+        const lat = parseFloat(card.getAttribute('data-lat'));
+        const lng = parseFloat(card.getAttribute('data-lng'));
+        const title = card.querySelector('.event-card-title').textContent;
+        const image = card.querySelector('.event-card-image img').getAttribute('src');
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+            events.push({
+                id: id,
+                coordinates: [lng, lat],
+                title: title,
+                image: image,
+                element: card
+            });
+        }
+    });
+
+    // Ajouter les marqueurs pour chaque événement
+    events.forEach(event => {
+        // Créer un élément personnalisé pour le marqueur
+        const el = document.createElement('div');
+        el.className = 'event-marker';
+        el.style.backgroundImage = `url(${event.image})`;
+        el.style.width = '30px';
+        el.style.height = '30px';
+        el.style.borderRadius = '50%';
+        el.style.border = '2px solid #fff';
+        el.style.boxShadow = '0 0 5px rgba(0,0,0,0.3)';
+        el.style.cursor = 'pointer';
+        el.style.backgroundSize = 'cover';
+        el.style.backgroundPosition = 'center';
+
+        // Ajouter le marqueur à la carte
+        const marker = new mapboxgl.Marker(el)
+            .setLngLat(event.coordinates)
+            .setPopup(
+                new mapboxgl.Popup({ offset: 25 })
+                    .setHTML(`
+                        <div style="max-width: 200px;">
+                            <h3 style="margin: 0 0 5px 0; font-size: 14px;">${event.title}</h3>
+                            <a href="?page=details&id=${event.id}" style="display: block; text-align: center; margin-top: 10px; color: #0066cc; text-decoration: none; font-size: 12px;">Voir les détails</a>
+                        </div>
+                    `)
+            )
+            .addTo(map);
+
+        // Synchroniser le survol entre la carte et la liste
+        el.addEventListener('mouseenter', () => {
+            event.element.classList.add('highlight');
+        });
+
+        el.addEventListener('mouseleave', () => {
+            event.element.classList.remove('highlight');
+        });
+
+        event.element.addEventListener('mouseenter', () => {
+            marker.getElement().classList.add('highlight');
+            marker.togglePopup();
+        });
+
+        event.element.addEventListener('mouseleave', () => {
+            marker.getElement().classList.remove('highlight');
+            marker.togglePopup();
+        });
+    });
+});
+</script>

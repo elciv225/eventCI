@@ -96,17 +96,16 @@ $stmt_active_events = $conn->prepare("
         e.Id_Evenement, e.Titre, e.Description, 
         MIN(i.Lien) AS image, 
         c.Libelle AS categorie, 
-        v.Libelle AS ville,
+        e.Salle AS salle,
         e.DateDebut, e.DateFin
     FROM evenement e
     JOIN creer cr ON e.Id_Evenement = cr.Id_Evenement
     LEFT JOIN imageevenement i ON e.Id_Evenement = i.Id_Evenement
     LEFT JOIN categorieevenement c ON e.Id_CategorieEvenement = c.Id_CategorieEvenement
-    LEFT JOIN ville v ON e.Id_Ville = v.Id_Ville
     WHERE cr.Id_Utilisateur = ?
     AND e.DateFin > NOW()
     AND e.statut_approbation = 'approuve'
-    GROUP BY e.Id_Evenement, e.Titre, e.Description, c.Libelle, v.Libelle, e.DateDebut, e.DateFin
+    GROUP BY e.Id_Evenement, e.Titre, e.Description, c.Libelle, e.Salle, e.DateDebut, e.DateFin
     ORDER BY e.DateDebut ASC
 ");
 $stmt_active_events->bind_param("i", $user_id);
@@ -124,16 +123,15 @@ $stmt_past_events = $conn->prepare("
         e.Id_Evenement, e.Titre, e.Description, 
         MIN(i.Lien) AS image, 
         c.Libelle AS categorie, 
-        v.Libelle AS ville,
+        e.Salle AS salle,
         e.DateDebut, e.DateFin
     FROM evenement e
     JOIN creer cr ON e.Id_Evenement = cr.Id_Evenement
     LEFT JOIN imageevenement i ON e.Id_Evenement = i.Id_Evenement
     LEFT JOIN categorieevenement c ON e.Id_CategorieEvenement = c.Id_CategorieEvenement
-    LEFT JOIN ville v ON e.Id_Ville = v.Id_Ville
     WHERE cr.Id_Utilisateur = ?
     AND e.DateFin <= NOW()
-    GROUP BY e.Id_Evenement, e.Titre, e.Description, c.Libelle, v.Libelle, e.DateDebut, e.DateFin
+    GROUP BY e.Id_Evenement, e.Titre, e.Description, c.Libelle, e.Salle, e.DateDebut, e.DateFin
     ORDER BY e.DateFin DESC
 ");
 $stmt_past_events->bind_param("i", $user_id);
@@ -156,16 +154,15 @@ $stmt_review_events = $conn->prepare("
         e.Id_Evenement, e.Titre, e.Description, 
         MIN(i.Lien) AS image, 
         c.Libelle AS categorie, 
-        v.Libelle AS ville,
+        e.Salle AS salle,
         e.DateDebut, e.DateFin
     FROM evenement e
     JOIN creer cr ON e.Id_Evenement = cr.Id_Evenement
     LEFT JOIN imageevenement i ON e.Id_Evenement = i.Id_Evenement
     LEFT JOIN categorieevenement c ON e.Id_CategorieEvenement = c.Id_CategorieEvenement
-    LEFT JOIN ville v ON e.Id_Ville = v.Id_Ville
     WHERE cr.Id_Utilisateur = ?
     AND e.statut_approbation = 'en_attente'
-    GROUP BY e.Id_Evenement, e.Titre, e.Description, c.Libelle, v.Libelle, e.DateDebut, e.DateFin
+    GROUP BY e.Id_Evenement, e.Titre, e.Description, c.Libelle, e.Salle, e.DateDebut, e.DateFin
     ORDER BY e.DateDebut ASC
 ");
 $stmt_review_events->bind_param("i", $user_id);
@@ -199,11 +196,10 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
         $stmt_event = $conn->prepare("
             SELECT 
                 e.Id_Evenement, e.Titre, e.Description, e.Adresse, 
-                e.DateDebut, e.DateFin, e.Id_Ville, e.Id_CategorieEvenement,
-                v.Libelle as ville_nom,
+                e.DateDebut, e.DateFin, e.Salle, e.Id_CategorieEvenement,
+                e.Salle as salle_nom,
                 c.Libelle as categorie_nom
             FROM evenement e
-            LEFT JOIN ville v ON e.Id_Ville = v.Id_Ville
             LEFT JOIN categorieevenement c ON e.Id_CategorieEvenement = c.Id_CategorieEvenement
             WHERE e.Id_Evenement = ?
         ");
@@ -316,7 +312,7 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                             </p>
                                             <p class="event-card-meta" style="color: var(--text-primary)">
                                                 <span class="event-category"><?php echo htmlspecialchars($event['categorie']); ?></span> |
-                                                <span class="event-location"><?php echo htmlspecialchars($event['ville']); ?></span>
+                                                <span class="event-location"><?php echo htmlspecialchars($event['salle']); ?></span>
                                             </p>
                                         </div>
                                     </a>
@@ -359,7 +355,7 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                         </p>
                                         <p class="event-card-meta" style="color: var(--text-primary)">
                                             <span class="event-category"><?php echo htmlspecialchars($event['categorie']); ?></span> |
-                                            <span class="event-location"><?php echo htmlspecialchars($event['ville']); ?></span>
+                                            <span class="event-location"><?php echo htmlspecialchars($event['salle']); ?></span>
                                         </p>
                                     </div>
                                 </div>
@@ -401,7 +397,7 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                             </p>
                                             <p class="event-card-meta" style="color: var(--text-primary)">
                                                 <span class="event-category"><?php echo htmlspecialchars($event['categorie']); ?></span> |
-                                                <span class="event-location"><?php echo htmlspecialchars($event['ville']); ?></span>
+                                                <span class="event-location"><?php echo htmlspecialchars($event['salle']); ?></span>
                                             </p>
                                         </div>
                                     </a>
@@ -538,20 +534,8 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                     </div>
 
                     <div class="form-group">
-                        <label for="event-ville">Ville</label>
-                        <select id="event-ville" name="idVille" required>
-                            <option value="">Sélectionnez une ville</option>
-                            <?php
-                            // Récupérer les villes depuis la base de données
-                            $villes_query = "SELECT Id_Ville, Libelle FROM ville ORDER BY Libelle";
-                            $villes_result = $conn->query($villes_query);
-                            if ($villes_result && $villes_result->num_rows > 0) {
-                                while ($ville = $villes_result->fetch_assoc()) {
-                                    echo '<option value="' . $ville['Id_Ville'] . '">' . htmlspecialchars($ville['Libelle']) . '</option>';
-                                }
-                            }
-                            ?>
-                        </select>
+                        <label for="event-salle">Salle</label>
+                        <input type="text" id="event-salle" name="salle" required>
                     </div>
 
                     <div class="form-group">

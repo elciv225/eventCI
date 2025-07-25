@@ -12,13 +12,12 @@ $upcoming_query = "SELECT
                     e.Id_Evenement, e.Titre, e.Description, 
                     MIN(i.Lien) AS image_lien, -- Utilisation de MIN() pour obtenir une seule image
                     c.Libelle AS categorie, 
-                    v.Libelle AS ville
+                    e.Salle AS salle
                   FROM evenement e
                   LEFT JOIN imageevenement i ON e.Id_Evenement = i.Id_Evenement
                   LEFT JOIN categorieevenement c ON e.Id_CategorieEvenement = c.Id_CategorieEvenement
-                  LEFT JOIN ville v ON e.Id_Ville = v.Id_Ville
                   WHERE e.statut_approbation = 'approuve'
-                  GROUP BY e.Id_Evenement, e.Titre, e.Description, c.Libelle, v.Libelle
+                  GROUP BY e.Id_Evenement, e.Titre, e.Description, c.Libelle, e.Salle
                   ORDER BY e.Id_Evenement DESC
                   LIMIT 6";
 
@@ -46,14 +45,13 @@ $recommended_query = "SELECT
                         e.Id_Evenement, e.Titre, e.Description,
                         MIN(i.Lien) AS image_lien, -- Utilisation de MIN() pour obtenir une seule image
                         c.Libelle AS categorie, 
-                        v.Libelle AS ville
+                        e.Salle AS salle
                      FROM evenement e
                      LEFT JOIN imageevenement i ON e.Id_Evenement = i.Id_Evenement
                      LEFT JOIN categorieevenement c ON e.Id_CategorieEvenement = c.Id_CategorieEvenement
-                     LEFT JOIN ville v ON e.Id_Ville = v.Id_Ville
                      WHERE e.statut_approbation = 'approuve'
                      AND e.Id_Evenement NOT IN ($upcoming_ids_str)
-                     GROUP BY e.Id_Evenement, e.Titre, e.Description, c.Libelle, v.Libelle
+                     GROUP BY e.Id_Evenement, e.Titre, e.Description, c.Libelle, e.Salle
                      ORDER BY RAND()
                      LIMIT 12";
 
@@ -123,7 +121,7 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                                 <p class="event-card-meta" style="color: var(--text-primary)">
                                     <span class="event-category"><?php echo htmlspecialchars($event['categorie']); ?></span>
                                     |
-                                    <span class="event-location" ><?php echo htmlspecialchars($event['ville']); ?></span>
+                                    <span class="event-location" ><?php echo htmlspecialchars($event['salle']); ?></span>
                                 </p>
                             </div>
                         </a>
@@ -170,7 +168,7 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                                 <p class="event-card-meta">
                                     <span class="event-category"><?php echo htmlspecialchars($event['categorie']); ?></span>
                                     |
-                                    <span class="event-location"><?php echo htmlspecialchars($event['ville']); ?></span>
+                                    <span class="event-location"><?php echo htmlspecialchars($event['salle']); ?></span>
                                 </p>
                             </div>
                         </a>

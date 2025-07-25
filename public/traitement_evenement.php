@@ -56,7 +56,9 @@ $description = trim($_POST['description'] ?? '');
 $adresse = trim($_POST['adresse'] ?? '');
 $dateDebut = $_POST['dateDebut'] ?? '';
 $dateFin = $_POST['dateFin'] ?? '';
-$idVille = (int)($_POST['idVille'] ?? 0);
+$latitude = $_POST['latitude'] ?? null;
+$longitude = $_POST['longitude'] ?? null;
+$salle = trim($_POST['salle'] ?? '');
 $idCategorieEvenement = (int)($_POST['idCategorieEvenement'] ?? 0);
 
 // Validation des données
@@ -102,9 +104,9 @@ if (!empty($dateDebut) && !empty($dateFin) && strtotime($dateDebut) && strtotime
     }
 }
 
-// Vérifier que la ville et la catégorie existent
-if ($idVille <= 0) {
-    $errors[] = "Veuillez sélectionner une ville valide";
+// Vérifier que la salle et la catégorie existent
+if (empty($salle)) {
+    $errors[] = "Veuillez entrer une salle valide";
 }
 
 if ($idCategorieEvenement <= 0) {
@@ -131,10 +133,10 @@ try {
     // Mise à jour de l'événement
     $stmt_update = $conn->prepare("
         UPDATE evenement 
-        SET Titre = ?, Description = ?, Adresse = ?, DateDebut = ?, DateFin = ?, Id_Ville = ?, Id_CategorieEvenement = ? 
+        SET Titre = ?, Description = ?, Adresse = ?, DateDebut = ?, DateFin = ?, Salle = ?, Id_CategorieEvenement = ?, Latitude = ?, Longitude = ? 
         WHERE Id_Evenement = ?
     ");
-    $stmt_update->bind_param("sssssiii", $titre, $description, $adresse, $dateDebutFormatted, $dateFinFormatted, $idVille, $idCategorieEvenement, $eventId);
+    $stmt_update->bind_param("ssssssidd", $titre, $description, $adresse, $dateDebutFormatted, $dateFinFormatted, $salle, $idCategorieEvenement, $latitude, $longitude, $eventId);
     if (!$stmt_update->execute()) {
         throw new Exception("Erreur lors de la mise à jour de l'événement: " . $stmt_update->error);
     }

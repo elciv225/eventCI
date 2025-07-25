@@ -302,7 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const eventLocation = document.getElementById('event-location');
             const eventDateDebut = document.getElementById('event-date-debut');
             const eventDateFin = document.getElementById('event-date-fin');
-            const idVille = document.getElementById('idVille');
             const idCategorieEvenement = document.getElementById('idCategorieEvenement');
 
             let isValid = true;
@@ -365,12 +364,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            if (!idVille.value) {
-                idVille.classList.add('error');
-                isValid = false;
-            } else {
-                idVille.classList.remove('error');
-            }
 
             if (!idCategorieEvenement.value) {
                 idCategorieEvenement.classList.add('error');

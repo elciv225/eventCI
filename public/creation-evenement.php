@@ -43,7 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['creer-evenement-ticke
     $adresse = trim($_POST['adresse'] ?? '');
     $dateDebut = $_POST['dateDebut'] ?? '';
     $dateFin = $_POST['dateFin'] ?? '';
-    $position = $_POST['position'] ?? '';
+    $latitude = $_POST['latitude'] ?? null;
+    $longitude = $_POST['longitude'] ?? null;
     $salle = trim($_POST['salle'] ?? '');
     $idCategorieEvenement = (int)($_POST['idCategorieEvenement'] ?? 0);
 
@@ -101,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['creer-evenement-ticke
 
     // Traitement des images
     $uploadedImageFiles = [];
-    $targetDir = "uploads/photos_event/";
+    $targetDir = "../uploads/photos_event/";
 
     if (!is_dir($targetDir)) {
         if (!mkdir($targetDir, 0755, true)) {
@@ -151,8 +152,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['creer-evenement-ticke
         $dateFinFormatted = date('Y-m-d H:i:s', strtotime($dateFin));
 
         // 1. Insertion de l'événement
-        $stmt_event = $conn->prepare("INSERT INTO evenement (Titre, Description, Adresse, DateDebut, DateFin, Salle, Id_CategorieEvenement, statut_approbation) VALUES (?, ?, ?, ?, ?, ?, ?, 'en_attente')");
-        $stmt_event->bind_param("ssssssi", $titre, $description, $adresse, $dateDebutFormatted, $dateFinFormatted, $salle, $idCategorieEvenement);
+        $stmt_event = $conn->prepare("INSERT INTO evenement (Titre, Description, Adresse, DateDebut, DateFin, Salle, Id_CategorieEvenement, statut_approbation, Latitude, Longitude) VALUES (?, ?, ?, ?, ?, ?, ?, 'en_attente', ?, ?)");
+        $stmt_event->bind_param("ssssssidd", $titre, $description, $adresse, $dateDebutFormatted, $dateFinFormatted, $salle, $idCategorieEvenement, $latitude, $longitude);
         if (!$stmt_event->execute()) throw new Exception("Erreur lors de la création de l'événement: " . $stmt_event->error);
         $evenementId = $conn->insert_id;
         $stmt_event->close();
@@ -270,7 +271,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['creer-evenement-ticke
             </div>
             <div class="form-group">
                 <div id="map"></div>
-                <input name="position" type="hidden" value="">
+
+                <input name="latitude" type="hidden" value="">
+                <input name="longitude" type="hidden" value="">
             </div>
             <div class="form-group-row">
                 <div class="form-group">
@@ -330,7 +333,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['creer-evenement-ticke
                         <label class="form-label" for="ticket-price">Prix</label>
                         <div class="checkbox-container inside-input">
                             <input type="checkbox" id="free-ticket" class="form-checkbox"/>
-                            <label for="free-ticket" class="checkbox-label">Gratuit</label>
+                            <label for="free-ticket" class="checkbox-label" style="margin: 0">Gratuit</label>
                         </div>
                     </div>
                 </div>
