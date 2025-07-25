@@ -86,11 +86,18 @@ $page_content = ob_get_clean();
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1,user-scalable=no">
     <title>Evently - <?php echo ucfirst($page); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.13.0/mapbox-gl.css" rel="stylesheet">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" rel="stylesheet" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.13.0/mapbox-gl.js"></script>
     <link rel="stylesheet" href="assets/css/accueil.css">
     <link rel="stylesheet" href="assets/css/creation-evenement.css">
     <link rel="stylesheet" href="assets/css/popup.css">
@@ -98,6 +105,8 @@ $page_content = ob_get_clean();
     <link rel="stylesheet" href="assets/css/details.css">
     <link rel="stylesheet" href="assets/css/panier.css">
     <link rel="stylesheet" href="assets/css/ticket.css">
+    <link rel="stylesheet" href="assets/css/mapbox.css">
+
 </head>
 <body data-theme="dark">
 
@@ -114,11 +123,6 @@ $page_content = ob_get_clean();
                 </svg>
                 <h2>Evently</h2>
             </div>
-            <button class="mobile-menu-toggle" aria-label="Menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
             <nav class="header-nav">
                 <a href="?page=accueil" <?php echo ($page === 'accueil' || $page === '') ? 'class="active"' : ''; ?>>Accueil</a>
                 <a href="?page=recherche" <?php echo ($page === 'recherche') ? 'class="active"' : ''; ?>>Explorer</a>
@@ -129,7 +133,7 @@ $page_content = ob_get_clean();
                         Profil</a>
                     <a href="?page=creation-evenement" <?php echo ($page === 'creation-evenement') ? 'class="active"' : ''; ?>>Créer</a>
                 <?php else: ?>
-                    <a href="authentification.php" class="login-button">Connexion / Inscription</a>
+                    <a href="authentification.php" class="login-button mobile">Connexion / Inscription</a>
                 <?php endif; ?>
             </nav>
         </div>
@@ -149,7 +153,6 @@ $page_content = ob_get_clean();
                     <path d="M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.84,104.84,0,0,0-52.91,37A104,104,0,0,0,136,224a103.09,103.09,0,0,0,62.52-20.88,104.84,104.84,0,0,0,37-52.91A8,8,0,0,0,233.54,142.23ZM188.9,190.34A88,88,0,0,1,65.66,67.11a89,89,0,0,1,31.4-26A106,106,0,0,0,96,56,104.11,104.11,0,0,0,200,160a106,106,0,0,0,14.92-1.06A89,89,0,0,1,188.9,190.34Z"></path>
                 </svg>
             </button>
-
             <?php if ($user_info): ?>
                 <div class="user-menu">
                     <?php if (!empty($user_info['Photo'])): ?>
@@ -182,6 +185,11 @@ $page_content = ob_get_clean();
                     <a href="authentification.php" class="login-button">Connexion / Inscription</a>
                 </div>
             <?php endif; ?>
+            <button class="mobile-menu-toggle" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
@@ -210,9 +218,10 @@ $page_content = ob_get_clean();
     </div>
 </div>
 
-<script src="assets/js/popup.js"></script>
-<script src="assets/js/accueil.js"></script>
-<script src="assets/js/creation-evenement.js"></script>
+<script src="assets/js/popup.js" defer></script>
+<script src="assets/js/accueil.js" defer></script>
+<script src="assets/js/creation-evenement.js" defer></script>
+<script src="assets/js/mapbox.js" defer></script>
 <script>
     // Le code de débogage et les popups sont maintenant exécutés en toute sécurité
     // après le rendu de la page.

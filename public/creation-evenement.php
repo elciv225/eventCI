@@ -26,21 +26,6 @@ try {
     $categories = [];
 }
 
-// Récupération des villes
-$villes = [];
-try {
-    $stmt_villes = $conn->prepare("SELECT Id_Ville, Libelle FROM ville ORDER BY Libelle ASC");
-    $stmt_villes->execute();
-    $result_villes = $stmt_villes->get_result();
-    while ($row = $result_villes->fetch_assoc()) {
-        $villes[] = $row;
-    }
-    $stmt_villes->close();
-} catch (Exception $e) {
-    error_log("Erreur récupération villes: " . $e->getMessage());
-    $villes = [];
-}
-
 // Vérifie si l'utilisateur est connecté
 $loggedInUserId = $_SESSION['utilisateur']['id'] ?? null;
 if (!$loggedInUserId) {
@@ -58,7 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['creer-evenement-ticke
     $adresse = trim($_POST['adresse'] ?? '');
     $dateDebut = $_POST['dateDebut'] ?? '';
     $dateFin = $_POST['dateFin'] ?? '';
-    $idVille = (int)($_POST['idVille'] ?? 0);
+    $position = $_POST['position'] ?? '';
+    $salle = trim($_POST['salle'] ?? '');
     $idCategorieEvenement = (int)($_POST['idCategorieEvenement'] ?? 0);
 
     // Validation des dates
@@ -165,8 +151,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['creer-evenement-ticke
         $dateFinFormatted = date('Y-m-d H:i:s', strtotime($dateFin));
 
         // 1. Insertion de l'événement
-        $stmt_event = $conn->prepare("INSERT INTO evenement (Titre, Description, Adresse, DateDebut, DateFin, Id_Ville, Id_CategorieEvenement, statut_approbation) VALUES (?, ?, ?, ?, ?, ?, ?, 'en_attente')");
-        $stmt_event->bind_param("sssssii", $titre, $description, $adresse, $dateDebutFormatted, $dateFinFormatted, $idVille, $idCategorieEvenement);
+        $stmt_event = $conn->prepare("INSERT INTO evenement (Titre, Description, Adresse, DateDebut, DateFin, Salle, Id_CategorieEvenement, statut_approbation) VALUES (?, ?, ?, ?, ?, ?, ?, 'en_attente')");
+        $stmt_event->bind_param("ssssssi", $titre, $description, $adresse, $dateDebutFormatted, $dateFinFormatted, $salle, $idCategorieEvenement);
         if (!$stmt_event->execute()) throw new Exception("Erreur lors de la création de l'événement: " . $stmt_event->error);
         $evenementId = $conn->insert_id;
         $stmt_event->close();
@@ -257,10 +243,34 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['creer-evenement-ticke
                 <label class="form-label" for="event-description">Description</label>
             </div>
             <div class="form-group">
+                <select id="idCategorieEvenement" name="idCategorieEvenement"
+                        class="form-input"
+                        required>
+                    <option value="">Sélectionnez une catégorie</option>
+                    <?php foreach ($categories as $categorie): ?>
+                        <option value="<?php echo $categorie['Id_CategorieEvenement']; ?>">
+                            <?php echo htmlspecialchars($categorie['Libelle']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <label class="form-label" for="idCategorieEvenement">Catégorie</label>
+            </div>
+            <div class="form-group">
+                <input id="event-place" name="salle" type="text" placeholder=" "
+                       class="form-input"
+                       required/>
+                <label class="form-label" for="event-place">Salle de l'événement</label>
+            </div>
+            <div class="form-group">
                 <input id="event-location" name="adresse" type="text" placeholder=" "
                        class="form-input"
                        required/>
                 <label class="form-label" for="event-location">Adresse</label>
+                <div id="geocoder-container" style="display: none;"></div>
+            </div>
+            <div class="form-group">
+                <div id="map"></div>
+                <input name="position" type="hidden" value="">
             </div>
             <div class="form-group-row">
                 <div class="form-group">
@@ -295,34 +305,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['creer-evenement-ticke
                     <button type="button" class="btn btn-secondary" id="uploadButton">Télécharger</button>
                 </div>
             </div>
-            <!-- Sélection de la ville et de la catégorie -->
-            <div class="form-group">
-                <select id="idVille" name="idVille"
-                        class="form-input" required>
-                    <option value="">Sélectionnez une ville</option>
-                    <?php foreach ($villes as $ville): ?>
-                        <option value="<?php echo $ville['Id_Ville']; ?>">
-                            <?php echo htmlspecialchars($ville['Libelle']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <label class="form-label" for="idVille">Ville</label>
-            </div>
-
-            <div class="form-group">
-                <select id="idCategorieEvenement" name="idCategorieEvenement"
-                        class="form-input"
-                        required>
-                    <option value="">Sélectionnez une catégorie</option>
-                    <?php foreach ($categories as $categorie): ?>
-                        <option value="<?php echo $categorie['Id_CategorieEvenement']; ?>">
-                            <?php echo htmlspecialchars($categorie['Libelle']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <label class="form-label" for="idCategorieEvenement">Catégorie</label>
-            </div>
-
             <div class="form-actions">
                 <button id="next-btn" type="button" class="btn btn-primary">Suivant</button>
             </div>

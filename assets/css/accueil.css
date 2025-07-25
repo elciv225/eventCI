@@ -693,7 +693,6 @@ main {
     border: none;
     cursor: pointer;
     padding: 0.5rem;
-    margin-left: 1rem;
     z-index: 1000;
 }
 
@@ -717,6 +716,10 @@ body.mobile-menu-open .mobile-menu-toggle span:nth-child(2) {
 
 body.mobile-menu-open .mobile-menu-toggle span:nth-child(3) {
     transform: rotate(-45deg) translate(7px, -7px);
+}
+
+.login-button.mobile{
+    display: none;
 }
 
 /* Overlay for mobile menu */
@@ -809,6 +812,13 @@ body.mobile-menu-open .header-nav a:last-child {
 }
 
 @media (max-width: 767px) {
+    .login-button.mobile{
+        display: block;
+    }
+
+    .header-right .login-button{
+        display: none;
+    }
     .header-nav {
         position: fixed;
         top: 78px;
