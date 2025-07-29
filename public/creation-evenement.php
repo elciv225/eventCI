@@ -102,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['creer-evenement-ticke
 
     // Traitement des images
     $uploadedImageFiles = [];
-    $targetDir = "../uploads/photos_event/";
+    $targetDir = "uploads/photos_event/";
 
     if (!is_dir($targetDir)) {
         if (!mkdir($targetDir, 0755, true)) {

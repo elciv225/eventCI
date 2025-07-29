@@ -40,11 +40,10 @@ $cart_query = "SELECT
                 e.Titre AS Titre_Evenement,
                 e.DateDebut AS DateDebut_Evenement,
                 e.DateFin AS DateFin_Evenement,
-                v.Libelle AS Lieu_Evenement
+                e.Adresse AS Lieu_Evenement
               FROM achat a
               JOIN ticketevenement t ON a.Id_TicketEvenement = t.Id_TicketEvenement
               JOIN evenement e ON t.Id_Evenement = e.Id_Evenement
-              LEFT JOIN ville v ON e.Id_Ville = v.Id_Ville
               WHERE a.Id_Utilisateur = ?
               ORDER BY a.DateAchat DESC";
 

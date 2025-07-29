@@ -18,6 +18,7 @@ if (!isset($_SESSION['utilisateur']) || empty($_SESSION['utilisateur']['id'])) {
 $user_id = $_SESSION['utilisateur']['id'];
 $user = $_SESSION['utilisateur'];
 
+
 // --- LOGIQUE POUR RÉCUPÉRER LES DONNÉES ---
 // Récupération des statistiques réelles depuis la base de données
 
@@ -289,12 +290,14 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                             <?php foreach ($active_events as $event): ?>
                                 <div class="event-card">
                                     <div class="event-card-image-wrapper aspect-square">
-                                        <div class="event-card-carousel">
+                                        <div class="event-card-carousel" data-carousel>
                                             <div class="event-card-image">
                                                 <img src="../<?php echo !empty($event['image']) ? htmlspecialchars($event['image']) : 'assets/images/default-event.jpg'; ?>"
                                                      alt="<?php echo htmlspecialchars($event['Titre']); ?>"/>
                                             </div>
                                         </div>
+                                        <button class="carousel-arrow prev">&lt;</button>
+                                        <button class="carousel-arrow next">&gt;</button>
                                         <a href="?page=mon-profil&tab=active&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                                                 <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
@@ -332,12 +335,14 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                             <?php foreach ($events_in_review_list as $event): ?>
                                 <div class="event-card">
                                     <div class="event-card-image-wrapper aspect-square">
-                                        <div class="event-card-carousel">
+                                        <div class="event-card-carousel" data-carousel>
                                             <div class="event-card-image">
                                                 <img src="../<?php echo !empty($event['image']) ? htmlspecialchars($event['image']) : 'assets/images/default-event.jpg'; ?>"
                                                      alt="<?php echo htmlspecialchars($event['Titre']); ?>"/>
                                             </div>
                                         </div>
+                                        <button class="carousel-arrow prev">&lt;</button>
+                                        <button class="carousel-arrow next">&gt;</button>
                                         <div class="event-status-badge pending">En attente d'approbation</div>
                                         <a href="?page=mon-profil&tab=en_attente&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
@@ -374,12 +379,14 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                             <?php foreach ($past_events as $event): ?>
                                 <div class="event-card">
                                     <div class="event-card-image-wrapper aspect-square">
-                                        <div class="event-card-carousel">
+                                        <div class="event-card-carousel" data-carousel>
                                             <div class="event-card-image">
                                                 <img src="../<?php echo !empty($event['image']) ? htmlspecialchars($event['image']) : 'assets/images/default-event.jpg'; ?>"
                                                      alt="<?php echo htmlspecialchars($event['Titre']); ?>"/>
                                             </div>
                                         </div>
+                                        <button class="carousel-arrow prev">&lt;</button>
+                                        <button class="carousel-arrow next">&gt;</button>
                                         <a href="?page=mon-profil&tab=past&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                                                 <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>

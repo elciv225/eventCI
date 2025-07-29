@@ -231,9 +231,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // S'assurer que l'index est dans les limites correctes
             let newIndex;
             if (index < 0) {
-                newIndex = images.length - 1;
+                newIndex = 0; // Stop at the first image instead of wrapping to the end
             } else if (index >= images.length) {
-                newIndex = 0;
+                newIndex = images.length - 1; // Stop at the last image instead of wrapping to the beginning
             } else {
                 newIndex = index;
             }
@@ -241,12 +241,21 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update currentIndex and apply the transformation
             currentIndex = newIndex;
             carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+            // Force a reflow to ensure the transform is applied
+            void carousel.offsetWidth;
         }
 
         function startCarousel() {
             if (intervalId) clearInterval(intervalId);
             intervalId = setInterval(() => {
-                showImage(currentIndex + 1);
+                // Only advance if we're not at the last image
+                if (currentIndex < images.length - 1) {
+                    showImage(currentIndex + 1);
+                } else {
+                    // Stop the carousel when we reach the last image
+                    stopCarousel();
+                }
             }, 3000);
         }
 
@@ -262,11 +271,9 @@ document.addEventListener('DOMContentLoaded', function() {
             carousel.style.transform = `translateX(0%)`;
         }
 
-        // Hide or show arrows based on number of images
-        if (images.length <= 1) {
-            if (prevBtn) prevBtn.style.display = 'none';
-            if (nextBtn) nextBtn.style.display = 'none';
-        } else {
+        // The PHP code already handles showing/hiding arrows based on image count
+        // So we don't need to hide them here based on DOM structure
+        {
             // Hover behavior - démarre le carrousel automatique
             imageWrapper.addEventListener('mouseenter', () => {
                 isHovered = true;

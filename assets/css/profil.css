@@ -747,7 +747,7 @@
     margin-top: 10px;
     max-width: 200px;
     border-radius: 8px;
-    overflow: hidden;
+    overflow-x:scroll ;
     border: 2px dashed var(--border-medium);
     padding: 5px;
     text-align: center;

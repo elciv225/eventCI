@@ -283,8 +283,21 @@ if (!empty($query)) {
                                         <img src="../<?php echo !empty($event['image_lien']) ? htmlspecialchars($event['image_lien']) : 'assets/images/default-event.jpg'; ?>" alt="<?php echo htmlspecialchars($event['Titre']); ?>"/>
                                     </div>
                                 </div>
+                                <?php
+                                // Récupérer toutes les images pour cet événement
+                                $event_images_query = "SELECT COUNT(*) as image_count FROM imageevenement WHERE Id_Evenement = ?";
+                                $stmt_images = $conn->prepare($event_images_query);
+                                $stmt_images->bind_param("i", $event['Id_Evenement']);
+                                $stmt_images->execute();
+                                $image_count_result = $stmt_images->get_result();
+                                $image_count = $image_count_result->fetch_assoc()['image_count'] ?? 0;
+                                $stmt_images->close();
+
+                                if ($image_count > 1): 
+                                ?>
                                 <button class="carousel-arrow prev">&lt;</button>
                                 <button class="carousel-arrow next">&gt;</button>
+                                <?php endif; ?>
                                 <?php if (!empty($event['distance'])): ?>
                                 <div class="event-distance"><?php echo round($event['distance'], 1); ?> km</div>
                                 <?php endif; ?>
