@@ -24,6 +24,11 @@ CREATE TABLE IF NOT EXISTS `achat`
     `Id_Utilisateur`     int NOT NULL,
     `Id_TicketEvenement` int NOT NULL,
     `DateAchat`          datetime DEFAULT CURRENT_TIMESTAMP,
+    `Statut`             varchar(20) DEFAULT 'panier',
+    `DatePaiement`       datetime DEFAULT NULL,
+    `QRCode`             LONGTEXT DEFAULT NULL,
+    `TicketUrl`          varchar(255) DEFAULT NULL,
+    `DernierScan`        datetime DEFAULT NULL,
     PRIMARY KEY (`Id_Achat`),
     KEY `Id_Utilisateur` (`Id_Utilisateur`),
     KEY `Id_TicketEvenement` (`Id_TicketEvenement`)
@@ -234,3 +239,12 @@ CREATE TABLE IF NOT EXISTS `utilisateur`
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;
+
+-- SQL script to add TicketUrl column to the achat table
+ALTER TABLE `achat` 
+ADD COLUMN `TicketUrl` varchar(255) DEFAULT NULL AFTER `QRCode`;
+
+-- Update existing records to generate TicketUrl from Id_Achat
+UPDATE `achat` 
+SET `TicketUrl` = CONCAT('http://localhost/?page=ticket&id=', Id_Achat) 
+WHERE `TicketUrl` IS NULL AND `Statut` = 'payé';

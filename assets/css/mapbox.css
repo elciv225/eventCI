@@ -144,3 +144,8 @@
     color: var(--text-secondary);
     text-align: center;
 }
+
+.mapboxgl-popup-content{
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}

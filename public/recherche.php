@@ -16,13 +16,16 @@ $distance_filter = isset($_GET['distance']) ? intval($_GET['distance']) : 100; /
 $ref_lat = isset($_GET['lat']) ? floatval($_GET['lat']) : 5.3364;
 $ref_lng = isset($_GET['lng']) ? floatval($_GET['lng']) : -4.0267;
 
+// Indique si les coordonnées sont celles de l'utilisateur ou par défaut
+$using_user_location = isset($_GET['lat']) && isset($_GET['lng']);
+
 // Construire la requête SQL de base
 $sql_base = "SELECT 
                 e.Id_Evenement, e.Titre, e.Description, e.DateDebut, e.DateFin, e.Adresse,
                 e.Latitude, e.Longitude,
                 MIN(i.Lien) AS image_lien,
                 c.Libelle AS categorie, 
-                e.Adresse AS ville,
+                e.Salle AS ville,
                 CASE 
                     WHEN e.Latitude IS NOT NULL AND e.Longitude IS NOT NULL THEN
                         6371 * 2 * ASIN(SQRT(
@@ -257,8 +260,19 @@ if (!empty($query)) {
 
         <!-- Carte des événements -->
         <div class="map-container">
-            <h2 class="section-subtitle">Événements à proximité (rayon de <?php echo $distance_filter; ?> km)</h2>
+            <h2 class="section-subtitle">
+                <?php if ($using_user_location): ?>
+                    Événements à proximité de votre position (rayon de <?php echo $distance_filter; ?> km)
+                <?php else: ?>
+                    Événements à proximité d'Abidjan (rayon de <?php echo $distance_filter; ?> km)
+                <?php endif; ?>
+            </h2>
             <div id="search-map" class="search-map"></div>
+            <?php if (!$using_user_location): ?>
+                <div class="info-text">
+                    <i>Nous n'avons pas pu déterminer votre position. Activez la géolocalisation pour voir les événements près de chez vous.</i>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- Résultats de recherche -->
@@ -267,7 +281,7 @@ if (!empty($query)) {
                 <div class="no-results">
                     <h3>Aucun événement trouvé</h3>
                     <p>Essayez de modifier vos critères de recherche.</p>
-                    <a href="?page=accueil" class="see-more-link">Retour à l'accueil</a>
+                    <a href="?page=accueil" class="back-button"><span class="arrow">←</span> Retour à l'accueil</a>
                 </div>
             <?php else: ?>
                 <div class="events-grid">
@@ -341,6 +355,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Coordonnées de référence
     const refLat = <?php echo $ref_lat; ?>;
     const refLng = <?php echo $ref_lng; ?>;
+    const usingUserLocation = <?php echo $using_user_location ? 'true' : 'false'; ?>;
+    const distanceFilter = <?php echo $distance_filter; ?>;
 
     // Initialiser la carte Mapbox
     mapboxgl.accessToken = 'pk.eyJ1IjoiZWxpZWwwNiIsImEiOiJjbWRqMjJsMHAwYmxuMmpzNW1xbmlldXA1In0.7S97Hn4TRZp-q6X3TW2UuQ';
@@ -351,12 +367,53 @@ document.addEventListener('DOMContentLoaded', function() {
         zoom: 10
     });
 
-    // Ajouter un marqueur pour la position de référence
-    new mapboxgl.Marker({
-        color: '#FF0000'
-    })
-    .setLngLat([refLng, refLat])
-    .addTo(map);
+    // Vérifier si la géolocalisation est disponible et si nous n'utilisons pas déjà la position de l'utilisateur
+    if (navigator.geolocation && !usingUserLocation) {
+        // Demander la position de l'utilisateur
+        navigator.geolocation.getCurrentPosition(
+            // Succès
+            function(position) {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                // Rediriger vers la même page avec les coordonnées de l'utilisateur
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('lat', userLat);
+                currentUrl.searchParams.set('lng', userLng);
+                window.location.href = currentUrl.toString();
+            },
+            // Erreur
+            function(error) {
+                console.log("Erreur de géolocalisation:", error.message);
+                // Continuer avec les coordonnées par défaut
+                addUserMarker(refLng, refLat, false);
+            },
+            // Options
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        // Utiliser les coordonnées actuelles (soit par défaut, soit déjà celles de l'utilisateur)
+        addUserMarker(refLng, refLat, usingUserLocation);
+    }
+
+    // Fonction pour ajouter le marqueur de l'utilisateur
+    function addUserMarker(lng, lat, isUserLocation) {
+        // Ajouter un marqueur plus discret pour la position
+        new mapboxgl.Marker({
+            color: isUserLocation ? 'rgba(0, 100, 255, 0.7)' : 'rgba(255, 0, 0, 0.5)',
+            scale: 0.8
+        })
+        .setLngLat([lng, lat])
+        .setPopup(
+            new mapboxgl.Popup({ offset: 25 })
+                .setHTML(`<div style="text-align: center;">${isUserLocation ? 'Votre position' : 'Position par défaut (Abidjan)'}</div>`)
+        )
+        .addTo(map);
+    }
 
     // Ajouter un cercle pour le rayon de recherche
     map.on('load', function() {

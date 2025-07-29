@@ -1,0 +1,81 @@
+/* Confirmation Page Styles */
+.confirmation-section {
+    padding: 40px 0;
+}
+
+.confirmation-container {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.confirmation-icon {
+    margin-bottom: 30px;
+}
+
+.confirmation-details {
+    background-color: var(--bg-secondary);
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.confirmation-details h2 {
+    margin-top: 0;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.tickets-list .ticket-item {
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.tickets-list .ticket-item h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.tickets-list .ticket-item p {
+    margin: 0 0 5px 0;
+    color: var(--text-secondary);
+}
+
+.ticket-actions {
+    margin-top: 10px;
+}
+
+.confirmation-message {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+.confirmation-actions {
+    margin-top: 30px;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-right: 15px;
+}
+
+.back-button:hover {
+    background-color: var(--border-light);
+}
+
+.back-button .arrow {
+    margin-right: 8px;
+    font-size: 1.2em;
+}

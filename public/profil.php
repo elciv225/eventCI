@@ -706,7 +706,7 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
         document.getElementById('event-date-fin').value = formatDate(dateFin);
 
         // Sélectionner la ville et la catégorie
-        document.getElementById('event-ville').value = <?php echo json_encode($event_to_edit['Id_Ville']); ?>;
+        document.getElementById('event-ville').value = <?php echo json_encode($event_to_edit['salle_nom']); ?>;
         document.getElementById('event-categorie').value = <?php echo json_encode($event_to_edit['Id_CategorieEvenement']); ?>;
 
         // Afficher les images actuelles

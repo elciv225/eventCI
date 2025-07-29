@@ -43,12 +43,10 @@ if ($count === 0) {
 // Récupérer les données de l'événement
 $stmt_event = $conn->prepare("
     SELECT 
-        e.Id_Evenement, e.Titre, e.Description, e.Adresse, 
-        e.DateDebut, e.DateFin, e.Id_Ville, e.Id_CategorieEvenement,
-        v.Libelle as ville_nom,
+        e.Id_Evenement, e.Titre, e.Description, e.Adresse, e.Salle,
+        e.DateDebut, e.DateFin, e.Id_CategorieEvenement,
         c.Libelle as categorie_nom
     FROM evenement e
-    LEFT JOIN ville v ON e.Id_Ville = v.Id_Ville
     LEFT JOIN categorieevenement c ON e.Id_CategorieEvenement = c.Id_CategorieEvenement
     WHERE e.Id_Evenement = ?
 ");

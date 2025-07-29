@@ -39,7 +39,7 @@ $conn->set_charset("utf8mb4");
 $result = $conn->query("SHOW TABLES");
 if ($result->num_rows == 0) {
     // Aucune table n'existe, on initialise la base de données avec le script SQL
-    $sql_file = file_get_contents(__DIR__ . '/gestiondebillet.sql');
+    $sql_file = file_get_contents('gestiondebillet.sql');
 
     if ($sql_file) {
         // Exécuter le script SQL

@@ -141,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create and add skeleton loader
         const loader = document.createElement('div');
         loader.className = 'carousel-loader';
+        loader.style.visibility = 'visible';
 
         // Create skeleton structure
         const skeletonCard = document.createElement('div');
@@ -171,6 +172,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
         imageWrapper.appendChild(loader);
 
+        // Function to create a warning message for failed image loads
+        function createImageWarning(container, index) {
+            const warningElement = document.createElement('div');
+            warningElement.className = 'image-load-warning';
+
+            // Add warning icon (SVG)
+            warningElement.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>L'image n'a pas pu être chargée</p>
+            `;
+
+            // Add the warning to the container
+            container.appendChild(warningElement);
+
+            // If this is the first image, make sure to show the card text
+            if (index === 0 && cardTextContainer) {
+                cardTextContainer.style.opacity = '1';
+            }
+
+            return warningElement;
+        }
+
         // Function to check if all images are loaded
         function checkImagesLoaded() {
             imagesLoaded++;
@@ -180,6 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Fade out loader with transition
                 loader.style.opacity = '0';
+                loader.style.visibility = 'hidden';
 
                 // Remove loader from DOM after transition completes
                 setTimeout(() => {
@@ -193,14 +221,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Track which images have failed to load
+        const failedImages = new Set();
+
         // Add load event listeners to all background images with optimization
         // Set a global timeout to prevent infinite loading
         const loadingTimeout = setTimeout(() => {
             if (imagesLoaded < totalImages) {
-                // Force complete loading after timeout
-                while (imagesLoaded < totalImages) {
-                    checkImagesLoaded();
-                }
+                // For each image that hasn't loaded yet, show a warning
+                images.forEach((imgContainer, index) => {
+                    if (!failedImages.has(index) && !imgContainer.dataset.loaded) {
+                        // Mark this image as failed
+                        failedImages.add(index);
+                        // Create and show warning for this image
+                        createImageWarning(imgContainer, index);
+                        // Count as loaded to continue
+                        checkImagesLoaded();
+                    }
+                });
             }
         }, 3000); // 3 second timeout
 
@@ -209,8 +247,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const imgElement = imgContainer.querySelector('img');
             if (imgElement && imgElement.src) {
                 const tempImg = new Image();
-                tempImg.onload = checkImagesLoaded;
-                tempImg.onerror = checkImagesLoaded; // Count errors as loaded to avoid stuck loader
+
+                tempImg.onload = () => {
+                    // Mark as successfully loaded
+                    imgContainer.dataset.loaded = 'true';
+                    checkImagesLoaded();
+                };
+
+                tempImg.onerror = () => {
+                    // Mark as failed
+                    failedImages.add(index);
+                    // Show warning message
+                    createImageWarning(imgContainer, index);
+                    // Count as loaded to continue
+                    checkImagesLoaded();
+                };
 
                 // Set high priority for the first image
                 if (index === 0) {
@@ -223,7 +274,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 tempImg.src = imgElement.src;
             } else {
                 console.error('No image found in container:', imgContainer);
-                checkImagesLoaded(); // No image found, count as loaded
+                // Mark as failed
+                failedImages.add(index);
+                // Show warning message
+                createImageWarning(imgContainer, index);
+                // Count as loaded to continue
+                checkImagesLoaded();
             }
         });
 

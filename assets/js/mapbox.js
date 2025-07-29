@@ -5,6 +5,11 @@ let suggestions = [];
 let selectedIndex = -1;
 let searchTimeout;
 
+// Déterminer la page actuelle
+const currentPage = window.location.search.includes('page=details') ? 'details' : 
+                   window.location.search.includes('page=creation-evenement') ? 'creation' : 'other';
+
+// Éléments pour la page de création d'événement
 const input = document.getElementById('event-location');
 const suggestionsContainer = document.getElementById('geocoder-container');
 const latitudeInput = document.querySelector('input[name="latitude"]');
@@ -13,15 +18,19 @@ const longitudeInput = document.querySelector('input[name="longitude"]');
 // Position par défaut à Abidjan si géolocalisation échoue
 const defaultCenter = [-4.0267, 5.3364]; // Abidjan, Côte d'Ivoire
 
-// Initialisation avec géolocalisation (priorité à la position actuelle)
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 600000 // Cache de 10 minutes
-    });
-} else {
-    setupMap(defaultCenter);
+// Vérifier si nous sommes sur une page avec une carte
+const mapElement = document.getElementById('map');
+if (mapElement) {
+    // Initialisation avec géolocalisation (priorité à la position actuelle)
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(successLocation, errorLocation, {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 600000 // Cache de 10 minutes
+        });
+    } else {
+        setupMap(defaultCenter);
+    }
 }
 
 function successLocation(position) {
@@ -38,6 +47,10 @@ function errorLocation() {
 }
 
 function setupMap(center) {
+    // Vérifier si l'élément de carte existe
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) return;
+
     map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v12',
@@ -45,67 +58,232 @@ function setupMap(center) {
         zoom: 14
     });
 
-    // Ajouter le marqueur
-    marker = new mapboxgl.Marker({draggable: true})
-        .setLngLat(center)
-        .addTo(map);
+    // Configurer la carte en fonction de la page
+    if (currentPage === 'details') {
+        // Pour la page de détails, récupérer les coordonnées de l'événement
+        const eventLatLng = getEventCoordinates();
+        if (eventLatLng) {
+            // Marqueur non déplaçable pour la page de détails
+            marker = new mapboxgl.Marker()
+                .setLngLat(eventLatLng)
+                .addTo(map);
 
-    // Stocke la position initiale
-    longitudeInput.value = center[0];
-    latitudeInput.value = center[1];
+            // Centrer la carte sur l'événement
+            map.setCenter(eventLatLng);
 
-    // Event listener pour le drag du marqueur
-    marker.on('dragend', () => {
-        const lngLat = marker.getLngLat();
-        longitudeInput.value = lngLat.lng;
-        latitudeInput.value = lngLat.lat;
-        reverseGeocode(lngLat.lng, lngLat.lat);
-    });
+            // Ajouter le bouton d'itinéraire
+            setupDirectionsButton(eventLatLng);
+        }
+    } else {
+        // Pour la page de création d'événement
+        // Ajouter le marqueur déplaçable
+        marker = new mapboxgl.Marker({draggable: true})
+            .setLngLat(center)
+            .addTo(map);
+
+        // Stocke la position initiale si les champs existent
+        if (longitudeInput && latitudeInput) {
+            longitudeInput.value = center[0];
+            latitudeInput.value = center[1];
+
+            // Event listener pour le drag du marqueur
+            marker.on('dragend', () => {
+                const lngLat = marker.getLngLat();
+                longitudeInput.value = lngLat.lng;
+                latitudeInput.value = lngLat.lat;
+                if (input) {
+                    reverseGeocode(lngLat.lng, lngLat.lat);
+                }
+            });
+        }
+    }
 }
 
-// Event listeners pour l'input
-input.addEventListener('input', (e) => {
-    const query = e.target.value.trim();
+// Fonction pour récupérer les coordonnées de l'événement sur la page de détails
+function getEventCoordinates() {
+    // Essayer de récupérer les coordonnées depuis les attributs data
+    const mapContainer = document.getElementById('map');
+    if (mapContainer) {
+        // Chercher les coordonnées dans l'URL (pour la démo)
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id') || urlParams.get('info-event');
 
-    if (query.length < 2) {
-        hideSuggestions();
-        return;
+        // Récupérer les coordonnées depuis le script PHP
+        const lat = mapContainer.getAttribute('data-lat');
+        const lng = mapContainer.getAttribute('data-lng');
+
+        if (lat && lng) {
+            return [parseFloat(lng), parseFloat(lat)];
+        }
     }
+    return null;
+}
 
-    // Debounce la recherche
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        searchAddresses(query);
-    }, 300);
-});
+// Fonction pour configurer le bouton d'itinéraire
+function setupDirectionsButton(destination) {
+    const directionsButton = document.getElementById('get-directions');
+    const directionsContainer = document.getElementById('directions-container');
+    const directionsInfo = document.getElementById('directions-info');
 
-input.addEventListener('keydown', (e) => {
-    if (!suggestionsContainer.style.display || suggestionsContainer.style.display === 'none') {
-        return;
-    }
-
-    switch(e.key) {
-        case 'ArrowDown':
-            e.preventDefault();
-            selectedIndex = Math.min(selectedIndex + 1, suggestions.length - 1);
-            updateHighlight();
-            break;
-        case 'ArrowUp':
-            e.preventDefault();
-            selectedIndex = Math.max(selectedIndex - 1, -1);
-            updateHighlight();
-            break;
-        case 'Enter':
-            e.preventDefault();
-            if (selectedIndex >= 0 && suggestions[selectedIndex]) {
-                selectSuggestion(suggestions[selectedIndex]);
+    if (directionsButton && directionsContainer && directionsInfo) {
+        directionsButton.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                directionsButton.textContent = 'Chargement...';
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const origin = [position.coords.longitude, position.coords.latitude];
+                        getDirections(origin, destination, directionsInfo);
+                        directionsContainer.style.display = 'block';
+                        directionsButton.textContent = 'Obtenir l\'itinéraire';
+                    },
+                    () => {
+                        directionsInfo.innerHTML = '<p>Impossible d\'obtenir votre position actuelle.</p>';
+                        directionsContainer.style.display = 'block';
+                        directionsButton.textContent = 'Obtenir l\'itinéraire';
+                    }
+                );
+            } else {
+                directionsInfo.innerHTML = '<p>La géolocalisation n\'est pas supportée par votre navigateur.</p>';
+                directionsContainer.style.display = 'block';
             }
-            break;
-        case 'Escape':
-            hideSuggestions();
-            break;
+        });
     }
-});
+}
+
+// Fonction pour obtenir les directions
+function getDirections(origin, destination, container) {
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}&language=fr`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.routes && data.routes.length > 0) {
+                const route = data.routes[0];
+                const distance = (route.distance / 1000).toFixed(1);
+                const duration = Math.round(route.duration / 60);
+
+                let html = `
+                    <div class="directions-summary">
+                        <p><strong>Distance:</strong> ${distance} km</p>
+                        <p><strong>Durée estimée:</strong> ${duration} minutes</p>
+                    </div>
+                    <div class="directions-steps">
+                        <h5>Instructions:</h5>
+                        <ol>
+                `;
+
+                route.legs[0].steps.forEach(step => {
+                    html += `<li>${step.maneuver.instruction}</li>`;
+                });
+
+                html += `
+                        </ol>
+                    </div>
+                    <div class="directions-link">
+                        <a href="https://www.mapbox.com/directions/?destination=${destination[1]},${destination[0]}" target="_blank" class="btn-text">
+                            Ouvrir dans Mapbox
+                        </a>
+                    </div>
+                `;
+
+                container.innerHTML = html;
+
+                // Dessiner l'itinéraire sur la carte
+                if (map.getSource('route')) {
+                    map.getSource('route').setData({
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': route.geometry
+                    });
+                } else {
+                    map.addSource('route', {
+                        'type': 'geojson',
+                        'data': {
+                            'type': 'Feature',
+                            'properties': {},
+                            'geometry': route.geometry
+                        }
+                    });
+
+                    map.addLayer({
+                        'id': 'route',
+                        'type': 'line',
+                        'source': 'route',
+                        'layout': {
+                            'line-join': 'round',
+                            'line-cap': 'round'
+                        },
+                        'paint': {
+                            'line-color': '#3887be',
+                            'line-width': 5,
+                            'line-opacity': 0.75
+                        }
+                    });
+                }
+
+                // Ajuster la vue pour voir tout l'itinéraire
+                const bounds = new mapboxgl.LngLatBounds()
+                    .extend(origin)
+                    .extend(destination);
+
+                map.fitBounds(bounds, {
+                    padding: 50
+                });
+            } else {
+                container.innerHTML = '<p>Impossible de trouver un itinéraire.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors de la récupération de l\'itinéraire:', error);
+            container.innerHTML = '<p>Erreur lors de la récupération de l\'itinéraire.</p>';
+        });
+}
+
+// Event listeners pour l'input (seulement si l'input existe)
+if (input) {
+    input.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+
+        if (query.length < 2) {
+            hideSuggestions();
+            return;
+        }
+
+        // Debounce la recherche
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchAddresses(query);
+        }, 300);
+    });
+
+    input.addEventListener('keydown', (e) => {
+        if (!suggestionsContainer || !suggestionsContainer.style.display || suggestionsContainer.style.display === 'none') {
+            return;
+        }
+
+        switch(e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, suggestions.length - 1);
+                updateHighlight();
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, -1);
+                updateHighlight();
+                break;
+            case 'Enter':
+                e.preventDefault();
+                if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+                    selectSuggestion(suggestions[selectedIndex]);
+                }
+                break;
+            case 'Escape':
+                hideSuggestions();
+                break;
+        }
+    });
+}
 
 // Cacher les suggestions quand on clique ailleurs
 document.addEventListener('click', (e) => {
@@ -309,15 +487,21 @@ function getTypeOrder(placeTypes) {
 }
 
 function showLoading() {
-    suggestionsContainer.innerHTML = '<div class="loading">🔍 Recherche en cours...</div>';
-    suggestionsContainer.style.display = 'block';
+    if (suggestionsContainer) {
+        suggestionsContainer.innerHTML = '<div class="loading">🔍 Recherche en cours...</div>';
+        suggestionsContainer.style.display = 'block';
+    }
 }
 
 function showError() {
-    suggestionsContainer.innerHTML = '<div class="no-results">❌ Erreur lors de la recherche. Réessayez.</div>';
+    if (suggestionsContainer) {
+        suggestionsContainer.innerHTML = '<div class="no-results">❌ Erreur lors de la recherche. Réessayez.</div>';
+    }
 }
 
 function displaySuggestions() {
+    if (!suggestionsContainer) return;
+
     if (suggestions.length === 0) {
         suggestionsContainer.innerHTML = '<div class="no-results">🔍 Aucun lieu trouvé. Essayez avec un autre terme.</div>';
         return;
@@ -360,6 +544,8 @@ function displaySuggestions() {
 }
 
 function updateHighlight() {
+    if (!suggestionsContainer) return;
+
     const items = suggestionsContainer.querySelectorAll('.suggestion-item');
     items.forEach((item, index) => {
         item.classList.toggle('highlighted', index === selectedIndex);
@@ -385,7 +571,9 @@ function selectSuggestion(suggestion) {
 }
 
 function hideSuggestions() {
-    suggestionsContainer.style.display = 'none';
+    if (suggestionsContainer) {
+        suggestionsContainer.style.display = 'none';
+    }
     selectedIndex = -1;
 }
 

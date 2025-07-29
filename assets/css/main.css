@@ -389,7 +389,7 @@ body[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
 }
 
 /* High contrast mode support */
-@media (prefers-contrast: high) {
+@media (forced-colors: active) {
     ::-webkit-scrollbar-thumb {
         background: var(--text-primary);
         opacity: 1;
@@ -437,4 +437,174 @@ body[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
 
 .event-card-meta{
     color: var(--text-primary);
+}
+
+/* Ticket Styles */
+.ticket-item {
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-medium);
+}
+
+.ticket-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.ticket-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(90deg, var(--text-highlight), #ff9966);
+}
+
+.ticket-info {
+    padding: 20px;
+    position: relative;
+}
+
+.ticket-info::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--border-medium),
+        var(--border-medium) 10px,
+        transparent 10px,
+        transparent 15px
+    );
+}
+
+.ticket-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.ticket-desc {
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.ticket-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-highlight);
+    margin-bottom: 5px;
+}
+
+.ticket-availability {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.ticket-actions {
+    padding: 15px 20px;
+    background-color: var(--bg-tertiary);
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Common Button Styles */
+.btn-primary, 
+input[type="submit"].btn-primary, 
+button.btn-primary {
+    background-color: var(--text-highlight);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary:hover, 
+input[type="submit"].btn-primary:hover, 
+button.btn-primary:hover {
+    background-color: #e65a28;
+}
+
+.btn-secondary, 
+input[type="submit"].btn-secondary, 
+button.btn-secondary {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-secondary:hover, 
+input[type="submit"].btn-secondary:hover, 
+button.btn-secondary:hover {
+    background-color: var(--border-light);
+    color: var(--text-primary);
+}
+
+.btn-danger, 
+input[type="submit"].btn-danger, 
+button.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-danger:hover, 
+input[type="submit"].btn-danger:hover, 
+button.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-right: 15px;
+}
+
+.back-button:hover {
+    background-color: var(--border-light);
+}
+
+.back-button .arrow {
+    margin-right: 8px;
+    font-size: 1.2em;
 }

@@ -137,7 +137,7 @@ $user_id = $user_logged_in ? $_SESSION['utilisateur']['id'] : 0;
                 <?php if (!empty($event['Latitude']) && !empty($event['Longitude'])): ?>
                     <div class="event-map-container">
                         <h3>Localisation</h3>
-                        <div id="event-map" class="event-map"></div>
+                        <div id="map" class="event-map" data-lat="<?php echo htmlspecialchars($event['Latitude']); ?>" data-lng="<?php echo htmlspecialchars($event['Longitude']); ?>"></div>
                         <div class="map-actions">
                             <button id="get-directions" class="btn-secondary">Obtenir l'itinéraire</button>
                         </div>
@@ -230,17 +230,17 @@ $user_id = $user_logged_in ? $_SESSION['utilisateur']['id'] : 0;
             // Configuration initiale du carousel
             carousel.style.display = 'flex';
             carousel.style.width = `${slideCount * 100}%`;
-            
+
             slides.forEach((slide, index) => {
                 slide.style.width = `${100 / slideCount}%`;
                 slide.style.flexShrink = '0';
-                
+
                 const img = slide.querySelector('img');
                 if (img) {
                     img.style.width = '100%';
                     img.style.height = '100%';
                     img.style.objectFit = 'cover';
-                    
+
                     // Précharger les images pour une transition plus fluide
                     if (index === 0 || index === 1) {
                         img.loading = 'eager';
@@ -254,7 +254,7 @@ $user_id = $user_logged_in ? $_SESSION['utilisateur']['id'] : 0;
             if (slideCount > 1) {
                 const indicatorsContainer = document.createElement('div');
                 indicatorsContainer.className = 'carousel-indicators';
-                
+
                 for (let i = 0; i < slideCount; i++) {
                     const indicator = document.createElement('button');
                     indicator.className = 'carousel-indicator';
@@ -262,16 +262,16 @@ $user_id = $user_logged_in ? $_SESSION['utilisateur']['id'] : 0;
                     indicator.addEventListener('click', () => showSlide(i));
                     indicatorsContainer.appendChild(indicator);
                 }
-                
+
                 carousel.parentElement.appendChild(indicatorsContainer);
             }
 
             // Fonction pour afficher un slide spécifique avec animation fluide
             function showSlide(index, direction = null) {
                 if (isTransitioning || index === currentSlide) return;
-                
+
                 isTransitioning = true;
-                
+
                 // Gérer les limites
                 if (index < 0) index = slideCount - 1;
                 if (index >= slideCount) index = 0;
@@ -286,7 +286,7 @@ $user_id = $user_logged_in ? $_SESSION['utilisateur']['id'] : 0;
                 requestAnimationFrame(() => {
                     carousel.style.transform = `translateX(-${index * (100 / slideCount)}%)`;
                     currentSlide = index;
-                    
+
                     // Réactiver les contrôles après la transition
                     setTimeout(() => {
                         isTransitioning = false;
@@ -297,7 +297,7 @@ $user_id = $user_logged_in ? $_SESSION['utilisateur']['id'] : 0;
             // Fonction pour le défilement automatique
             function startAutoplay() {
                 if (slideCount <= 1) return;
-                
+
                 autoplayInterval = setInterval(() => {
                     if (!isTransitioning) {
                         showSlide(currentSlide + 1);
@@ -396,8 +396,9 @@ $user_id = $user_logged_in ? $_SESSION['utilisateur']['id'] : 0;
         }
     });
 
-    // Reste du code pour la carte...
+    // Le code de la carte est maintenant géré par mapbox.js
+    // qui détecte automatiquement la page et configure la carte en conséquence
     <?php if (!empty($event['Latitude']) && !empty($event['Longitude'])): ?>
-    // ... code de la carte inchangé ...
+    // Les coordonnées sont passées via les attributs data-lat et data-lng
     <?php endif; ?>
 </script>

@@ -73,10 +73,10 @@ function getEmailTemplate($title, $content, $footerText = '') {
             }
 
             body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 line-height: 1.6;
                 color: #333;
-                background-color: #f4f4f4;
+                background-color: #f8f8f8;
             }
 
             .email-container {
@@ -89,7 +89,7 @@ function getEmailTemplate($title, $content, $footerText = '') {
             }
 
             .header {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #d1410c 0%, #ff7043 100%);
                 color: white;
                 padding: 30px;
                 text-align: center;
@@ -106,7 +106,7 @@ function getEmailTemplate($title, $content, $footerText = '') {
             }
 
             .content h2 {
-                color: #667eea;
+                color: #d1410c;
                 margin-bottom: 20px;
                 font-size: 24px;
             }
@@ -124,7 +124,7 @@ function getEmailTemplate($title, $content, $footerText = '') {
 
             .btn {
                 display: inline-block;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #d1410c 0%, #ff7043 100%);
                 color: white !important;
                 padding: 15px 30px;
                 text-decoration: none;
@@ -140,8 +140,8 @@ function getEmailTemplate($title, $content, $footerText = '') {
             }
 
             .info-box {
-                background-color: #f8f9ff;
-                border-left: 4px solid #667eea;
+                background-color: #f2f2f2;
+                border-left: 4px solid #d1410c;
                 padding: 20px;
                 margin: 20px 0;
                 border-radius: 0 5px 5px 0;
@@ -158,7 +158,7 @@ function getEmailTemplate($title, $content, $footerText = '') {
 
             .divider {
                 height: 2px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #d1410c 0%, #ff7043 100%);
                 margin: 30px 0;
                 border-radius: 1px;
             }
@@ -235,28 +235,28 @@ function sendWelcomeEmail($to, $username, $activationLink = null) {
     $subject = "Bienvenue sur EventCI, " . $username . " !";
 
     $content = "
-        <h2 style='color: var(--text-highlight);'>Bonjour " . htmlspecialchars($username) . " !</h2>
-        <p style='color: var(--text-primary);'>Nous sommes ravis de vous accueillir sur EventCI, votre plateforme de billetterie en ligne.</p>
+        <h2 style='color: #d1410c;'>Bonjour " . htmlspecialchars($username) . " !</h2>
+        <p style='color: #333;'>Nous sommes ravis de vous accueillir sur EventCI, votre plateforme de billetterie en ligne.</p>
 
-        <div class='info-box' style='background-color: var(--bg-tertiary); border-left: 4px solid var(--text-highlight); padding: 20px; margin: 20px 0; border-radius: 0 5px 5px 0;'>
-            <h3 style='color: var(--text-tertiary);'>Prochaines étapes :</h3>
-            <p style='color: var(--text-secondary);'>• Complétez votre profil</p>
-            <p style='color: var(--text-secondary);'>• Découvrez les événements disponibles</p>
-            <p style='color: var(--text-secondary);'>• Achetez vos premiers tickets</p>
+        <div class='info-box'>
+            <h3 style='color: #555;'>Prochaines étapes :</h3>
+            <p style='color: #666;'>• Complétez votre profil</p>
+            <p style='color: #666;'>• Découvrez les événements disponibles</p>
+            <p style='color: #666;'>• Achetez vos premiers tickets</p>
         </div>";
 
     if ($activationLink) {
         $content .= "
-        <p style='color: var(--text-primary);'>Pour commencer, veuillez activer votre compte en cliquant sur le bouton ci-dessous :</p>
+        <p style='color: #333;'>Pour commencer, veuillez activer votre compte en cliquant sur le bouton ci-dessous :</p>
         <div style='text-align: center;'>
-            <a href='" . htmlspecialchars($activationLink) . "' class='btn' style='display: inline-block; background: var(--text-highlight); color: white !important; padding: 15px 30px; text-decoration: none; border-radius: 25px; margin: 20px 0; font-weight: bold; text-align: center;'>Activer mon compte</a>
+            <a href='" . htmlspecialchars($activationLink) . "' class='btn'>Activer mon compte</a>
         </div>";
     }
 
     $content .= "
-        <div class='divider' style='height: 2px; background: var(--text-highlight); margin: 30px 0; border-radius: 1px;'></div>
-        <p style='color: var(--text-primary);'>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
-        <p style='color: var(--text-primary);'><strong>L'équipe EventCI</strong></p>";
+        <div class='divider'></div>
+        <p style='color: #333;'>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
+        <p style='color: #333;'><strong>L'équipe EventCI</strong></p>";
 
     return sendSimpleEmail($to, $subject, $title, $content);
 }
@@ -279,35 +279,35 @@ function sendTicketReceiptEmail($to, $username, $ticketData, $viewTicketUrl = nu
 
     // Formatage du prix
     $prix = isset($ticketData['Prix']) ? $ticketData['Prix'] : 0;
-    $prixFormatted = number_format($prix, 2, ',', ' ') . ' €';
+    $prixFormatted = number_format($prix, 0, '', ' ') . ' FCFA';
 
     $content = "
-        <h2 style='color: var(--text-highlight);'>Merci pour votre achat, " . htmlspecialchars($username) . " !</h2>
-        <p style='color: var(--text-primary);'>Votre commande a été confirmée et votre ticket est prêt.</p>
+        <h2 style='color: #d1410c;'>Merci pour votre achat, " . htmlspecialchars($username) . " !</h2>
+        <p style='color: #333;'>Votre commande a été confirmée et votre ticket est prêt.</p>
 
-        <div class='info-box' style='background-color: var(--bg-tertiary); border-left: 4px solid var(--text-highlight); padding: 20px; margin: 20px 0; border-radius: 0 5px 5px 0;'>
-            <h3 style='color: var(--text-tertiary);'>Détails de votre ticket :</h3>
-            <p style='color: var(--text-secondary);'><strong>Événement :</strong> " . htmlspecialchars($ticketData['Titre_Evenement'] ?? 'N/A') . "</p>
-            <p style='color: var(--text-secondary);'><strong>Type de ticket :</strong> " . htmlspecialchars($ticketData['Titre_Ticket'] ?? 'N/A') . "</p>
-            <p style='color: var(--text-secondary);'><strong>Date de l'événement :</strong> " . htmlspecialchars($ticketData['Date_Evenement'] ?? 'N/A') . "</p>
-            <p style='color: var(--text-secondary);'><strong>Lieu :</strong> " . htmlspecialchars($ticketData['Lieu'] ?? 'N/A') . "</p>
-            <p style='color: var(--text-secondary);'><strong>Prix :</strong> " . $prixFormatted . "</p>
-            <p style='color: var(--text-secondary);'><strong>Date d'achat :</strong> " . $dateAchatFormatted . "</p>
-            <p style='color: var(--text-secondary);'><strong>Numéro de commande :</strong> " . htmlspecialchars($ticketData['Id_Achat'] ?? 'N/A') . "</p>
+        <div class='info-box'>
+            <h3 style='color: #555;'>Détails de votre ticket :</h3>
+            <p style='color: #666;'><strong>Événement :</strong> " . htmlspecialchars($ticketData['Titre_Evenement'] ?? 'N/A') . "</p>
+            <p style='color: #666;'><strong>Type de ticket :</strong> " . htmlspecialchars($ticketData['Titre_Ticket'] ?? 'N/A') . "</p>
+            <p style='color: #666;'><strong>Date de l'événement :</strong> " . htmlspecialchars($ticketData['Date_Evenement'] ?? 'N/A') . "</p>
+            <p style='color: #666;'><strong>Lieu :</strong> " . htmlspecialchars($ticketData['Lieu'] ?? 'N/A') . "</p>
+            <p style='color: #666;'><strong>Prix :</strong> " . $prixFormatted . "</p>
+            <p style='color: #666;'><strong>Date d'achat :</strong> " . $dateAchatFormatted . "</p>
+            <p style='color: #666;'><strong>Numéro de commande :</strong> " . htmlspecialchars($ticketData['Id_Achat'] ?? 'N/A') . "</p>
         </div>";
 
     if ($viewTicketUrl) {
         $content .= "
         <div style='text-align: center;'>
-            <a href='" . htmlspecialchars($viewTicketUrl) . "' class='btn' style='display: inline-block; background: var(--text-highlight); color: white !important; padding: 15px 30px; text-decoration: none; border-radius: 25px; margin: 20px 0; font-weight: bold; text-align: center;'>Voir mon ticket</a>
+            <a href='" . htmlspecialchars($viewTicketUrl) . "' class='btn'>Voir mon ticket</a>
         </div>";
     }
 
     $content .= "
-        <div class='divider' style='height: 2px; background: var(--text-highlight); margin: 30px 0; border-radius: 1px;'></div>
-        <p style='color: var(--text-primary);'>Conservez précieusement ce reçu, il pourra vous être demandé lors de l'événement.</p>
-        <p style='color: var(--text-primary);'>Si vous avez des questions concernant votre achat, n'hésitez pas à nous contacter.</p>
-        <p style='color: var(--text-primary);'><strong>L'équipe EventCI</strong></p>";
+        <div class='divider'></div>
+        <p style='color: #333;'>Conservez précieusement ce reçu, il pourra vous être demandé lors de l'événement.</p>
+        <p style='color: #333;'>Si vous avez des questions concernant votre achat, n'hésitez pas à nous contacter.</p>
+        <p style='color: #333;'><strong>L'équipe EventCI</strong></p>";
 
     return sendSimpleEmail($to, $subject, $title, $content);
 }

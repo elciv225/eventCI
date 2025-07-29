@@ -105,6 +105,7 @@ $page_content = ob_get_clean();
     <link rel="stylesheet" href="assets/css/details.css">
     <link rel="stylesheet" href="assets/css/panier.css">
     <link rel="stylesheet" href="assets/css/ticket.css">
+    <link rel="stylesheet" href="assets/css/confirmation.css">
     <link rel="stylesheet" href="assets/css/mapbox.css">
 
 </head>
