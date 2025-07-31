@@ -147,16 +147,25 @@ try {
         $tickets = json_decode($_POST['tickets'], true);
 
         if (is_array($tickets) && !empty($tickets)) {
-            // D'abord, supprimer tous les tickets existants pour cet événement
-            $stmt_delete_tickets = $conn->prepare("DELETE FROM ticketevenement WHERE Id_Evenement = ?");
-            $stmt_delete_tickets->bind_param("i", $eventId);
-            if (!$stmt_delete_tickets->execute()) {
-                throw new Exception("Erreur lors de la suppression des tickets existants: " . $stmt_delete_tickets->error);
-            }
-            $stmt_delete_tickets->close();
+            // --- Nouvelle logique de synchronisation des tickets ---
 
-            // Ensuite, insérer les nouveaux tickets
-            $stmt_ticket = $conn->prepare("INSERT INTO ticketevenement (Titre, Description, Prix, NombreDisponible, Id_Evenement) VALUES (?, ?, ?, ?, ?)");
+            // 1. Récupérer les tickets existants depuis la BDD
+            $stmt_existing = $conn->prepare("SELECT Id_TicketEvenement, Titre, Description, Prix, NombreDisponible FROM ticketevenement WHERE Id_Evenement = ?");
+            $stmt_existing->bind_param("i", $eventId);
+            $stmt_existing->execute();
+            $result_existing = $stmt_existing->get_result();
+            $existing_tickets_map = [];
+            while ($row = $result_existing->fetch_assoc()) {
+                $existing_tickets_map[$row['Id_TicketEvenement']] = $row;
+            }
+            $stmt_existing->close();
+
+            $submitted_ticket_ids = [];
+
+            // 2. Parcourir les tickets soumis pour les insérer ou les mettre à jour
+            $stmt_update_ticket = $conn->prepare("UPDATE ticketevenement SET Titre = ?, Description = ?, Prix = ?, NombreDisponible = ? WHERE Id_TicketEvenement = ?");
+            $stmt_insert_ticket = $conn->prepare("INSERT INTO ticketevenement (Titre, Description, Prix, NombreDisponible, Id_Evenement) VALUES (?, ?, ?, ?, ?)");
+
             foreach ($tickets as $ticket) {
                 $ticketTitre = trim($ticket['name']);
                 $ticketDesc = trim($ticket['description'] ?? '');
@@ -167,12 +176,66 @@ try {
                     $ticketPrix = floatval($prixStr);
                 }
                 $ticketQuantite = (int)$ticket['quantity'];
-                $stmt_ticket->bind_param("ssdii", $ticketTitre, $ticketDesc, $ticketPrix, $ticketQuantite, $eventId);
-                if (!$stmt_ticket->execute()) {
-                    throw new Exception("Erreur lors de l'insertion du ticket '$ticketTitre': " . $stmt_ticket->error);
+
+                if (isset($ticket['id'])) {
+                    // C'est un ticket existant -> UPDATE
+                    $ticketId = (int)$ticket['id'];
+                    $submitted_ticket_ids[] = $ticketId;
+
+                    // Vérifier si une mise à jour est nécessaire
+                    if (isset($existing_tickets_map[$ticketId])) {
+                        $existing_ticket = $existing_tickets_map[$ticketId];
+                        if ($existing_ticket['Titre'] !== $ticketTitre ||
+                            $existing_ticket['Description'] !== $ticketDesc ||
+                            (float)$existing_ticket['Prix'] !== $ticketPrix ||
+                            (int)$existing_ticket['NombreDisponible'] !== $ticketQuantite) {
+
+                            $stmt_update_ticket->bind_param("ssdii", $ticketTitre, $ticketDesc, $ticketPrix, $ticketQuantite, $ticketId);
+                            if (!$stmt_update_ticket->execute()) {
+                                throw new Exception("Erreur lors de la mise à jour du ticket '$ticketTitre': " . $stmt_update_ticket->error);
+                            }
+                        }
+                    }
+                } else {
+                    // C'est un nouveau ticket -> INSERT
+                    $stmt_insert_ticket->bind_param("ssdii", $ticketTitre, $ticketDesc, $ticketPrix, $ticketQuantite, $eventId);
+                    if (!$stmt_insert_ticket->execute()) {
+                        throw new Exception("Erreur lors de l'insertion du ticket '$ticketTitre': " . $stmt_insert_ticket->error);
+                    }
                 }
             }
-            $stmt_ticket->close();
+            $stmt_update_ticket->close();
+            $stmt_insert_ticket->close();
+
+            // 3. Déterminer quels tickets supprimer
+            $existing_ticket_ids = array_keys($existing_tickets_map);
+            $tickets_to_delete_ids = array_diff($existing_ticket_ids, $submitted_ticket_ids);
+
+            if (!empty($tickets_to_delete_ids)) {
+                // Vérifier si un des tickets à supprimer a été vendu
+                $placeholders_delete = str_repeat('?,', count($tickets_to_delete_ids) - 1) . '?';
+                $stmt_check_sold = $conn->prepare("SELECT COUNT(*) as sold_count, t.Titre FROM achat a JOIN ticketevenement t ON a.Id_TicketEvenement = t.Id_TicketEvenement WHERE a.Id_TicketEvenement IN ($placeholders_delete) GROUP BY t.Titre");
+                $types_delete = str_repeat('i', count($tickets_to_delete_ids));
+                $stmt_check_sold->bind_param($types_delete, ...$tickets_to_delete_ids);
+                $stmt_check_sold->execute();
+                $result_sold = $stmt_check_sold->get_result();
+                while($sold_ticket = $result_sold->fetch_assoc()){
+                    if($sold_ticket['sold_count'] > 0){
+                         throw new Exception("Impossible de supprimer le ticket '" . htmlspecialchars($sold_ticket['Titre']) . "' car il a déjà été vendu.");
+                    }
+                }
+                $stmt_check_sold->close();
+
+                // Supprimer les tickets qui n'ont pas été vendus
+                $stmt_delete = $conn->prepare("DELETE FROM ticketevenement WHERE Id_TicketEvenement IN ($placeholders_delete)");
+                $stmt_delete->bind_param($types_delete, ...$tickets_to_delete_ids);
+                if (!$stmt_delete->execute()) {
+                    throw new Exception("Erreur lors de la suppression des anciens tickets: " . $stmt_delete->error);
+                }
+                $stmt_delete->close();
+            }
+        }
+    }
         }
     }
 

@@ -43,30 +43,46 @@ $totalPages = ceil($totalRows / $limit);
         </form>
     </div>
 
-    <div class="ticket-grid">
-        <?php if (isset($tickets) && $tickets->num_rows > 0): ?>
-            <?php while ($ticket = $tickets->fetch_assoc()): ?>
-                <div class="ticket-card">
-                    <h3><?= htmlspecialchars($ticket['Titre']) ?></h3>
-                    <p><strong>Description :</strong> <?= htmlspecialchars($ticket['Description']) ?></p>
-                    <p><strong>Prix :</strong> <?= number_format($ticket['Prix'], 2, ',', ' ') ?> CFA</p>
-                    <p><strong>Disponible :</strong> <?= $ticket['NombreDisponible'] ?></p>
-                    <p><strong>ID Événement :</strong> <?= $ticket['Id_Evenement'] ?></p>
-                    <div class="actions">
-                        <a href="?page=modifier_ticket_evenement&id=<?= $ticket['Id_TicketEvenement'] ?>" class="modify-btn">
-                            <i class="fas fa-edit"></i> Modifier
-                        </a>
-                        <a href="?page=supprimer_ticket_evenement&id=<?= $ticket['Id_TicketEvenement'] ?>" class="delete-btn">
-                            <i class="fas fa-trash-alt"></i> Supprimer
-                        </a>
-                    </div>
-                </div>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <p class="no-users-message">
-                <i class="fas fa-info-circle"></i> Aucun ticket trouvé pour votre recherche.
-            </p>
-        <?php endif; ?>
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Titre</th>
+                    <th>Prix</th>
+                    <th>Disponibles</th>
+                    <th>ID Événement</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (isset($tickets) && $tickets->num_rows > 0): ?>
+                    <?php while ($ticket = $tickets->fetch_assoc()): ?>
+                        <tr>
+                            <td><?= $ticket['Id_TicketEvenement'] ?></td>
+                            <td><?= htmlspecialchars($ticket['Titre']) ?></td>
+                            <td><?= number_format($ticket['Prix'], 2, ',', ' ') ?> €</td>
+                            <td><?= $ticket['NombreDisponible'] ?></td>
+                            <td><?= $ticket['Id_Evenement'] ?></td>
+                            <td class="actions-cell">
+                                <a href="?page=modifier_ticket_evenement&id=<?= $ticket['Id_TicketEvenement'] ?>" class="btn-warning">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                <a href="?page=supprimer_ticket_evenement&id=<?= $ticket['Id_TicketEvenement'] ?>" class="btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce type de ticket ?');">
+                                    <i class="fas fa-trash-alt"></i> Supprimer
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <i class="fas fa-info-circle"></i> Aucun type de ticket trouvé pour votre recherche.
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 
     <div class="pagination">

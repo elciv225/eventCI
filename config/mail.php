@@ -1,52 +1,27 @@
 <?php
-require_once 'vendor/autoload.php';
-require_once 'qrcode.php';
+// require_once __DIR__ . '/../vendor/autoload.php'; // Bypassed due to environment issues.
+require_once __DIR__ . '/qrcode.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
+// use PHPMailer\PHPMailer\PHPMailer; // Bypassed
+// use PHPMailer\PHPMailer\SMTP; // Bypassed
+// use PHPMailer\PHPMailer\Exception; // Bypassed
 
 /**
- * Configuration SMTP - À personnaliser selon votre fournisseur
+ * Configuration for mail sending.
  */
 class MailConfig {
-    const SMTP_HOST = 'smtp.gmail.com';
-    const SMTP_PORT = 587;
-    const SMTP_USERNAME = 'eventci2025@gmail.com'; // Doit être l'adresse email complète
-    const SMTP_PASSWORD = 'cprw cujr qjpm ucwc'; // Mots de passe des applications Google
-    const FROM_EMAIL = 'eventci2025@gmail.com'; // Email
+    const SMTP_HOST = 'smtp.gmail.com'; // Kept for reference
+    const SMTP_PORT = 587; // Kept for reference
+    const SMTP_USERNAME = 'eventci2025@gmail.com'; // Kept for reference
+    const SMTP_PASSWORD = 'cprw cujr qjpm ucwc'; // Kept for reference
+    const FROM_EMAIL = 'eventci2025@gmail.com';
     const FROM_NAME = 'EventCI';
     const CHARSET = 'UTF-8';
 }
 
 /**
- * Initialise et configure PHPMailer
- * @return PHPMailer
- * @throws Exception
+ * initMailer() is no longer used with the native mail() function.
  */
-function initMailer() {
-    $mail = new PHPMailer(true);
-
-    try {
-        // Configuration serveur SMTP
-        $mail->isSMTP();
-        $mail->Host = MailConfig::SMTP_HOST;
-        $mail->SMTPAuth = true;
-        $mail->Username = MailConfig::SMTP_USERNAME;
-        $mail->Password = MailConfig::SMTP_PASSWORD;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = MailConfig::SMTP_PORT;
-
-        // Configuration générale
-        $mail->setFrom(MailConfig::FROM_EMAIL, MailConfig::FROM_NAME);
-        $mail->CharSet = MailConfig::CHARSET;
-        $mail->isHTML(true);
-
-        return $mail;
-    } catch (Exception $e) {
-        throw new Exception("Erreur d'initialisation du mailer: " . $e->getMessage());
-    }
-}
 
 /**
  * Template HTML de base avec CSS intégré
@@ -196,7 +171,7 @@ function getEmailTemplate($title, $content, $footerText = '') {
 }
 
 /**
- * Envoie un email simple avec template
+ * Envoie un email simple avec template using PHP's native mail() function.
  * @param string $to Email destinataire
  * @param string $subject Sujet de l'email
  * @param string $title Titre affiché dans l'email
@@ -205,20 +180,23 @@ function getEmailTemplate($title, $content, $footerText = '') {
  * @return bool Succès de l'envoi
  */
 function sendSimpleEmail($to, $subject, $title, $content, $replyTo = null) {
-    try {
-        $mail = initMailer();
+    $body = getEmailTemplate($title, $content);
 
-        $mail->addAddress($to);
-        if ($replyTo) {
-            $mail->addReplyTo($replyTo);
-        }
+    // To send HTML mail, the Content-type header must be set
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=" . MailConfig::CHARSET . "\r\n";
 
-        $mail->Subject = $subject;
-        $mail->Body = getEmailTemplate($title, $content);
+    // Additional headers
+    $headers .= 'From: ' . MailConfig::FROM_NAME . ' <' . MailConfig::FROM_EMAIL . '>' . "\r\n";
+    if ($replyTo) {
+        $headers .= 'Reply-To: ' . $replyTo . "\r\n";
+    }
 
-        return $mail->send();
-    } catch (Exception $e) {
-        error_log("Erreur envoi email: " . $e->getMessage());
+    // Use the mail() function
+    if (mail($to, $subject, $body, $headers)) {
+        return true;
+    } else {
+        error_log("Erreur envoi email: Failed to send email using mail() function to " . $to);
         return false;
     }
 }
@@ -295,6 +273,15 @@ function sendTicketReceiptEmail($to, $username, $ticketData, $viewTicketUrl = nu
             <p style='color: var(--text-secondary);'><strong>Date d'achat :</strong> " . $dateAchatFormatted . "</p>
             <p style='color: var(--text-secondary);'><strong>Numéro de commande :</strong> " . htmlspecialchars($ticketData['Id_Achat'] ?? 'N/A') . "</p>
         </div>";
+
+    if (!empty($ticketData['QRCode'])) {
+        $content .= "
+        <div style='text-align: center; margin-top: 30px;'>
+            <h3 style='color: #555;'>Votre QR Code personnel :</h3>
+            <p style='color: #666;'>Présentez ce code à l'entrée de l'événement.</p>
+            <img src='" . $ticketData['QRCode'] . "' alt='QR Code de votre ticket' style='width: 200px; height: 200px; margin-top: 10px;'/>
+        </div>";
+    }
 
     if ($viewTicketUrl) {
         $content .= "

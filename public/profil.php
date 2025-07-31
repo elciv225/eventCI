@@ -231,6 +231,28 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
         }
     }
 }
+
+// Récupération des notifications pour l'utilisateur
+$notifications = [];
+$stmt_notifications = $conn->prepare("
+    SELECT
+        a.Statut, a.remarque_de_rejet,
+        e.Titre AS EventTitre,
+        t.Titre AS TicketTitre,
+        a.DateAchat
+    FROM achat a
+    JOIN ticketevenement t ON a.Id_TicketEvenement = t.Id_TicketEvenement
+    JOIN evenement e ON t.Id_Evenement = e.Id_Evenement
+    WHERE a.Id_Utilisateur = ? AND (a.Statut = 'validé' OR a.Statut = 'rejeté')
+    ORDER BY a.DateAchat DESC
+");
+$stmt_notifications->bind_param("i", $user_id);
+$stmt_notifications->execute();
+$result_notifications = $stmt_notifications->get_result();
+while ($row = $result_notifications->fetch_assoc()) {
+    $notifications[] = $row;
+}
+$stmt_notifications->close();
 ?>
 
 <main class="profile-page-container">
@@ -277,9 +299,10 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
 
     <section class="profile-events-section">
         <div class="tabs">
-            <a href="?page=mon-profil&tab=active" class="tab-button <?php echo $active_tab === 'active' ? 'active' : ''; ?>">Événements Actifs</a>
-            <a href="?page=mon-profil&tab=en_attente" class="tab-button <?php echo $active_tab === 'en_attente' ? 'active' : ''; ?>">Événements en Attente</a>
-            <a href="?page=mon-profil&tab=past" class="tab-button <?php echo $active_tab === 'past' ? 'active' : ''; ?>">Événements Passés</a>
+            <a href="?page=mon-profil&tab=active" class="tab-button <?php echo $active_tab === 'active' ? 'active' : ''; ?>">Mes Événements Actifs</a>
+            <a href="?page=mon-profil&tab=en_attente" class="tab-button <?php echo $active_tab === 'en_attente' ? 'active' : ''; ?>">En Attente</a>
+            <a href="?page=mon-profil&tab=past" class="tab-button <?php echo $active_tab === 'past' ? 'active' : ''; ?>">Passés</a>
+            <a href="?page=mon-profil&tab=notifications" class="tab-button <?php echo $active_tab === 'notifications' ? 'active' : ''; ?>">Notifications</a>
         </div>
 
         <div class="tab-content-container">
@@ -298,11 +321,14 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                         </div>
                                         <button class="carousel-arrow prev">&lt;</button>
                                         <button class="carousel-arrow next">&gt;</button>
-                                        <a href="?page=mon-profil&tab=active&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                                <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="event-card-actions">
+                                            <a href="?page=mon-profil&tab=active&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path></svg>
+                                            </a>
+                                            <a href="public/supprimer_evenement.php?id=<?php echo $event['Id_Evenement']; ?>" class="delete-event-btn" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet événement et tous ses tickets ?');">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+                                            </a>
+                                        </div>
                                     </div>
                                     <a href="?info-event=<?php echo $event['Id_Evenement']; ?>">
                                         <div>
@@ -344,11 +370,14 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                         <button class="carousel-arrow prev">&lt;</button>
                                         <button class="carousel-arrow next">&gt;</button>
                                         <div class="event-status-badge pending">En attente d'approbation</div>
-                                        <a href="?page=mon-profil&tab=en_attente&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                                <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="event-card-actions">
+                                            <a href="?page=mon-profil&tab=en_attente&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path></svg>
+                                            </a>
+                                            <a href="public/supprimer_evenement.php?id=<?php echo $event['Id_Evenement']; ?>" class="delete-event-btn" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet événement et tous ses tickets ?');">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+                                            </a>
+                                        </div>
                                     </div>
                                     <div>
                                         <h3 class="event-card-title"><?php echo htmlspecialchars($event['Titre']); ?></h3>
@@ -387,11 +416,14 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                         </div>
                                         <button class="carousel-arrow prev">&lt;</button>
                                         <button class="carousel-arrow next">&gt;</button>
-                                        <a href="?page=mon-profil&tab=past&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                                <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="event-card-actions">
+                                            <a href="?page=mon-profil&tab=past&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path></svg>
+                                            </a>
+                                            <a href="public/supprimer_evenement.php?id=<?php echo $event['Id_Evenement']; ?>" class="delete-event-btn" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet événement et tous ses tickets ?');">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+                                            </a>
+                                        </div>
                                     </div>
                                     <a href="?info-event=<?php echo $event['Id_Evenement']; ?>">
                                         <div>
@@ -414,6 +446,41 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                     <?php else: ?>
                         <div class="empty-state">
                             <p>Vous n'avez aucun événement passé.</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php elseif ($active_tab === 'notifications'): ?>
+                <div id="notifications-tab" class="tab-pane active">
+                    <?php if (!empty($notifications)): ?>
+                        <div class="notifications-list">
+                            <?php foreach ($notifications as $notif): ?>
+                                <div class="notification-item status-<?= htmlspecialchars($notif['Statut']) ?>">
+                                    <div class="notification-icon">
+                                        <?php if ($notif['Statut'] === 'validé'): ?>
+                                            <i data-lucide="check-circle-2" style="color: green;"></i>
+                                        <?php else: ?>
+                                            <i data-lucide="x-circle" style="color: red;"></i>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="notification-content">
+                                        <p class="notification-text">
+                                            Votre ticket "<strong><?= htmlspecialchars($notif['TicketTitre']) ?></strong>"
+                                            pour l'événement "<strong><?= htmlspecialchars($notif['EventTitre']) ?></strong>"
+                                            a été <span class="status-label"><?= htmlspecialchars($notif['Statut']) ?></span>.
+                                        </p>
+                                        <?php if ($notif['Statut'] === 'rejeté' && !empty($notif['remarque_de_rejet'])): ?>
+                                            <p class="rejection-remark">
+                                                <strong>Motif :</strong> <?= htmlspecialchars($notif['remarque_de_rejet']) ?>
+                                            </p>
+                                        <?php endif; ?>
+                                        <p class="notification-date"><?= date('d/m/Y H:i', strtotime($notif['DateAchat'])) ?></p>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-state">
+                            <p>Vous n'avez aucune nouvelle notification.</p>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -754,6 +821,7 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                     // Ajouter chaque ticket au tableau
                     data.tickets.forEach(ticket => {
                         tickets.push({
+                            id: ticket.Id_TicketEvenement, // Important for tracking existing tickets
                             name: ticket.Titre,
                             description: ticket.Description,
                             price: ticket.Prix > 0 ? ticket.Prix : 'Gratuit',

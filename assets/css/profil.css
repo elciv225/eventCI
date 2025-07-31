@@ -809,3 +809,136 @@
 .new-images-preview .remove-preview:hover {
     background-color: rgba(255, 0, 0, 0.8);
 }
+
+/* Styles for event card action buttons */
+.event-card-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+    z-index: 30;
+}
+
+.event-card-actions .edit-event-btn,
+.event-card-actions .delete-event-btn {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(2px);
+}
+
+.event-card-actions .edit-event-btn:hover {
+    background-color: var(--text-highlight);
+    color: white;
+    transform: scale(1.1);
+}
+
+.event-card-actions .delete-event-btn {
+    color: var(--color-error);
+}
+
+.event-card-actions .delete-event-btn:hover {
+    background-color: var(--color-error);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Remove the old edit button style since it's now inside the container */
+.edit-event-btn {
+    position: static; /* Override absolute positioning */
+    opacity: 1 !important; /* Override any other opacity */
+}
+
+/* Styles for Notifications Tab */
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    border-left: 5px solid;
+}
+
+.notification-item.status-validé {
+    border-left-color: var(--color-success);
+}
+
+.notification-item.status-rejeté {
+    border-left-color: var(--color-error);
+}
+
+.notification-icon {
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.notification-icon .lucide {
+    width: 24px;
+    height: 24px;
+}
+
+.notification-item.status-validé .notification-icon {
+    color: var(--color-success);
+}
+
+.notification-item.status-rejeté .notification-icon {
+    color: var(--color-error);
+}
+
+.notification-content {
+    flex-grow: 1;
+}
+
+.notification-text {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.notification-text .status-label {
+    font-weight: 700;
+}
+
+.notification-item.status-validé .status-label {
+    color: var(--color-success);
+}
+
+.notification-item.status-rejeté .status-label {
+    color: var(--color-error);
+}
+
+.rejection-remark {
+    margin: 0.75rem 0;
+    padding: 0.75rem 1rem;
+    background-color: var(--bg-tertiary);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.rejection-remark strong {
+    color: var(--text-primary);
+}
+
+.notification-date {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: right;
+    margin: 0;
+}

@@ -30,7 +30,8 @@ $ticketData = [
     'Date_Evenement' => '15/12/2023 à 20:00',
     'Lieu' => 'Salle de concert, Paris',
     'Prix' => 45.00,
-    'DateAchat' => '2023-11-25 14:30:00'
+    'DateAchat' => '2023-11-25 14:30:00',
+    'QRCode' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
 ];
 
 $success2 = sendTicketReceiptEmail(
