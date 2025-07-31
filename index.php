@@ -5,6 +5,7 @@ ob_start();
 session_start();
 
 require 'config/base.php';
+require 'config/mail.php';
 
 // Variables pour les messages
 $success_message = '';

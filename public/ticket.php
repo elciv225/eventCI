@@ -5,13 +5,6 @@ if (!isset($conn)) {
     require_once __DIR__ . '/../config/base.php';
 }
 
-// Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['utilisateur']) || empty($_SESSION['utilisateur']['id'])) {
-    // Rediriger vers la page d'authentification si non connecté
-    header('Location: authentification.php');
-    exit;
-}
-
 // Vérifier si l'ID du ticket est fourni
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     // Rediriger vers la page des tickets si aucun ID n'est fourni

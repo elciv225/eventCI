@@ -12,9 +12,9 @@ use PHPMailer\PHPMailer\Exception;
 class MailConfig {
     const SMTP_HOST = 'smtp.gmail.com';
     const SMTP_PORT = 587;
-    const SMTP_USERNAME = 'eventci2025@gmail.com'; // Doit être l'adresse email complète
-    const SMTP_PASSWORD = 'cprw cujr qjpm ucwc'; // Mots de passe des applications Google
-    const FROM_EMAIL = 'eventci2025@gmail.com'; // Email
+    const SMTP_USERNAME = 'eventci2025@gmail.com';
+    const SMTP_PASSWORD = 'cprw cujr qjpm ucwc';
+    const FROM_EMAIL = 'eventci2025@gmail.com';
     const FROM_NAME = 'EventCI';
     const CHARSET = 'UTF-8';
 }
@@ -50,10 +50,6 @@ function initMailer() {
 
 /**
  * Template HTML de base avec CSS intégré
- * @param string $title Titre de l'email
- * @param string $content Contenu HTML
- * @param string $footerText Texte du footer (optionnel)
- * @return string Template HTML complet
  */
 function getEmailTemplate($title, $content, $footerText = '') {
     $defaultFooter = $footerText ?: 'Cet email a été envoyé automatiquement, merci de ne pas répondre.';
@@ -147,6 +143,23 @@ function getEmailTemplate($title, $content, $footerText = '') {
                 border-radius: 0 5px 5px 0;
             }
 
+            .qr-code-container {
+                text-align: center;
+                margin: 30px 0;
+                padding: 20px;
+                background-color: #f8f9fa;
+                border-radius: 10px;
+                border: 2px dashed #d1410c;
+            }
+
+            .qr-code-container img {
+                max-width: 200px;
+                height: auto;
+                border: 3px solid #fff;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+
             .footer {
                 background-color: #f8f9fa;
                 padding: 20px;
@@ -196,13 +209,39 @@ function getEmailTemplate($title, $content, $footerText = '') {
 }
 
 /**
+ * Génère un QR code et le retourne en base64
+ * @param string $data Données à encoder
+ * @return string QR code en base64 ou chaîne vide si erreur
+ */
+function generateQRCodeBase64($data) {
+    try {
+        // Utilise la fonction de votre fichier qrcode.php
+        if (function_exists('generateQRCode')) {
+            // Génère le QR code et le sauvegarde temporairement
+            $tempFile = sys_get_temp_dir() . '/qr_' . uniqid() . '.png';
+            $qrResult = generateQRCode($data, $tempFile);
+
+            if ($qrResult && file_exists($tempFile)) {
+                // Lit le fichier et le convertit en base64
+                $imageData = file_get_contents($tempFile);
+                $base64 = base64_encode($imageData);
+
+                // Supprime le fichier temporaire
+                unlink($tempFile);
+
+                return 'data:image/png;base64,' . $base64;
+            }
+        }
+
+        return '';
+    } catch (Exception $e) {
+        error_log("Erreur génération QR code: " . $e->getMessage());
+        return '';
+    }
+}
+
+/**
  * Envoie un email simple avec template
- * @param string $to Email destinataire
- * @param string $subject Sujet de l'email
- * @param string $title Titre affiché dans l'email
- * @param string $content Contenu HTML
- * @param string $replyTo Email de réponse (optionnel)
- * @return bool Succès de l'envoi
  */
 function sendSimpleEmail($to, $subject, $title, $content, $replyTo = null) {
     try {
@@ -224,11 +263,41 @@ function sendSimpleEmail($to, $subject, $title, $content, $replyTo = null) {
 }
 
 /**
- * Envoie un email de bienvenue
+ * Envoie un email avec pièce jointe (QR code)
  * @param string $to Email destinataire
- * @param string $username Nom d'utilisateur
- * @param string $activationLink Lien d'activation (optionnel)
+ * @param string $subject Sujet
+ * @param string $title Titre
+ * @param string $content Contenu HTML
+ * @param string $qrCodePath Chemin vers le fichier QR code
+ * @param string $replyTo Email de réponse (optionnel)
  * @return bool Succès de l'envoi
+ */
+function sendEmailWithAttachment($to, $subject, $title, $content, $qrCodePath = null, $replyTo = null) {
+    try {
+        $mail = initMailer();
+
+        $mail->addAddress($to);
+        if ($replyTo) {
+            $mail->addReplyTo($replyTo);
+        }
+
+        // Ajouter la pièce jointe QR code si fournie
+        if ($qrCodePath && file_exists($qrCodePath)) {
+            $mail->addAttachment($qrCodePath, 'qr-code-ticket.png');
+        }
+
+        $mail->Subject = $subject;
+        $mail->Body = getEmailTemplate($title, $content);
+
+        return $mail->send();
+    } catch (Exception $e) {
+        error_log("Erreur envoi email avec pièce jointe: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Envoie un email de bienvenue
  */
 function sendWelcomeEmail($to, $username, $activationLink = null) {
     $title = "Bienvenue sur l'application";
@@ -262,21 +331,16 @@ function sendWelcomeEmail($to, $username, $activationLink = null) {
 }
 
 /**
- * Envoie un email de reçu de commande de ticket
- * @param string $to Email destinataire
- * @param string $username Nom d'utilisateur
- * @param array $ticketData Données du ticket acheté
- * @param string $viewTicketUrl URL pour voir le ticket (optionnel)
- * @return bool Succès de l'envoi
+ * SOLUTION 1: Envoie un email de reçu avec QR code intégré en base64
  */
-function sendTicketReceiptEmail(string $to, string $username, array $ticketData, string $viewTicketUrl = ''): bool
+function sendTicketReceiptEmailWithQR(string $to, string $username, array $ticketData, string $viewTicketUrl = ''): bool
 {
     $title = "Reçu de commande de ticket";
     $subject = "Confirmation de votre achat de ticket - EventCI";
 
     // Formatage de la date d'achat
-    $dateAchat = isset($ticketData['DateAchat']) ? new DateTime($ticketData['DateAchat']) : 
-                (isset($ticketData['DatePaiement']) ? new DateTime($ticketData['DatePaiement']) : new DateTime());
+    $dateAchat = isset($ticketData['DateAchat']) ? new DateTime($ticketData['DateAchat']) :
+        (isset($ticketData['DatePaiement']) ? new DateTime($ticketData['DatePaiement']) : new DateTime());
     $dateAchatFormatted = $dateAchat->format('d/m/Y à H:i');
 
     // Formatage du prix
@@ -298,14 +362,18 @@ function sendTicketReceiptEmail(string $to, string $username, array $ticketData,
             <p style='color: #666;'><strong>Numéro de commande :</strong> " . htmlspecialchars($ticketData['Id_Achat'] ?? 'N/A') . "</p>
         </div>";
 
-    // Ajouter le QR code s'il est disponible
-    if (!empty($ticketData['QRCode'])) {
-        $content .= "
-        <div style='text-align: center; margin: 20px 0;'>
-            <h3 style='color: #555;'>Votre QR Code :</h3>
-            <img src='" . htmlspecialchars($ticketData['QRCode'], ENT_QUOTES, 'UTF-8') . "' alt='QR Code' style='max-width: 200px; margin: 10px auto;'>
-            <p style='color: #666;'>Présentez ce QR code à l'entrée de l'événement pour valider votre ticket.</p>
-        </div>";
+    // Générer le QR code en base64 si des données sont disponibles
+    $qrData = $ticketData['QRData'] ?? $ticketData['Id_Achat'] ?? '';
+    if (!empty($qrData)) {
+        $qrCodeBase64 = generateQRCodeBase64($qrData);
+        if (!empty($qrCodeBase64)) {
+            $content .= "
+            <div class='qr-code-container'>
+                <h3 style='color: #555; margin-bottom: 15px;'>Votre QR Code :</h3>
+                <img src='" . $qrCodeBase64 . "' alt='QR Code' style='max-width: 200px; margin: 10px auto;'>
+                <p style='color: #666; margin-top: 15px;'>Présentez ce QR code à l'entrée de l'événement pour valider votre ticket.</p>
+            </div>";
+        }
     }
 
     if ($viewTicketUrl) {
@@ -325,6 +393,88 @@ function sendTicketReceiptEmail(string $to, string $username, array $ticketData,
 }
 
 /**
+ * SOLUTION 2: Envoie un email de reçu avec QR code en pièce jointe
+ */
+function sendTicketReceiptEmailWithAttachment(string $to, string $username, array $ticketData, string $viewTicketUrl = ''): bool
+{
+    $title = "Reçu de commande de ticket";
+    $subject = "Confirmation de votre achat de ticket - EventCI";
+
+    // Formatage de la date d'achat
+    $dateAchat = isset($ticketData['DateAchat']) ? new DateTime($ticketData['DateAchat']) :
+        (isset($ticketData['DatePaiement']) ? new DateTime($ticketData['DatePaiement']) : new DateTime());
+    $dateAchatFormatted = $dateAchat->format('d/m/Y à H:i');
+
+    // Formatage du prix
+    $prix = isset($ticketData['Prix']) ? $ticketData['Prix'] : 0;
+    $prixFormatted = number_format($prix, 0, '', ' ') . ' FCFA';
+
+    $content = "
+        <h2 style='color: #d1410c;'>Merci pour votre achat, " . htmlspecialchars($username) . " !</h2>
+        <p style='color: #333;'>Votre commande a été confirmée et votre ticket est prêt.</p>
+
+        <div class='info-box'>
+            <h3 style='color: #555;'>Détails de votre ticket :</h3>
+            <p style='color: #666;'><strong>Événement :</strong> " . htmlspecialchars($ticketData['Titre_Evenement'] ?? 'N/A') . "</p>
+            <p style='color: #666;'><strong>Type de ticket :</strong> " . htmlspecialchars($ticketData['Titre_Ticket'] ?? 'N/A') . "</p>
+            <p style='color: #666;'><strong>Date de l'événement :</strong> " . htmlspecialchars($ticketData['Date_Evenement'] ?? 'N/A') . "</p>
+            <p style='color: #666;'><strong>Lieu :</strong> " . htmlspecialchars($ticketData['Lieu'] ?? 'N/A') . "</p>
+            <p style='color: #666;'><strong>Prix :</strong> " . $prixFormatted . "</p>
+            <p style='color: #666;'><strong>Date d'achat :</strong> " . $dateAchatFormatted . "</p>
+            <p style='color: #666;'><strong>Numéro de commande :</strong> " . htmlspecialchars($ticketData['Id_Achat'] ?? 'N/A') . "</p>
+        </div>";
+
+    // Générer le QR code dans un fichier temporaire
+    $qrCodePath = null;
+    $qrData = $ticketData['QRData'] ?? $ticketData['Id_Achat'] ?? '';
+    if (!empty($qrData) && function_exists('generateQRCode')) {
+        $qrCodePath = sys_get_temp_dir() . '/qr_ticket_' . $ticketData['Id_Achat'] . '.png';
+        generateQRCode($qrData, $qrCodePath);
+
+        $content .= "
+        <div style='text-align: center; margin: 30px 0;'>
+            <div style='background-color: #f8f9fa; padding: 20px; border-radius: 10px; border: 2px dashed #d1410c;'>
+                <h3 style='color: #555; margin-bottom: 15px;'>Votre QR Code :</h3>
+                <p style='color: #666;'>Le QR code de votre ticket est joint à cet email en pièce jointe.</p>
+                <p style='color: #666;'>Téléchargez-le et présentez-le à l'entrée de l'événement pour valider votre ticket.</p>
+            </div>
+        </div>";
+    }
+
+    if ($viewTicketUrl) {
+        $content .= "
+        <div style='text-align: center;'>
+            <a href='" . htmlspecialchars($viewTicketUrl) . "' class='btn'>Voir mon ticket</a>
+        </div>";
+    }
+
+    $content .= "
+        <div class='divider'></div>
+        <p style='color: #333;'>Conservez précieusement ce reçu, il pourra vous être demandé lors de l'événement.</p>
+        <p style='color: #333;'>Si vous avez des questions concernant votre achat, n'hésitez pas à nous contacter.</p>
+        <p style='color: #333;'><strong>L'équipe EventCI</strong></p>";
+
+    // Envoyer l'email avec ou sans pièce jointe
+    $result = sendEmailWithAttachment($to, $subject, $title, $content, $qrCodePath);
+
+    // Nettoyer le fichier temporaire
+    if ($qrCodePath && file_exists($qrCodePath)) {
+        unlink($qrCodePath);
+    }
+
+    return $result;
+}
+
+/**
+ * Fonction originale modifiée (pour compatibilité)
+ */
+function sendTicketReceiptEmail(string $to, string $username, array $ticketData, string $viewTicketUrl = ''): bool
+{
+    // Utilise la nouvelle version avec QR code intégré
+    return sendTicketReceiptEmailWithQR($to, $username, $ticketData, $viewTicketUrl);
+}
+
+/**
  * Exemple d'utilisation
  */
 function exempleUtilisation() {
@@ -335,7 +485,7 @@ function exempleUtilisation() {
         'https://eventci.com/activation?token=123456'
     );
 
-    // Email de reçu de ticket
+    // Email de reçu de ticket avec QR code
     $ticketData = [
         'Id_Achat' => 12345,
         'Titre_Evenement' => 'Concert de Jazz',
@@ -343,17 +493,27 @@ function exempleUtilisation() {
         'Date_Evenement' => '15/12/2023 à 20:00',
         'Lieu' => 'Salle de concert, Paris',
         'Prix' => 45.00,
-        'DateAchat' => '2023-11-25 14:30:00'
+        'DateAchat' => '2023-11-25 14:30:00',
+        'QRData' => 'TICKET-12345-CONCERT-JAZZ-VIP' // Données pour le QR code
     ];
 
-    $success = sendTicketReceiptEmail(
+    // SOLUTION 1: QR code intégré dans l'email
+    $success1 = sendTicketReceiptEmailWithQR(
         'elielassy06@gmail.com',
         'Jean Dupont',
         $ticketData,
         'https://eventci.com/ticket?id=12345'
     );
 
-    if ($success) {
+    // SOLUTION 2: QR code en pièce jointe
+    $success2 = sendTicketReceiptEmailWithAttachment(
+        'elielassy06@gmail.com',
+        'Jean Dupont',
+        $ticketData,
+        'https://eventci.com/ticket?id=12345'
+    );
+
+    if ($success1 && $success2) {
         echo "Emails envoyés avec succès!\n";
     } else {
         echo "Erreur lors de l'envoi des emails.\n";
