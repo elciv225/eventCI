@@ -281,6 +281,7 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
             <a href="?page=mon-profil&tab=en_attente" class="tab-button <?php echo $active_tab === 'en_attente' ? 'active' : ''; ?>">Événements en Attente</a>
             <a href="?page=mon-profil&tab=past" class="tab-button <?php echo $active_tab === 'past' ? 'active' : ''; ?>">Événements Passés</a>
             <a href="?page=mon-profil&tab=notifications" class="tab-button <?php echo $active_tab === 'notifications' ? 'active' : ''; ?>">Notifications</a>
+            <a href="?page=mon-profil&tab=comments" class="tab-button <?php echo $active_tab === 'comments' ? 'active' : ''; ?>">Commentaires Reçus</a>
         </div>
 
         <div class="tab-content-container">
@@ -312,6 +313,45 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                         <?php else: ?>
                             <div class="empty-state">
                                 <p>Vous n'avez aucune notification.</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php elseif ($active_tab === 'comments'): ?>
+                <div id="comments-tab" class="tab-pane active">
+                    <?php
+                    $comments_query = "
+                        SELECT
+                            c.Contenu, c.DateCommentaire,
+                            e.Titre AS EventTitre, e.Id_Evenement,
+                            u.Prenom AS CommenterPrenom, u.Nom AS CommenterNom
+                        FROM commentaireevenement c
+                        JOIN evenement e ON c.Id_Evenement = e.Id_Evenement
+                        JOIN creer cr ON e.Id_Evenement = cr.Id_Evenement
+                        JOIN utilisateur u ON c.Id_Utilisateur = u.Id_Utilisateur
+                        WHERE cr.Id_Utilisateur = ?
+                        ORDER BY c.DateCommentaire DESC
+                    ";
+                    $stmt_comments = $conn->prepare($comments_query);
+                    $stmt_comments->bind_param("i", $user_id);
+                    $stmt_comments->execute();
+                    $received_comments = $stmt_comments->get_result();
+                    ?>
+                    <div class="received-comments-list">
+                        <?php if ($received_comments->num_rows > 0): ?>
+                            <?php while ($comment = $received_comments->fetch_assoc()): ?>
+                                <div class="received-comment-item">
+                                    <p class="comment-text">"<?= htmlspecialchars($comment['Contenu']) ?>"</p>
+                                    <div class="comment-meta">
+                                        <span class="comment-author">Par: <?= htmlspecialchars($comment['CommenterPrenom'] . ' ' . $comment['CommenterNom']) ?></span>
+                                        <span class="comment-event">Sur l'événement: <a href="?page=details&id=<?= $comment['Id_Evenement'] ?>"><?= htmlspecialchars($comment['EventTitre']) ?></a></span>
+                                        <span class="comment-date-received"><?= date('d/m/Y', strtotime($comment['DateCommentaire'])) ?></span>
+                                    </div>
+                                </div>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <div class="empty-state">
+                                <p>Vous n'avez reçu aucun commentaire sur vos événements pour le moment.</p>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -1152,5 +1192,39 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
 .notification-date {
     font-size: 0.85em;
     color: var(--text-medium);
+}
+.received-comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px;
+}
+.received-comment-item {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--accent-green);
+}
+.comment-text {
+    font-style: italic;
+    color: var(--text-dark);
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-light);
+}
+.comment-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85em;
+    color: var(--text-medium);
+}
+.comment-meta a {
+    color: var(--accent-blue);
+    text-decoration: none;
+}
+.comment-meta a:hover {
+    text-decoration: underline;
 }
 </style>

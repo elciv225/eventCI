@@ -211,7 +211,150 @@ $user_id = $user_logged_in ? $_SESSION['utilisateur']['id'] : 0;
             </div>
         </div>
     </section>
+
+    <!-- Section Avis et Notes -->
+    <?php if ($date_fin < new DateTime()): ?>
+        <section class="event-reviews-section">
+            <h2 class="section-title">Avis et Notes</h2>
+            <div class="reviews-container">
+                <!-- Logique pour récupérer les avis et la note moyenne -->
+                <?php
+                // Note moyenne
+                $avg_rating_query = "SELECT AVG(Note) as avg_rating, COUNT(*) as total_ratings FROM noteevenement WHERE Id_Evenement = ?";
+                $stmt_avg = $conn->prepare($avg_rating_query);
+                $stmt_avg->bind_param("i", $event_id);
+                $stmt_avg->execute();
+                $avg_result = $stmt_avg->get_result()->fetch_assoc();
+                $avg_rating = round($avg_result['avg_rating'] ?? 0, 1);
+                $total_ratings = $avg_result['total_ratings'] ?? 0;
+
+                // Liste des commentaires
+                $comments_query = "SELECT c.Contenu, c.DateCommentaire, u.Prenom, u.Nom, u.Photo
+                                   FROM commentaireevenement c
+                                   JOIN utilisateur u ON c.Id_Utilisateur = u.Id_Utilisateur
+                                   WHERE c.Id_Evenement = ? ORDER BY c.DateCommentaire DESC";
+                $stmt_comments = $conn->prepare($comments_query);
+                $stmt_comments->bind_param("i", $event_id);
+                $stmt_comments->execute();
+                $comments = $stmt_comments->get_result();
+
+                // Vérifier si l'utilisateur peut commenter
+                $can_comment = false;
+                $user_has_commented = false;
+                if ($user_logged_in) {
+                    // A-t-il un ticket validé ?
+                    $stmt_ticket = $conn->prepare("SELECT COUNT(*) as count FROM achat a JOIN ticketevenement te ON a.Id_TicketEvenement = te.Id_TicketEvenement WHERE a.Id_Utilisateur = ? AND te.Id_Evenement = ? AND a.Statut = 'validé'");
+                    $stmt_ticket->bind_param("ii", $user_id, $event_id);
+                    $stmt_ticket->execute();
+                    $ticket_count = $stmt_ticket->get_result()->fetch_assoc()['count'];
+
+                    // A-t-il déjà commenté ?
+                    $stmt_has_commented = $conn->prepare("SELECT COUNT(*) as count FROM commentaireevenement WHERE Id_Utilisateur = ? AND Id_Evenement = ?");
+                    $stmt_has_commented->bind_param("ii", $user_id, $event_id);
+                    $stmt_has_commented->execute();
+                    $comment_count = $stmt_has_commented->get_result()->fetch_assoc()['count'];
+                    $user_has_commented = ($comment_count > 0);
+
+                    if ($ticket_count > 0 && !$user_has_commented) {
+                        $can_comment = true;
+                    }
+                }
+                ?>
+
+                <div class="reviews-summary">
+                    <div class="average-rating">
+                        <span class="rating-value"><?= $avg_rating ?></span>
+                        <div class="stars" style="--rating: <?= $avg_rating ?>;"></div>
+                        <span class="total-reviews">(basé sur <?= $total_ratings ?> avis)</span>
+                    </div>
+                </div>
+
+                <!-- Formulaire pour laisser un avis -->
+                <?php if ($can_comment): ?>
+                <div class="review-form-container">
+                    <h3>Laissez votre avis</h3>
+                    <form action="public/traitement_commentaire.php" method="POST">
+                        <input type="hidden" name="event_id" value="<?= $event_id ?>">
+                        <div class="form-group rating-group">
+                            <label>Votre note :</label>
+                            <div class="star-rating">
+                                <input type="radio" id="star5" name="rating" value="5" required/><label for="star5" title="5 stars"></label>
+                                <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars"></label>
+                                <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars"></label>
+                                <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars"></label>
+                                <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star"></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="comment">Votre commentaire :</label>
+                            <textarea name="comment" id="comment" rows="4" required placeholder="Décrivez votre expérience..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Envoyer l'avis</button>
+                    </form>
+                </div>
+                <?php elseif($user_logged_in && $user_has_commented): ?>
+                    <p class="already-commented">Vous avez déjà laissé un avis pour cet événement. Merci !</p>
+                <?php endif; ?>
+
+
+                <!-- Liste des commentaires existants -->
+                <div class="comments-list">
+                    <?php if ($comments->num_rows > 0): ?>
+                        <?php while($comment = $comments->fetch_assoc()): ?>
+                            <div class="comment-item">
+                                <div class="comment-author">
+                                    <div class="author-pic">
+                                        <?php if (!empty($comment['Photo'])): ?>
+                                            <img src="../<?= htmlspecialchars($comment['Photo']) ?>" alt="Photo de profil">
+                                        <?php else: ?>
+                                            <div class="author-initials"><?= strtoupper(substr($comment['Prenom'], 0, 1) . substr($comment['Nom'], 0, 1)) ?></div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="author-name"><?= htmlspecialchars($comment['Prenom'] . ' ' . $comment['Nom']) ?></div>
+                                </div>
+                                <div class="comment-content">
+                                    <p><?= htmlspecialchars($comment['Contenu']) ?></p>
+                                    <span class="comment-date"><?= date('d/m/Y', strtotime($comment['DateCommentaire'])) ?></span>
+                                </div>
+                            </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p>Aucun commentaire pour le moment. Soyez le premier à en laisser un !</p>
+                    <?php endif; ?>
+                </div>
+
+            </div>
+        </section>
+    <?php endif; ?>
 </main>
+
+<style>
+/* Styles pour la section des avis */
+.event-reviews-section { padding: 40px 0; border-top: 1px solid #eee; }
+.reviews-container { max-width: 800px; margin: 0 auto; }
+.reviews-summary { display: flex; justify-content: center; align-items: center; margin-bottom: 30px; }
+.average-rating { text-align: center; }
+.rating-value { font-size: 3em; font-weight: bold; }
+.total-reviews { font-size: 0.9em; color: #6c757d; }
+.stars { --star-size: 30px; --star-color: #eee; --star-background: #ffc107; display: inline-block; font-size: var(--star-size); position: relative; }
+.stars::before { content: '★★★★★'; color: var(--star-color); }
+.stars::after { content: '★★★★★'; color: var(--star-background); position: absolute; top: 0; left: 0; overflow: hidden; width: calc(var(--rating) / 5 * 100%); }
+.review-form-container { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+.star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; }
+.star-rating input { display: none; }
+.star-rating label { font-size: 2em; color: #ddd; cursor: pointer; }
+.star-rating input:checked ~ label, .star-rating:not(:checked) > label:hover, .star-rating:not(:checked) > label:hover ~ label { color: #ffc107; }
+.comments-list { display: flex; flex-direction: column; gap: 20px; }
+.comment-item { display: flex; gap: 15px; }
+.comment-author { flex-shrink: 0; text-align: center; width: 80px; }
+.author-pic { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; margin: 0 auto 5px; background-color: #eee; }
+.author-pic img { width: 100%; height: 100%; object-fit: cover; }
+.author-initials { width: 50px; height: 50px; border-radius: 50%; background-color: #667eea; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+.author-name { font-size: 0.8em; }
+.comment-content { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 8px; width: 100%; }
+.comment-date { font-size: 0.8em; color: #6c757d; text-align: right; display: block; margin-top: 10px; }
+.already-commented { text-align: center; background: #e9ecef; padding: 15px; border-radius: 8px; }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
