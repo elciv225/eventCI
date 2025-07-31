@@ -274,7 +274,8 @@ function sendTicketReceiptEmail($to, $username, $ticketData, $viewTicketUrl = nu
     $subject = "Confirmation de votre achat de ticket - EventCI";
 
     // Formatage de la date d'achat
-    $dateAchat = isset($ticketData['DateAchat']) ? new DateTime($ticketData['DateAchat']) : new DateTime();
+    $dateAchat = isset($ticketData['DateAchat']) ? new DateTime($ticketData['DateAchat']) : 
+                (isset($ticketData['DatePaiement']) ? new DateTime($ticketData['DatePaiement']) : new DateTime());
     $dateAchatFormatted = $dateAchat->format('d/m/Y à H:i');
 
     // Formatage du prix
@@ -295,6 +296,16 @@ function sendTicketReceiptEmail($to, $username, $ticketData, $viewTicketUrl = nu
             <p style='color: #666;'><strong>Date d'achat :</strong> " . $dateAchatFormatted . "</p>
             <p style='color: #666;'><strong>Numéro de commande :</strong> " . htmlspecialchars($ticketData['Id_Achat'] ?? 'N/A') . "</p>
         </div>";
+
+    // Ajouter le QR code s'il est disponible
+    if (isset($ticketData['QRCode']) && !empty($ticketData['QRCode'])) {
+        $content .= "
+        <div style='text-align: center; margin: 20px 0;'>
+            <h3 style='color: #555;'>Votre QR Code :</h3>
+            <img src='" . htmlspecialchars($ticketData['QRCode'], ENT_QUOTES, 'UTF-8') . "' alt='QR Code' style='max-width: 200px; margin: 10px auto;'>
+            <p style='color: #666;'>Présentez ce QR code à l'entrée de l'événement pour valider votre ticket.</p>
+        </div>";
+    }
 
     if ($viewTicketUrl) {
         $content .= "

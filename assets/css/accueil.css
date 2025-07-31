@@ -48,10 +48,10 @@ header {
 }
 
 .logo-svg {
-    height: 2rem;
-    width: 2rem;
-    color: var(--text-highlight);
+    width: 10rem;
 }
+
+
 
 header nav a {
     color: var(--text-secondary);
@@ -166,6 +166,9 @@ main {
 
 .mobile-search-section {
     padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .filter-section {
@@ -340,27 +343,6 @@ main {
 
 .event-card:hover .event-card-image img {
     transform: scale(1.05);
-}
-
-/* Add image dimensions as text overlay to help with visualization */
-.event-card-image::after {
-    content: attr(data-size);
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 5px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-}
-
-.aspect-square .event-card-image::after {
-    content: "300x300px";
-}
-
-.aspect-video .event-card-image::after {
-    content: "300x169px";
 }
 
 .carousel-arrow, .horizontal-scroll-nav {
@@ -691,7 +673,7 @@ main {
 .see-more-container {
     display: flex;
     justify-content: center;
-    padding-top: 2rem;
+    padding-bottom: 2rem;
 }
 
 .see-more-link {
@@ -954,10 +936,6 @@ body.mobile-menu-open .header-nav a:last-child {
         padding-bottom: 56.25%;
     }
 
-    .events-grid .aspect-square .event-card-image::after {
-        content: "300x169px";
-    }
-
     .search-container {
         width: 100%;
     }
@@ -974,10 +952,9 @@ body.mobile-menu-open .header-nav a:last-child {
     .user-dropdown, .auth-dropdown {
         position: fixed;
         top: 80px;
-        left: 0;
         right: 0;
-        width: 100%;
-        min-width: 100%;
+        width: 90%;
+        min-width: 90%;
         border-radius: 0;
         box-shadow: 0 4px 8px var(--shadow-light);
         z-index: 1001;

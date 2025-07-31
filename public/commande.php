@@ -5,6 +5,7 @@ if (!isset($conn)) {
     require_once __DIR__ . '/../config/base.php';
 }
 require_once 'config/qrcode.php';
+require_once 'config/mail.php';
 
 // Vérifier si la colonne QRCode existe dans la table achat
 $check_column = $conn->query("SHOW COLUMNS FROM achat LIKE 'QRCode'");
@@ -78,11 +79,16 @@ if ($action === 'checkout') {
                     'Lieu' => $ticket['Lieu'] ?? 'N/A',
                     'QRCode' => $qrcode_base64,
                     'Prix' => $ticket['Prix'] ?? 0,
+                    'DateAchat' => date('Y-m-d H:i:s'),
                     'DatePaiement' => date('Y-m-d H:i:s')
                 ];
 
                 // Envoyer l'email avec le ticket
-                sendTicketReceiptEmail($user_email, $user_name, $ticket_email_data, $ticket_url);
+                $email_sent = sendTicketReceiptEmail($user_email, $user_name, $ticket_email_data, $ticket_url);
+
+                if (!$email_sent) {
+                    error_log("Erreur lors de l'envoi de l'email pour le ticket ID: " . $ticket['Id_Achat']);
+                }
             }
 
             // Rediriger vers la page des tickets achetés
@@ -303,7 +309,7 @@ elseif ($ticket_id > 0) {
                             <h3 style="font-size: 1.25rem;"><?php echo htmlspecialchars($ticket['Titre']); ?></h3>
                             <p><?php echo htmlspecialchars($ticket['Description']); ?></p>
                             <div class="ticket-price">
-                                <?php echo number_format($ticket['Prix'], 2, ',', ' '); ?> €
+                                <?php echo number_format($ticket['Prix'], 0, '', ' '); ?> FCFA
                             </div>
                             <p>
                                 <strong>Disponibilité:</strong> <?php echo $ticket['NombreDisponible']; ?> tickets restants

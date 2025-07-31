@@ -280,10 +280,87 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
             <a href="?page=mon-profil&tab=active" class="tab-button <?php echo $active_tab === 'active' ? 'active' : ''; ?>">Événements Actifs</a>
             <a href="?page=mon-profil&tab=en_attente" class="tab-button <?php echo $active_tab === 'en_attente' ? 'active' : ''; ?>">Événements en Attente</a>
             <a href="?page=mon-profil&tab=past" class="tab-button <?php echo $active_tab === 'past' ? 'active' : ''; ?>">Événements Passés</a>
+            <a href="?page=mon-profil&tab=notifications" class="tab-button <?php echo $active_tab === 'notifications' ? 'active' : ''; ?>">
+                Notifications
+                <?php
+                // Inclure le fichier de gestion des notifications
+                require_once __DIR__ . '/../app/utils/notifications.php';
+
+                // Compter les notifications non lues
+                $unreadCount = countUnreadNotifications($user_id);
+                if ($unreadCount > 0) {
+                    echo '<span class="notification-badge">' . $unreadCount . '</span>';
+                }
+                ?>
+            </a>
         </div>
 
         <div class="tab-content-container">
-            <?php if($active_tab === 'active'): ?>
+            <?php if($active_tab === 'notifications'): ?>
+                <div id="notifications-tab" class="tab-pane active">
+                    <?php
+                    // Récupérer les notifications de l'utilisateur
+                    $notifications = getUserNotifications($user_id);
+
+                    if (!empty($notifications)):
+                        // Marquer toutes les notifications comme lues si l'utilisateur est sur cet onglet
+                        markAllNotificationsAsRead($user_id);
+                    ?>
+                        <div class="notifications-list">
+                            <?php foreach ($notifications as $notification): ?>
+                                <div class="notification-item <?php echo $notification['Lu'] ? 'read' : 'unread'; ?>">
+                                    <div class="notification-icon">
+                                        <?php if ($notification['Type'] === 'ticket_validated'): ?>
+                                            <span class="icon-validated">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                                                    <path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path>
+                                                </svg>
+                                            </span>
+                                        <?php elseif ($notification['Type'] === 'ticket_rejected'): ?>
+                                            <span class="icon-rejected">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                                                    <path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path>
+                                                </svg>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="icon-info">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                                                    <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-40a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176ZM112,84a12,12,0,1,1,12,12A12,12,0,0,1,112,84Z"></path>
+                                                </svg>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="notification-content">
+                                        <p class="notification-message"><?php echo htmlspecialchars($notification['Message']); ?></p>
+                                        <p class="notification-date"><?php echo date('d/m/Y à H:i', strtotime($notification['DateCreation'])); ?></p>
+
+                                        <?php
+                                        // Afficher les détails supplémentaires pour les tickets rejetés
+                                        if ($notification['Type'] === 'ticket_rejected' && !empty($notification['DonneesSupplementaires'])) {
+                                            $data = json_decode($notification['DonneesSupplementaires'], true);
+                                            if (isset($data['remarque']) && !empty($data['remarque'])) {
+                                                echo '<div class="notification-details">';
+                                                echo '<p class="rejection-reason"><strong>Motif du rejet:</strong> ' . htmlspecialchars($data['remarque']) . '</p>';
+                                                echo '</div>';
+                                            }
+                                        }
+
+                                        // Ajouter un lien vers le ticket si disponible
+                                        if (!empty($notification['Id_Reference'])) {
+                                            echo '<a href="?page=ticket&id=' . $notification['Id_Reference'] . '" class="notification-link">Voir le ticket</a>';
+                                        }
+                                        ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-state">
+                            <p>Vous n'avez aucune notification pour le moment.</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php elseif($active_tab === 'active'): ?>
                 <div id="active-tab" class="tab-pane active">
                     <?php if (!empty($active_events)): ?>
                         <div class="events-grid">
@@ -298,11 +375,18 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                         </div>
                                         <button class="carousel-arrow prev">&lt;</button>
                                         <button class="carousel-arrow next">&gt;</button>
-                                        <a href="?page=mon-profil&tab=active&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                                <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="event-actions">
+                                            <a href="?page=mon-profil&tab=active&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                                                    <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
+                                                </svg>
+                                            </a>
+                                            <button type="button" class="delete-event-btn" data-event-id="<?php echo $event['Id_Evenement']; ?>" data-event-title="<?php echo htmlspecialchars($event['Titre']); ?>">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                                                    <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                     <a href="?info-event=<?php echo $event['Id_Evenement']; ?>">
                                         <div>
@@ -344,11 +428,18 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                         <button class="carousel-arrow prev">&lt;</button>
                                         <button class="carousel-arrow next">&gt;</button>
                                         <div class="event-status-badge pending">En attente d'approbation</div>
-                                        <a href="?page=mon-profil&tab=en_attente&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                                <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="event-actions">
+                                            <a href="?page=mon-profil&tab=en_attente&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                                                    <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
+                                                </svg>
+                                            </a>
+                                            <button type="button" class="delete-event-btn" data-event-id="<?php echo $event['Id_Evenement']; ?>" data-event-title="<?php echo htmlspecialchars($event['Titre']); ?>">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                                                    <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div>
                                         <h3 class="event-card-title"><?php echo htmlspecialchars($event['Titre']); ?></h3>
@@ -387,11 +478,18 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                         </div>
                                         <button class="carousel-arrow prev">&lt;</button>
                                         <button class="carousel-arrow next">&gt;</button>
-                                        <a href="?page=mon-profil&tab=past&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                                <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="event-actions">
+                                            <a href="?page=mon-profil&tab=past&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                                                    <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
+                                                </svg>
+                                            </a>
+                                            <button type="button" class="delete-event-btn" data-event-id="<?php echo $event['Id_Evenement']; ?>" data-event-title="<?php echo htmlspecialchars($event['Titre']); ?>">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                                                    <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                     <a href="?info-event=<?php echo $event['Id_Evenement']; ?>">
                                         <div>
@@ -960,7 +1058,7 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                 <div class="ticket-preview-details">
                     <p>${ticket.description || 'Aucune description'}</p>
                     <div class="ticket-preview-info">
-                        <span class="ticket-price">${ticket.price === 'Gratuit' ? 'Gratuit' : ticket.price + ' €'}</span>
+                        <span class="ticket-price">${ticket.price === 'Gratuit' ? 'Gratuit' : ticket.price + ' FCFA'}</span>
                         <span class="ticket-quantity">${ticket.quantity} disponibles</span>
                     </div>
                 </div>
@@ -1065,3 +1163,230 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
         });
     }
 </script>
+
+<!-- Modal de confirmation de suppression d'événement -->
+<div class="modal" id="delete-event-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirmer la suppression</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir supprimer l'événement <strong id="event-title-to-delete"></strong> ?</p>
+            <p class="warning-text">Cette action est irréversible. Tous les tickets associés à cet événement seront également supprimés.</p>
+
+            <form id="delete-event-form" method="post" action="traitement_evenement.php">
+                <input type="hidden" id="event-id-to-delete" name="event_id" value="">
+                <input type="hidden" id="active-tab-delete" name="active_tab" value="">
+                <input type="hidden" name="supprimer_evenement" value="1">
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary modal-close">Annuler</button>
+                    <button type="submit" class="btn-danger">Supprimer définitivement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.event-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+.edit-event-btn, .delete-event-btn {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.edit-event-btn:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.delete-event-btn {
+    color: #d1410c;
+}
+
+.delete-event-btn:hover {
+    background-color: #d1410c;
+    color: white;
+}
+
+.warning-text {
+    color: #d1410c;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.btn-danger {
+    background-color: #d1410c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-danger:hover {
+    background-color: #b13609;
+}
+</style>
+
+<style>
+/* Styles for notifications */
+.notification-badge {
+    background-color: #d1410c;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    margin-left: 5px;
+    position: relative;
+    top: -1px;
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.notification-item {
+    display: flex;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.notification-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.notification-item.unread {
+    border-left: 4px solid #d1410c;
+}
+
+.notification-item.read {
+    border-left: 4px solid #e9ecef;
+    opacity: 0.8;
+}
+
+.notification-icon {
+    margin-right: 15px;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 5px;
+}
+
+.icon-validated {
+    color: #28a745;
+}
+
+.icon-rejected {
+    color: #dc3545;
+}
+
+.icon-info {
+    color: #17a2b8;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-message {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.notification-date {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.notification-details {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+.rejection-reason {
+    margin: 0;
+    color: #721c24;
+}
+
+.notification-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: #d1410c;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.notification-link:hover {
+    text-decoration: underline;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteEventModal = document.getElementById('delete-event-modal');
+    const eventTitleToDelete = document.getElementById('event-title-to-delete');
+    const eventIdToDelete = document.getElementById('event-id-to-delete');
+    const activeTabDelete = document.getElementById('active-tab-delete');
+
+    // Ajouter des gestionnaires d'événements pour les boutons de suppression
+    document.querySelectorAll('.delete-event-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const eventId = this.getAttribute('data-event-id');
+            const eventTitle = this.getAttribute('data-event-title');
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('tab') || 'active';
+
+            // Remplir le modal avec les informations de l'événement
+            eventTitleToDelete.textContent = eventTitle;
+            eventIdToDelete.value = eventId;
+            activeTabDelete.value = activeTab;
+
+            // Afficher le modal
+            deleteEventModal.style.display = 'block';
+        });
+    });
+
+    // Fermer le modal lorsqu'on clique sur le bouton de fermeture
+    document.querySelectorAll('#delete-event-modal .modal-close').forEach(btn => {
+        btn.addEventListener('click', function() {
+            deleteEventModal.style.display = 'none';
+        });
+    });
+
+    // Fermer le modal lorsqu'on clique à l'extérieur
+    window.addEventListener('click', function(event) {
+        if (event.target === deleteEventModal) {
+            deleteEventModal.style.display = 'none';
+        }
+    });
+});

@@ -192,18 +192,19 @@ $user_id = $user_logged_in ? $_SESSION['utilisateur']['id'] : 0;
                                     <div class="ticket-info">
                                         <h4 class="ticket-title"><?php echo htmlspecialchars($ticket['Titre']); ?></h4>
                                         <p class="ticket-desc"><?php echo htmlspecialchars($ticket['Description']); ?></p>
-                                        <div class="ticket-price"><?php echo number_format($ticket['Prix'], 2, ',', ' '); ?>
-                                            €
+                                        <div class="ticket-price"><?php echo number_format($ticket['Prix'], 0, '', ' '); ?>
+                                            FCFA
                                         </div>
                                         <div class="ticket-availability"><?php echo $ticket['NombreDisponible']; ?>
                                             disponibles
                                         </div>
                                     </div>
-                                    <div class="ticket-actions">
+
                                         <a href="?page=commande&ticket=<?php echo $ticket['Id_TicketEvenement']; ?>"
                                            class="btn-primary">Commander</a>
-                                    </div>
+
                                 </div>
+
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>

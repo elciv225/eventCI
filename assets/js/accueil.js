@@ -117,20 +117,36 @@ document.addEventListener('DOMContentLoaded', function() {
     carousels.forEach(wrapper => {
         const carousel = wrapper;
         const images = carousel.querySelectorAll('.event-card-image');
-        // Les boutons sont des frères du carrousel dans le même conteneur (event-card-image-wrapper)
         const imageWrapper = wrapper.parentElement;
         const prevBtn = imageWrapper.querySelector('.carousel-arrow.prev');
         const nextBtn = imageWrapper.querySelector('.carousel-arrow.next');
-
-        // Get the card element and its text content
         const card = imageWrapper.closest('.event-card');
         const cardTextContainer = card.querySelector('a > div');
 
-        // Hide the text content initially
         if (cardTextContainer) {
             cardTextContainer.style.opacity = '0';
             cardTextContainer.style.transition = 'opacity 0.3s ease';
         }
+
+        const loader = document.createElement('div');
+        loader.className = 'carousel-loader';
+        loader.style.visibility = 'visible';
+        const skeletonCard = document.createElement('div');
+        skeletonCard.className = 'skeleton-card';
+        const skeletonImage = document.createElement('div');
+        skeletonImage.className = 'skeleton skeleton-image';
+        const skeletonContent = document.createElement('div');
+        skeletonContent.className = 'skeleton-card-content';
+        const skeletonTitle = document.createElement('div');
+        skeletonTitle.className = 'skeleton skeleton-text skeleton-title';
+        const skeletonDesc = document.createElement('div');
+        skeletonDesc.className = 'skeleton skeleton-text skeleton-desc';
+        skeletonContent.appendChild(skeletonTitle);
+        skeletonContent.appendChild(skeletonDesc);
+        skeletonCard.appendChild(skeletonImage);
+        skeletonCard.appendChild(skeletonContent);
+        loader.appendChild(skeletonCard);
+        imageWrapper.appendChild(loader);
 
         let currentIndex = 0;
         let intervalId = null;
@@ -138,255 +154,163 @@ document.addEventListener('DOMContentLoaded', function() {
         let imagesLoaded = 0;
         let totalImages = images.length;
 
-        // Create and add skeleton loader
-        const loader = document.createElement('div');
-        loader.className = 'carousel-loader';
-        loader.style.visibility = 'visible';
+        // =================================================================
+        // DÉBUT DE LA CORRECTION
+        // =================================================================
+        // Si la carte n'a aucune image, on retire le loader immédiatement.
+        if (totalImages === 0) {
+            // On rend le loader invisible
+            loader.style.opacity = '0';
+            loader.style.visibility = 'hidden';
 
-        // Create skeleton structure
-        const skeletonCard = document.createElement('div');
-        skeletonCard.className = 'skeleton-card';
+            // On le supprime du DOM après la transition et on affiche le texte
+            setTimeout(() => {
+                if (loader.parentNode) {
+                    loader.parentNode.removeChild(loader);
+                }
+                if (cardTextContainer) {
+                    cardTextContainer.style.opacity = '1';
+                }
+            }, 300); // Doit correspondre à la durée de la transition CSS
 
-        // Create skeleton image
-        const skeletonImage = document.createElement('div');
-        skeletonImage.className = 'skeleton skeleton-image';
+            // On arrête le script pour cette carte, car il n'y a rien à faire.
+            return;
+        }
+        // =================================================================
+        // FIN DE LA CORRECTION
+        // =================================================================
 
-        // Create skeleton content
-        const skeletonContent = document.createElement('div');
-        skeletonContent.className = 'skeleton-card-content';
-
-        // Create skeleton title
-        const skeletonTitle = document.createElement('div');
-        skeletonTitle.className = 'skeleton skeleton-text skeleton-title';
-
-        // Create skeleton description
-        const skeletonDesc = document.createElement('div');
-        skeletonDesc.className = 'skeleton skeleton-text skeleton-desc';
-
-        // Assemble the skeleton
-        skeletonContent.appendChild(skeletonTitle);
-        skeletonContent.appendChild(skeletonDesc);
-        skeletonCard.appendChild(skeletonImage);
-        skeletonCard.appendChild(skeletonContent);
-        loader.appendChild(skeletonCard);
-
-        imageWrapper.appendChild(loader);
-
-        // Function to create a warning message for failed image loads
         function createImageWarning(container, index) {
             const warningElement = document.createElement('div');
             warningElement.className = 'image-load-warning';
-
-            // Add warning icon (SVG)
             warningElement.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-                <p>L'image n'a pas pu être chargée</p>
-            `;
-
-            // Add the warning to the container
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <p>L'image n'a pas pu être chargée</p>
+        `;
             container.appendChild(warningElement);
-
-            // If this is the first image, make sure to show the card text
             if (index === 0 && cardTextContainer) {
                 cardTextContainer.style.opacity = '1';
             }
-
             return warningElement;
         }
 
-        // Function to check if all images are loaded
+        const failedImages = new Set();
         function checkImagesLoaded() {
             imagesLoaded++;
-            if (imagesLoaded === totalImages) {
-                // All images loaded, clear the timeout
+            if (imagesLoaded >= totalImages) {
                 clearTimeout(loadingTimeout);
-
-                // Fade out loader with transition
                 loader.style.opacity = '0';
                 loader.style.visibility = 'hidden';
-
-                // Remove loader from DOM after transition completes
                 setTimeout(() => {
-                    loader.style.display = 'none';
-
-                    // Show the card text with a smooth transition
+                    if (loader.parentNode) {
+                        loader.parentNode.removeChild(loader);
+                    }
                     if (cardTextContainer) {
                         cardTextContainer.style.opacity = '1';
                     }
-                }, 300); // Match this with the transition duration in CSS
+                }, 300);
             }
         }
 
-        // Track which images have failed to load
-        const failedImages = new Set();
-
-        // Add load event listeners to all background images with optimization
-        // Set a global timeout to prevent infinite loading
         const loadingTimeout = setTimeout(() => {
             if (imagesLoaded < totalImages) {
-                // For each image that hasn't loaded yet, show a warning
                 images.forEach((imgContainer, index) => {
-                    if (!failedImages.has(index) && !imgContainer.dataset.loaded) {
-                        // Mark this image as failed
+                    if (!imgContainer.dataset.loaded && !failedImages.has(index)) {
                         failedImages.add(index);
-                        // Create and show warning for this image
                         createImageWarning(imgContainer, index);
-                        // Count as loaded to continue
-                        checkImagesLoaded();
                     }
                 });
+                // Force la suppression du loader
+                loader.style.opacity = '0';
+                loader.style.visibility = 'hidden';
+                setTimeout(() => {
+                    if (loader.parentNode) {
+                        loader.parentNode.removeChild(loader);
+                    }
+                    if (cardTextContainer) {
+                        cardTextContainer.style.opacity = '1';
+                    }
+                }, 300);
             }
-        }, 3000); // 3 second timeout
+        }, 5000); // 5 secondes de timeout
 
-        // Process images with priority for the first one
         images.forEach((imgContainer, index) => {
             const imgElement = imgContainer.querySelector('img');
             if (imgElement && imgElement.src) {
                 const tempImg = new Image();
-
                 tempImg.onload = () => {
-                    // Mark as successfully loaded
                     imgContainer.dataset.loaded = 'true';
                     checkImagesLoaded();
                 };
-
                 tempImg.onerror = () => {
-                    // Mark as failed
                     failedImages.add(index);
-                    // Show warning message
                     createImageWarning(imgContainer, index);
-                    // Count as loaded to continue
                     checkImagesLoaded();
                 };
-
-                // Set high priority for the first image
-                if (index === 0) {
-                    tempImg.fetchPriority = "high";
-                    tempImg.loading = "eager";
-                } else {
-                    tempImg.loading = "lazy";
-                }
-
                 tempImg.src = imgElement.src;
             } else {
-                console.error('No image found in container:', imgContainer);
-                // Mark as failed
                 failedImages.add(index);
-                // Show warning message
                 createImageWarning(imgContainer, index);
-                // Count as loaded to continue
                 checkImagesLoaded();
             }
         });
 
         function showImage(index) {
-            // S'assurer que l'index est dans les limites correctes
-            let newIndex;
-            if (index < 0) {
-                newIndex = 0; // Stop at the first image instead of wrapping to the end
-            } else if (index >= images.length) {
-                newIndex = images.length - 1; // Stop at the last image instead of wrapping to the beginning
-            } else {
-                newIndex = index;
-            }
-
-            // Update currentIndex and apply the transformation
+            let newIndex = Math.max(0, Math.min(index, images.length - 1));
             currentIndex = newIndex;
             carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
-
-            // Force a reflow to ensure the transform is applied
-            void carousel.offsetWidth;
         }
 
         function startCarousel() {
             if (intervalId) clearInterval(intervalId);
             intervalId = setInterval(() => {
-                // Only advance if we're not at the last image
                 if (currentIndex < images.length - 1) {
                     showImage(currentIndex + 1);
                 } else {
-                    // Stop the carousel when we reach the last image
                     stopCarousel();
                 }
             }, 3000);
         }
 
         function stopCarousel() {
-            if (intervalId) {
-                clearInterval(intervalId);
-                intervalId = null;
-            }
+            clearInterval(intervalId);
+            intervalId = null;
         }
 
-        function resetToFirst() {
-            currentIndex = 0;
-            carousel.style.transform = `translateX(0%)`;
-        }
+        imageWrapper.addEventListener('mouseenter', () => {
+            isHovered = true;
+            startCarousel();
+        });
 
-        // The PHP code already handles showing/hiding arrows based on image count
-        // So we don't need to hide them here based on DOM structure
-        {
-            // Hover behavior - démarre le carrousel automatique
-            imageWrapper.addEventListener('mouseenter', () => {
-                isHovered = true;
-                startCarousel();
-            });
+        imageWrapper.addEventListener('mouseleave', () => {
+            isHovered = false;
+            stopCarousel();
+        });
 
-            // Quand on arrête de hover, on arrête le carrousel mais on garde la position actuelle
-            imageWrapper.addEventListener('mouseleave', () => {
-                isHovered = false;
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 stopCarousel();
-                // Ne pas réinitialiser à la première image
+                showImage(currentIndex - 1);
+                if (isHovered) {
+                    setTimeout(() => { if (isHovered) startCarousel(); }, 1000);
+                }
             });
 
-            // Arrow click behavior - navigation manuelle
-            if (prevBtn && nextBtn) {
-                prevBtn.addEventListener('click', (e) => {
-                    // Empêcher la propagation de l'événement et le comportement par défaut
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    // Arrêter le carrousel automatique temporairement
-                    stopCarousel();
-
-                    // Naviguer vers l'image précédente
-                    showImage(currentIndex - 1);
-
-                    // Redémarrer le carrousel automatique si on est toujours en hover
-                    if (isHovered) {
-                        setTimeout(() => {
-                            if (isHovered) {
-                                startCarousel();
-                            }
-                        }, 1000); // Délai d'1 seconde avant de redémarrer
-                    }
-                });
-
-                nextBtn.addEventListener('click', (e) => {
-                    // Empêcher la propagation de l'événement et le comportement par défaut
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    // Arrêter le carrousel automatique temporairement
-                    stopCarousel();
-
-                    // Naviguer vers l'image suivante
-                    showImage(currentIndex + 1);
-
-                    // Redémarrer le carrousel automatique si on est toujours en hover
-                    if (isHovered) {
-                        setTimeout(() => {
-                            if (isHovered) {
-                                startCarousel();
-                            }
-                        }, 1000); // Délai d'1 seconde avant de redémarrer
-                    }
-                });
-            }
+            nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                stopCarousel();
+                showImage(currentIndex + 1);
+                if (isHovered) {
+                    setTimeout(() => { if (isHovered) startCarousel(); }, 1000);
+                }
+            });
         }
     });
 

@@ -1,4 +1,13 @@
-/* Styles pour la page ticket */
+ .qr-code-preview {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.cart-item-purchase-date {
+    font-style: italic;
+    color: #666;
+    margin-top: 5px;
+}
 .ticket-section {
     padding: 1.25rem 1rem;
 }

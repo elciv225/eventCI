@@ -96,7 +96,6 @@ $page_content = ob_get_clean();
     <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" rel="stylesheet" />
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
-
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.13.0/mapbox-gl.js"></script>
     <link rel="stylesheet" href="assets/css/accueil.css">
     <link rel="stylesheet" href="assets/css/creation-evenement.css">
@@ -107,22 +106,34 @@ $page_content = ob_get_clean();
     <link rel="stylesheet" href="assets/css/ticket.css">
     <link rel="stylesheet" href="assets/css/confirmation.css">
     <link rel="stylesheet" href="assets/css/mapbox.css">
-
+    <link rel="icon" href="assets/images/logo.png">
 </head>
 <body data-theme="dark">
-
 <div class="page-wrapper">
     <!-- Header -->
     <header>
         <div class="header-left">
             <div class="logo-container">
-                <svg class="logo-svg" viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                          d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z"></path>
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                          d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z"></path>
+                <svg class="logo-svg" viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <style>
+                            .event-text { font-size: 50px; font-weight: bold; }
+                            .ci-text { font-size: 50px; font-weight: bold; fill: #e56717; }
+                            .event-contour { fill: none; stroke: #fff; stroke-width: 3; stroke-linejoin: round; }
+                            .wave { fill: none; stroke: #e56717; stroke-width: 1; }
+                        </style>
+                    </defs>
+                    <g>
+                        <path class="wave" d="M 50,50 C 80,20 120,80 150,50 S 220,20 250,50 S 320,80 350,50" opacity="0.6"/>
+                        <path class="wave" d="M 55,55 C 85,25 125,85 155,55 S 225,25 255,55 S 325,85 355,55" opacity="0.6"/>
+                        <path class="wave" d="M 60,60 C 90,30 130,90 160,60 S 230,30 260,60 S 330,90 360,60" opacity="0.6"/>
+                    </g>
+                    <g>
+                        <text class="event-text" x="20" y="70" fill="#333" stroke="#fff" stroke-width="3" stroke-linejoin="round">Events</text>
+                        <text class="event-text" x="20" y="70" fill="#333">Events</text>
+                        <text class="ci-text" x="240" y="70">CI</text>
+                    </g>
                 </svg>
-                <h2>Evently</h2>
             </div>
             <nav class="header-nav">
                 <a href="?page=accueil" <?php echo ($page === 'accueil' || $page === '') ? 'class="active"' : ''; ?>>Accueil</a>

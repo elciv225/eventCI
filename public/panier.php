@@ -128,7 +128,7 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'panier';
                                 </div>
                             </div>
                             <div class="cart-item-price">
-                                <?php echo number_format($item['Prix'], 2, ',', ' '); ?> €
+                                <?php echo number_format($item['Prix'], 0, '', ' '); ?> FCFA
                             </div>
                             <div class="cart-item-actions">
                                 <a href="?page=ticket&id=<?php echo $item['Id_Achat']; ?>" class="btn-secondary">Voir le ticket</a>
@@ -144,7 +144,7 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'panier';
                 <div class="cart-summary">
                     <div class="cart-total">
                         <span class="total-label">Total:</span>
-                        <span class="total-value"><?php echo number_format($cart_total, 2, ',', ' '); ?> €</span>
+                        <span class="total-value"><?php echo number_format($cart_total, 0, '', ' '); ?> FCFA</span>
                     </div>
                     <div class="cart-actions">
                         <a href="?page=accueil" class="btn-secondary">Continuer mes achats</a>
@@ -177,15 +177,10 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'panier';
                                 </div>
                             </div>
                             <div class="cart-item-price">
-                                <?php echo number_format($item['Prix'], 2, ',', ' '); ?> €
+                                <?php echo number_format($item['Prix'], 0, '', ' '); ?> FCFA
                             </div>
                             <div class="cart-item-actions">
                                 <a href="?page=ticket&id=<?php echo $item['Id_Achat']; ?>" class="btn-primary">Voir le ticket</a>
-                                <?php if (!empty($item['QRCode'])): ?>
-                                    <div class="qr-code-preview">
-                                        <img src="data:image/png;base64,<?php echo $item['QRCode']; ?>" alt="QR Code" width="80">
-                                    </div>
-                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -195,50 +190,3 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'panier';
     </section>
 </main>
 
-<style>
-.tabs {
-    display: flex;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ddd;
-}
-
-.tab-button {
-    padding: 10px 20px;
-    margin-right: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-    color: #666;
-    text-decoration: none;
-}
-
-.tab-button.active {
-    color: #007bff;
-    border-bottom: 2px solid #007bff;
-}
-
-.qr-code-preview {
-    margin-top: 10px;
-    text-align: center;
-}
-
-.cart-item-purchase-date {
-    font-style: italic;
-    color: #666;
-    margin-top: 5px;
-}
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Gestion des boutons de suppression
-        const removeForms = document.querySelectorAll('.remove-item').forEach(button => {
-            button.addEventListener('click', function(e) {
-                if (!confirm('Êtes-vous sûr de vouloir supprimer ce ticket de votre panier ?')) {
-                    e.preventDefault(); // Annuler la soumission du formulaire si l'utilisateur annule
-                }
-            });
-        });
-    });
-</script>

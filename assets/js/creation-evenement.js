@@ -136,10 +136,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const numericPrice = price.replace(/[^\d.]/g, '');
             // Ensure it's a valid number
             if (isNaN(parseFloat(numericPrice))) {
-                price = '0€';
+                price = '0 FCFA';
             } else {
                 // Format with currency symbol for display
-                price = numericPrice + '€';
+                price = numericPrice + ' FCFA';
             }
         }
 

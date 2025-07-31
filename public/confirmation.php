@@ -73,7 +73,7 @@ if ($result && $result->num_rows > 0) {
                                     <strong>Ticket:</strong> <?php echo htmlspecialchars($ticket['Titre_Ticket']); ?><br>
                                     <strong>Date de l'événement:</strong> <?php echo date('d/m/Y à H:i', strtotime($ticket['DateDebut'])); ?><br>
                                     <strong>Lieu:</strong> <?php echo htmlspecialchars($ticket['Lieu_Evenement']); ?><br>
-                                    <strong>Prix:</strong> <?php echo number_format($ticket['Prix'], 2, ',', ' '); ?> €<br>
+                                    <strong>Prix:</strong> <?php echo number_format($ticket['Prix'], 0, '', ' '); ?> FCFA<br>
                                     <strong>Date d'achat:</strong> <?php echo date('d/m/Y à H:i', strtotime($ticket['DatePaiement'])); ?>
                                 </p>
                                 <div class="ticket-actions">

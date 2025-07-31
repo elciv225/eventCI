@@ -38,7 +38,7 @@
     border-radius: 12px;
     padding: 1.5rem;
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 1rem;
 }
 
@@ -165,21 +165,4 @@
 
 .btn-danger:hover {
     background-color: #c0392b;
-}
-
-/* Responsive */
-@media (min-width: 768px) {
-    .cart-item {
-        flex-direction: row;
-        align-items: center;
-    }
-    
-    .cart-item-price {
-        margin: 0 2rem;
-    }
-    
-    .cart-actions {
-        flex-direction: row;
-        justify-content: flex-end;
-    }
 }

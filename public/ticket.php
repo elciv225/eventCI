@@ -75,9 +75,6 @@ if ($result->num_rows > 0) {
 }
 // --- Fin de la récupération des données ---
 
-// Le QR code est stocké en base64 dans la base de données
-$qr_code_src = 'data:image/png;base64,' . $ticket_data['QRCode'];
-
 // Formater les dates
 $date_achat = new DateTime($ticket_data['DateAchat']);
 $date_debut = new DateTime($ticket_data['DateDebut_Evenement']);
@@ -155,7 +152,7 @@ $heure_fin_formatted = $date_fin->format($format_time);
 
                     <div class="ticket-qr">
                         <?php if (!empty($ticket_data['QRCode'])): ?>
-                            <img src="<?php echo $qr_code_src; ?>" alt="Code QR du ticket" class="qr-code">
+                            <img src="<?php echo htmlspecialchars($ticket_data['QRCode'], ENT_QUOTES, 'UTF-8'); ?>" alt="Code QR du ticket" class="qr-code">
                         <?php else: ?>
                             <div class="qr-placeholder">QR Code non disponible</div>
                         <?php endif; ?>
@@ -171,4 +168,3 @@ $heure_fin_formatted = $date_fin->format($format_time);
         </div>
     </section>
 </main>
-

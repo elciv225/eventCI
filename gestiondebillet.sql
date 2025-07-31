@@ -23,12 +23,12 @@ CREATE TABLE IF NOT EXISTS `achat`
     `Id_Achat`           int NOT NULL AUTO_INCREMENT,
     `Id_Utilisateur`     int NOT NULL,
     `Id_TicketEvenement` int NOT NULL,
-    `DateAchat`          datetime DEFAULT CURRENT_TIMESTAMP,
-    `Statut`             varchar(20) DEFAULT 'panier',
-    `DatePaiement`       datetime DEFAULT NULL,
-    `QRCode`             LONGTEXT DEFAULT NULL,
+    `DateAchat`          datetime     DEFAULT CURRENT_TIMESTAMP,
+    `Statut`             varchar(20)  DEFAULT 'panier',
+    `DatePaiement`       datetime     DEFAULT NULL,
+    `QRCode`             LONGTEXT     DEFAULT NULL,
     `TicketUrl`          varchar(255) DEFAULT NULL,
-    `DernierScan`        datetime DEFAULT NULL,
+    `DernierScan`        datetime     DEFAULT NULL,
     PRIMARY KEY (`Id_Achat`),
     KEY `Id_Utilisateur` (`Id_Utilisateur`),
     KEY `Id_TicketEvenement` (`Id_TicketEvenement`)
@@ -241,10 +241,34 @@ CREATE TABLE IF NOT EXISTS `utilisateur`
 /*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;
 
 -- SQL script to add TicketUrl column to the achat table
-ALTER TABLE `achat` 
-ADD COLUMN `TicketUrl` varchar(255) DEFAULT NULL AFTER `QRCode`;
+ALTER TABLE `achat`
+    ADD COLUMN `TicketUrl` varchar(255) DEFAULT NULL AFTER `QRCode`;
+
+-- SQL script to add RemarqueRejet column to the achat table if it doesn't exist
+ALTER TABLE `achat`
+    ADD COLUMN `RemarqueRejet` text DEFAULT NULL AFTER `DernierScan`;
+
+-- SQL script to create the notifications table
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE IF NOT EXISTS `notifications`
+(
+    `Id_Notification`        int         NOT NULL AUTO_INCREMENT,
+    `Id_Utilisateur`         int         NOT NULL,
+    `Message`                text        NOT NULL,
+    `Type`                   varchar(50) NOT NULL,
+    `Id_Reference`           int        DEFAULT NULL,
+    `Lu`                     tinyint(1) DEFAULT 0,
+    `DateCreation`           datetime   DEFAULT CURRENT_TIMESTAMP,
+    `DonneesSupplementaires` text       DEFAULT NULL,
+    PRIMARY KEY (`Id_Notification`),
+    KEY `Id_Utilisateur` (`Id_Utilisateur`),
+    CONSTRAINT `fk_notifications_utilisateur` FOREIGN KEY (`Id_Utilisateur`) REFERENCES `utilisateur` (`Id_Utilisateur`) ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci;
 
 -- Update existing records to generate TicketUrl from Id_Achat
-UPDATE `achat` 
-SET `TicketUrl` = CONCAT('http://localhost/?page=ticket&id=', Id_Achat) 
-WHERE `TicketUrl` IS NULL AND `Statut` = 'payé';
+UPDATE `achat`
+SET `TicketUrl` = CONCAT('http://localhost/?page=ticket&id=', Id_Achat)
+WHERE `TicketUrl` IS NULL
+  AND `Statut` = 'payé';

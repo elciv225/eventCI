@@ -1,5 +1,5 @@
 <?php
-// Fichier pour traiter les modifications d'événements
+// Fichier pour traiter les modifications et suppressions d'événements
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -11,7 +11,105 @@ if (!isset($_SESSION['utilisateur']) || empty($_SESSION['utilisateur']['id'])) {
     exit;
 }
 
-// Vérifier si le formulaire a été soumis
+// Traitement de la suppression d'un événement
+if (isset($_POST['supprimer_evenement']) && isset($_POST['event_id'])) {
+    // Connexion à la base de données
+    require_once __DIR__ . '/../config/base.php';
+
+    $eventId = (int)$_POST['event_id'];
+    $userId = $_SESSION['utilisateur']['id'];
+    $activeTab = isset($_POST['active_tab']) ? $_POST['active_tab'] : 'active';
+
+    // Vérifier que l'événement appartient à l'utilisateur
+    $stmt_check = $conn->prepare("
+        SELECT COUNT(*) as count 
+        FROM evenement e 
+        JOIN creer c ON e.Id_Evenement = c.Id_Evenement 
+        WHERE e.Id_Evenement = ? AND c.Id_Utilisateur = ?
+    ");
+    $stmt_check->bind_param("ii", $eventId, $userId);
+    $stmt_check->execute();
+    $result_check = $stmt_check->get_result();
+    $count = $result_check->fetch_assoc()['count'] ?? 0;
+    $stmt_check->close();
+
+    if ($count === 0) {
+        $_SESSION['error_message'] = 'Événement non trouvé ou non autorisé.';
+        header('Location: index.php?page=profil&tab=' . $activeTab);
+        exit;
+    }
+
+    // Début de la transaction
+    $conn->begin_transaction();
+
+    try {
+        // 1. Récupérer les images de l'événement pour les supprimer physiquement
+        $stmt_images = $conn->prepare("SELECT Lien FROM imageevenement WHERE Id_Evenement = ?");
+        $stmt_images->bind_param("i", $eventId);
+        $stmt_images->execute();
+        $result_images = $stmt_images->get_result();
+        $imagePaths = [];
+        while ($row = $result_images->fetch_assoc()) {
+            $imagePaths[] = $row['Lien'];
+        }
+        $stmt_images->close();
+
+        // 2. Supprimer les achats liés aux tickets de l'événement
+        $stmt_delete_achats = $conn->prepare("
+            DELETE FROM achat 
+            WHERE Id_TicketEvenement IN (
+                SELECT Id_TicketEvenement FROM ticketevenement WHERE Id_Evenement = ?
+            )
+        ");
+        $stmt_delete_achats->bind_param("i", $eventId);
+        $stmt_delete_achats->execute();
+        $stmt_delete_achats->close();
+
+        // 3. Supprimer les tickets de l'événement
+        $stmt_delete_tickets = $conn->prepare("DELETE FROM ticketevenement WHERE Id_Evenement = ?");
+        $stmt_delete_tickets->bind_param("i", $eventId);
+        $stmt_delete_tickets->execute();
+        $stmt_delete_tickets->close();
+
+        // 4. Supprimer les images de l'événement
+        $stmt_delete_images = $conn->prepare("DELETE FROM imageevenement WHERE Id_Evenement = ?");
+        $stmt_delete_images->bind_param("i", $eventId);
+        $stmt_delete_images->execute();
+        $stmt_delete_images->close();
+
+        // 5. Supprimer les relations dans la table creer
+        $stmt_delete_creer = $conn->prepare("DELETE FROM creer WHERE Id_Evenement = ?");
+        $stmt_delete_creer->bind_param("i", $eventId);
+        $stmt_delete_creer->execute();
+        $stmt_delete_creer->close();
+
+        // 6. Supprimer l'événement lui-même
+        $stmt_delete_event = $conn->prepare("DELETE FROM evenement WHERE Id_Evenement = ?");
+        $stmt_delete_event->bind_param("i", $eventId);
+        $stmt_delete_event->execute();
+        $stmt_delete_event->close();
+
+        // Supprimer les fichiers d'images physiques
+        foreach ($imagePaths as $path) {
+            if (file_exists($path)) {
+                unlink($path);
+            }
+        }
+
+        $conn->commit();
+        $_SESSION['success_message'] = 'Événement supprimé avec succès !';
+        header('Location: index.php?page=profil&tab=' . $activeTab);
+        exit;
+
+    } catch (Exception $e) {
+        $conn->rollback();
+        $_SESSION['error_message'] = 'Une erreur est survenue lors de la suppression de l\'événement: ' . $e->getMessage();
+        header('Location: index.php?page=profil&tab=' . $activeTab);
+        exit;
+    }
+}
+
+// Vérifier si le formulaire de modification a été soumis
 if (!isset($_POST['modifier_evenement'])) {
     $_SESSION['error_message'] = 'Requête invalide.';
     header('Location: index.php?page=profil');

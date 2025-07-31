@@ -1,23 +1,32 @@
 <?php
 require_once 'vendor/autoload.php';
 use Endroid\QrCode\Builder\Builder;
-use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\Writer\SvgWriter;
+use Endroid\QrCode\Encoding\Encoding;
 
 /**
- * Génère une image QR code encodée en base64
+ * Génère une image QR code encodée en base64 (SVG - ne nécessite pas GD)
  * @param string $text Texte ou URL à encoder dans le QR code
- * @return string Image QR code encodée en base64 avec le préfixe data:image/png;base64
+ * @return string Image QR code SVG encodée en base64
+ * @throws Exception
  */
 function generateQrBase64(string $text): string {
-    $result = Builder::create()
-        ->writer(new PngWriter())
-        ->data($text)
-        ->size(300)
-        ->margin(10)
-        ->build();
+    try {
+        // Construction du QR code avec SVG Writer (pas besoin de GD)
+        $builder = new Builder(
+            writer: new SvgWriter(),
+            data: $text,
+            encoding: new Encoding('UTF-8'),
+            size: 400,
+            margin: 10
+        );
 
-    // Convertir l’image PNG en base64
-    $dataUri = $result->getDataUri();
+        $result = $builder->build();
 
-    return $dataUri; // Exemple : data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...
+        // Conversion en base64 pour SVG
+        return 'data:image/svg+xml;base64,' . base64_encode($result->getString());
+
+    } catch (Exception $e) {
+        throw new Exception("Erreur lors de la génération du QR code : " . $e->getMessage());
+    }
 }

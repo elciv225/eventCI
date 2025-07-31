@@ -85,9 +85,6 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
         <!-- Titre modifié comme demandé -->
         <h2 class="section-title">Événements à venir</h2>
         <div class="horizontal-scroll-container" id="upcoming-events-carousel" data-section-carousel>
-            <button class="horizontal-scroll-nav prev">&lt;</button>
-            <button class="horizontal-scroll-nav next">&gt;</button>
-
             <?php if (empty($upcoming_events)): ?>
                 <div class="event-card event-card-horizontal">
                     <div class="event-card-empty">
@@ -101,7 +98,6 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                     <div class="event-card event-card-horizontal">
                         <div class="event-card-image-wrapper aspect-video">
                             <div class="event-card-carousel" data-carousel>
-                                <!-- Les flèches de carrousel n'apparaissent que s'il y a plusieurs images -->
                                 <?php
                                 // Récupérer toutes les images pour cet événement
                                 $event_images_query = "SELECT Lien FROM imageevenement WHERE Id_Evenement = ?";
@@ -109,19 +105,22 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                                 $stmt_images->bind_param("i", $event['Id_Evenement']);
                                 $stmt_images->execute();
                                 $image_result = $stmt_images->get_result();
-                                $image_count = $image_result->num_rows;
+                                $all_images = $image_result->fetch_all(MYSQLI_ASSOC);
+                                $image_count = count($all_images);
+                                $stmt_images->close();
 
-                                // Ajouter les images supplémentaires au carrousel
-                                if ($image_count > 1) {
-                                    while ($img = $image_result->fetch_assoc()) {
-                                        if ($img['Lien'] != $event['image_lien']) { // Éviter de dupliquer la première image
-                                            echo '<div class="event-card-image">';
-                                            echo '<img src="' . htmlspecialchars($img['Lien']) . '" alt="' . htmlspecialchars($event['Titre']) . '"/>';
-                                            echo '</div>';
-                                        }
+                                // S'il n'y a aucune image, on peut mettre une image par défaut (optionnel)
+                                if ($image_count === 0) {
+                                    // echo '<div class="event-card-image"><img src="/path/to/default-image.jpg" alt="Image par défaut"/></div>';
+                                } else {
+                                    // Afficher toutes les images récupérées
+                                    foreach ($all_images as $img) {
+                                        echo '<div class="event-card-image">';
+                                        echo '<img src="' . htmlspecialchars($img['Lien']) . '" alt="' . htmlspecialchars($event['Titre']) . '"/>';
+                                        echo '</div>';
                                     }
                                 }
-                                $stmt_images->close(); ?>
+                                ?>
                             </div>
                             <?php if ($image_count > 1): ?>
                                 <button class="carousel-arrow prev">&lt;</button>
@@ -146,6 +145,7 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                         </a>
                     </div>
                 <?php endforeach; ?>
+
             <?php endif; ?>
         </div>
     </section>
