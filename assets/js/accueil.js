@@ -1,4 +1,94 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Common elements
+    const header = document.querySelector('.header-principale');
+
+    // --- Page Loader Logic ---
+    const pageLoader = document.getElementById('page-loader');
+    if (pageLoader && header) {
+        // Position the loader under the header
+        const positionLoader = function() {
+            const headerHeight = header.offsetHeight;
+            pageLoader.style.top = headerHeight + 'px';
+            pageLoader.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+        };
+
+        // Position immediately and on resize
+        positionLoader();
+        window.addEventListener('resize', positionLoader);
+
+        // Hide loader when page is fully loaded
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                pageLoader.classList.add('loaded');
+                // Remove from DOM after animation completes
+                setTimeout(function() {
+                    if (pageLoader.parentNode) {
+                        pageLoader.parentNode.removeChild(pageLoader);
+                    }
+                }, 300); // Match the duration of the loaderFadeOut animation
+            }, 500); // Small delay to ensure the loader is visible even on fast loads
+        });
+    }
+
+    // --- Sticky Header Logic ---
+    const mobileSearch = document.querySelector('.mobile-search-section');
+    let lastScrollTop = 0;
+    const scrollThreshold = 100; // Pixels to scroll before hiding header
+    let isHeaderVisible = true;
+
+    function handleScroll() {
+        const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Determine scroll direction
+        if (currentScrollTop > lastScrollTop && currentScrollTop > scrollThreshold) {
+            // Scrolling down past threshold
+            if (isHeaderVisible) {
+                // Hide header
+                header.style.transform = 'translateY(-100%)';
+                isHeaderVisible = false;
+                document.body.classList.add('header-hidden');
+
+                // If mobile search exists, move it to top position
+                if (mobileSearch) {
+                    mobileSearch.style.transform = 'translateY(0)';
+                    mobileSearch.style.top = '0';
+                }
+            }
+        } else if (currentScrollTop < lastScrollTop) {
+            // Scrolling up
+            if (!isHeaderVisible) {
+                // Show header
+                header.style.transform = 'translateY(0)';
+                isHeaderVisible = true;
+                document.body.classList.remove('header-hidden');
+
+                // If mobile search exists, move it below header
+                if (mobileSearch) {
+                    mobileSearch.style.transform = 'translateY(0)';
+                    // When header is visible, position search below it
+                    mobileSearch.style.top = header.offsetHeight + 'px';
+                }
+            }
+        }
+
+        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // For Mobile or negative scrolling
+    }
+
+    // Set initial position for mobile search if it exists
+    if (mobileSearch && header) {
+        mobileSearch.style.top = header.offsetHeight + 'px';
+    }
+
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Update mobile search position on window resize
+    window.addEventListener('resize', function() {
+        if (mobileSearch && header && isHeaderVisible) {
+            mobileSearch.style.top = header.offsetHeight + 'px';
+        }
+    });
+
     // --- User Menu Dropdown Logic ---
     const userMenu = document.querySelector('.user-menu');
     const authMenu = document.querySelector('.auth-menu');

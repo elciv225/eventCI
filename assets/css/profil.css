@@ -311,14 +311,7 @@
 
 /* Styles pour les tickets */
 .tickets-list {
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
-    border: 1px solid var(--border-light);
-    border-radius: 8px;
-    padding: 1rem;
-    background-color: var(--bg-tertiary);
-    max-height: 300px;
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 .tickets-list p {
@@ -327,18 +320,7 @@
     margin: 1rem 0;
 }
 
-.ticket-item {
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--border-medium);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 4px var(--shadow-light);
-}
 
-.ticket-item:last-child {
-    margin-bottom: 0;
-}
 
 .ticket-header {
     display: flex;

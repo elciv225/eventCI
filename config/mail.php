@@ -1,6 +1,6 @@
 <?php
-require_once 'vendor/autoload.php';
-require_once 'qrcode.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/qrcode.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -269,7 +269,8 @@ function sendWelcomeEmail($to, $username, $activationLink = null) {
  * @param string $viewTicketUrl URL pour voir le ticket (optionnel)
  * @return bool Succès de l'envoi
  */
-function sendTicketReceiptEmail($to, $username, $ticketData, $viewTicketUrl = null) {
+function sendTicketReceiptEmail(string $to, string $username, array $ticketData, string $viewTicketUrl = ''): bool
+{
     $title = "Reçu de commande de ticket";
     $subject = "Confirmation de votre achat de ticket - EventCI";
 
@@ -298,7 +299,7 @@ function sendTicketReceiptEmail($to, $username, $ticketData, $viewTicketUrl = nu
         </div>";
 
     // Ajouter le QR code s'il est disponible
-    if (isset($ticketData['QRCode']) && !empty($ticketData['QRCode'])) {
+    if (!empty($ticketData['QRCode'])) {
         $content .= "
         <div style='text-align: center; margin: 20px 0;'>
             <h3 style='color: #555;'>Votre QR Code :</h3>

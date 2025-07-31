@@ -106,12 +106,13 @@ $page_content = ob_get_clean();
     <link rel="stylesheet" href="assets/css/ticket.css">
     <link rel="stylesheet" href="assets/css/confirmation.css">
     <link rel="stylesheet" href="assets/css/mapbox.css">
+    <link rel="stylesheet" href="assets/css/recherche.css">
     <link rel="icon" href="assets/images/logo.png">
 </head>
-<body data-theme="dark">
+<body data-theme="light">
 <div class="page-wrapper">
     <!-- Header -->
-    <header>
+    <header class="header-principale">
         <div class="header-left">
             <div class="logo-container">
                 <svg class="logo-svg" viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg">
@@ -205,6 +206,9 @@ $page_content = ob_get_clean();
         </div>
     </header>
 
+    <!-- Page loader -->
+    <div class="page-loader" id="page-loader"></div>
+
     <!-- Mobile menu overlay -->
     <div class="mobile-menu-overlay"></div>
 
@@ -234,6 +238,7 @@ $page_content = ob_get_clean();
 <script src="assets/js/accueil.js" defer></script>
 <script src="assets/js/creation-evenement.js" defer></script>
 <script src="assets/js/mapbox.js" defer></script>
+<script src="assets/js/recherche.js" defer></script>
 <script>
     // Le code de débogage et les popups sont maintenant exécutés en toute sécurité
     // après le rendu de la page.

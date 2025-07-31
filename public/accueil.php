@@ -111,7 +111,7 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
 
                                 // S'il n'y a aucune image, on peut mettre une image par défaut (optionnel)
                                 if ($image_count === 0) {
-                                    // echo '<div class="event-card-image"><img src="/path/to/default-image.jpg" alt="Image par défaut"/></div>';
+                                    echo '<div class="event-card-image"><img src="assets/images/default-event.jpg" alt="Image par défaut"/></div>';
                                 } else {
                                     // Afficher toutes les images récupérées
                                     foreach ($all_images as $img) {
@@ -162,7 +162,7 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                 </div>
             </div>
         <?php else: ?>
-            <div class="events-grid" id="recommended-grid" data-section-carousel>
+        <div class="events-grid" id="recommended-grid" data-section-carousel>
             <?php foreach ($recommended_events as $event): ?>
                 <div class="event-card">
                     <div class="event-card-image-wrapper aspect-square">
@@ -177,14 +177,12 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                             $image_count = $image_result->num_rows;
 
                             // Ajouter les images supplémentaires au carrousel
-                            if ($image_count > 1) {
-                                while ($img = $image_result->fetch_assoc()) {
-                                    if ($img['Lien'] != $event['image_lien']) { // Éviter de dupliquer la première image
-                                        echo '<div class="event-card-image">';
-                                        echo '<img src="' . htmlspecialchars($img['Lien']) . '" alt="' . htmlspecialchars($event['Titre']) . '"/>';
-                                        echo '</div>';
-                                    }
-                                }
+
+                            while ($img = $image_result->fetch_assoc()) {
+                                // Éviter de dupliquer la première image
+                                echo '<div class="event-card-image">';
+                                echo '<img src="' . htmlspecialchars($img['Lien']) . '" alt="' . htmlspecialchars($event['Titre']) . '"/>';
+                                echo '</div>';
                             }
                             $stmt_images->close();
                             ?>
@@ -194,27 +192,28 @@ if ($recommended_result && $recommended_result->num_rows > 0) {
                             <button class="carousel-arrow next">&gt;</button>
                         <?php endif; ?>
                     </div>
-                </div>
-                <a href="?page=details&info-event=<?php echo $event['Id_Evenement']; ?>">
-                    <div>
-                        <h3 class="event-card-title"><?php echo htmlspecialchars($event['Titre']); ?></h3>
-                        <p class="event-card-desc">
-                            <?php
-                            $desc = htmlspecialchars($event['Description']);
-                            echo (strlen($desc) > 100) ? substr($desc, 0, 97) . '...' : $desc;
-                            ?>
-                        </p>
-                        <p class="event-card-meta">
-                            <span class="event-category"><?php echo htmlspecialchars($event['categorie']); ?></span>
-                            |
-                            <span class="event-location"><?php echo htmlspecialchars($event['salle']); ?></span>
-                        </p>
-                    </div>
-                </a>
+
+                    <a href="?page=details&info-event=<?php echo $event['Id_Evenement']; ?>">
+                        <div>
+                            <h3 class="event-card-title"><?php echo htmlspecialchars($event['Titre']); ?></h3>
+                            <p class="event-card-desc">
+                                <?php
+                                $desc = htmlspecialchars($event['Description']);
+                                echo (strlen($desc) > 100) ? substr($desc, 0, 97) . '...' : $desc;
+                                ?>
+                            </p>
+                            <p class="event-card-meta">
+                                <span class="event-category"><?php echo htmlspecialchars($event['categorie']); ?></span>
+                                |
+                                <span class="event-location"><?php echo htmlspecialchars($event['salle']); ?></span>
+                            </p>
+                        </div>
+                    </a>
                 </div>
             <?php endforeach; ?>
-        <?php endif; ?>
+            <?php endif; ?>
         </div>
+
         <div class="see-more-container" id="see-more-container">
             <a href="#" class="see-more-link" id="see-more-link">Voir plus</a>
         </div>

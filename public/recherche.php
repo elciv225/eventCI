@@ -193,48 +193,8 @@ if (!empty($query)) {
     <section class="search-results-section">
         <h1 class="section-title"><?php echo $page_title; ?></h1>
 
-        <!-- Filtres actifs et possibilité de les modifier -->
-        <div class="active-filters">
-            <div class="filter-section">
-                <!-- Section Date -->
-                <div class="filter-group">
-                    <span class="filter-group-title">Date:</span>
-                    <div class="filter-buttons">
-                        <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo $category_id > 0 ? '&category='.$category_id : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>&date=today" class="filter-link <?php echo $date_filter === 'today' ? 'active' : ''; ?>">Aujourd'hui</a>
-                        <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo $category_id > 0 ? '&category='.$category_id : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>&date=week" class="filter-link <?php echo $date_filter === 'week' ? 'active' : ''; ?>">Cette semaine</a>
-                        <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo $category_id > 0 ? '&category='.$category_id : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>&date=month" class="filter-link <?php echo $date_filter === 'month' ? 'active' : ''; ?>">Ce mois-ci</a>
-                        <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo $category_id > 0 ? '&category='.$category_id : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>&date=next_month" class="filter-link <?php echo $date_filter === 'next_month' ? 'active' : ''; ?>">Dans un mois</a>
-                    </div>
-                </div>
-
-                <!-- Section Catégorie (afficher seulement quelques catégories) -->
-                <div class="filter-group">
-                    <span class="filter-group-title">Catégorie:</span>
-                    <div class="filter-buttons">
-                        <?php 
-                        $displayed_categories = array_slice($categories, 0, 5); // Limiter à 5 catégories
-                        foreach ($displayed_categories as $cat): 
-                        ?>
-                            <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo !empty($date_filter) ? '&date='.$date_filter : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>&category=<?php echo $cat['Id_CategorieEvenement']; ?>" class="filter-link <?php echo $category_id == $cat['Id_CategorieEvenement'] ? 'active' : ''; ?>"><?php echo htmlspecialchars($cat['Libelle']); ?></a>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-
-                <!-- Section Ville désactivée car la table ville n'est plus utilisée -->
-                <!-- <div class="filter-group">
-                    <span class="filter-group-title">Ville:</span>
-                    <div class="filter-buttons">
-                        <?php 
-                        // $displayed_cities = array_slice($cities, 0, 5); // Limiter à 5 villes
-                        // foreach ($displayed_cities as $city): 
-                        ?>
-                            <a href="?page=recherche<?php // echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php // echo !empty($date_filter) ? '&date='.$date_filter : ''; ?><?php // echo $category_id > 0 ? '&category='.$category_id : ''; ?>&city=<?php // echo $city['Id_Ville']; ?>" class="filter-link <?php // echo $city_id == $city['Id_Ville'] ? 'active' : ''; ?>"><?php // echo htmlspecialchars($city['Libelle']); ?></a>
-                        <?php // endforeach; ?>
-                    </div>
-                </div> -->
-            </div>
-
-            <!-- Formulaire de recherche -->
+        <!-- Section de recherche mobile (comme sur l'accueil) -->
+        <div class="mobile-search-section">
             <form action="?page=recherche" method="get" class="search-container">
                 <input type="hidden" name="page" value="recherche">
                 <?php if (!empty($date_filter)): ?>
@@ -243,19 +203,105 @@ if (!empty($query)) {
                 <?php if ($category_id > 0): ?>
                     <input type="hidden" name="category" value="<?php echo $category_id; ?>">
                 <?php endif; ?>
-                <?php /* Filtre ville désactivé
-                if ($city_id > 0): ?>
-                    <input type="hidden" name="city" value="<?php echo $city_id; ?>">
-                <?php endif; */ ?>
-                <div class="search-input-wrapper">
-                    <input type="text" name="query" value="<?php echo htmlspecialchars($query); ?>" placeholder="Rechercher des événements" class="search-input">
-                    <button type="submit" class="search-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                            <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
-                        </svg>
-                    </button>
-                </div>
+                <input type="text" name="query" value="<?php echo htmlspecialchars($query); ?>" placeholder="Rechercher des événements"
+                       class="search-input" style="height: 3rem; padding-left: 3rem;"/>
+                <button type="submit" class="search-icon"
+                        style="left: 1rem; background: none; border: none; cursor: pointer;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 0 256 256">
+                        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                    </svg>
+                </button>
             </form>
+        </div>
+
+        <!-- Filtres actifs et possibilité de les modifier -->
+        <div class="active-filters">
+            <!-- Bouton pour afficher/masquer les filtres -->
+            <button id="toggle-filters" class="filter-toggle-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M200,128a8,8,0,0,1-8,8H64a8,8,0,0,1,0-16H192A8,8,0,0,1,200,128ZM64,72H192a8,8,0,0,0,0-16H64a8,8,0,0,0,0,16ZM192,184H64a8,8,0,0,0,0,16H192a8,8,0,0,0,0-16Z"></path>
+                </svg>
+                Filtres
+                <?php if (!empty($date_filter) || $category_id > 0): ?>
+                    <span class="filter-badge"><?php echo (!empty($date_filter) ? 1 : 0) + ($category_id > 0 ? 1 : 0); ?></span>
+                <?php endif; ?>
+            </button>
+
+            <!-- Conteneur de filtres (masqué par défaut) -->
+            <div id="filter-container" class="filter-container">
+                <div class="filter-section">
+                    <!-- Section Date -->
+                    <div class="filter-group filter-card">
+                        <span class="filter-group-title">Date:</span>
+                        <div class="filter-buttons">
+                            <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo $category_id > 0 ? '&category='.$category_id : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>&date=today" class="filter-link <?php echo $date_filter === 'today' ? 'active' : ''; ?>">Aujourd'hui</a>
+                            <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo $category_id > 0 ? '&category='.$category_id : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>&date=week" class="filter-link <?php echo $date_filter === 'week' ? 'active' : ''; ?>">Cette semaine</a>
+                            <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo $category_id > 0 ? '&category='.$category_id : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>&date=month" class="filter-link <?php echo $date_filter === 'month' ? 'active' : ''; ?>">Ce mois-ci</a>
+                            <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo $category_id > 0 ? '&category='.$category_id : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>&date=next_month" class="filter-link <?php echo $date_filter === 'next_month' ? 'active' : ''; ?>">Dans un mois</a>
+                        </div>
+                    </div>
+
+                    <!-- Section Catégorie (afficher seulement quelques catégories) -->
+                    <div class="filter-group filter-card">
+                        <span class="filter-group-title">Catégorie:</span>
+                        <div class="filter-buttons">
+                            <?php 
+                            $displayed_categories = array_slice($categories, 0, 5); // Limiter à 5 catégories
+                            foreach ($displayed_categories as $cat): 
+                            ?>
+                                <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo !empty($date_filter) ? '&date='.$date_filter : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>&category=<?php echo $cat['Id_CategorieEvenement']; ?>" class="filter-link <?php echo $category_id == $cat['Id_CategorieEvenement'] ? 'active' : ''; ?>"><?php echo htmlspecialchars($cat['Libelle']); ?></a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
+                    <!-- Section Ville désactivée car la table ville n'est plus utilisée -->
+                    <!-- <div class="filter-group filter-card">
+                        <span class="filter-group-title">Ville:</span>
+                        <div class="filter-buttons">
+                            <?php 
+                            // $displayed_cities = array_slice($cities, 0, 5); // Limiter à 5 villes
+                            // foreach ($displayed_cities as $city): 
+                            ?>
+                                <a href="?page=recherche<?php // echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php // echo !empty($date_filter) ? '&date='.$date_filter : ''; ?><?php // echo $category_id > 0 ? '&category='.$category_id : ''; ?>&city=<?php // echo $city['Id_Ville']; ?>" class="filter-link <?php // echo $city_id == $city['Id_Ville'] ? 'active' : ''; ?>"><?php // echo htmlspecialchars($city['Libelle']); ?></a>
+                            <?php // endforeach; ?>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+
+            <!-- Affichage des filtres actifs -->
+            <div class="active-filter-tags">
+                <?php if (!empty($date_filter)): ?>
+                    <div class="filter-tag">
+                        <?php 
+                        $date_labels = [
+                            'today' => "Aujourd'hui",
+                            'week' => "Cette semaine",
+                            'month' => "Ce mois-ci",
+                            'next_month' => "Dans un mois"
+                        ];
+                        echo $date_labels[$date_filter] ?? "Date"; 
+                        ?>
+                        <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo $category_id > 0 ? '&category='.$category_id : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>" class="remove-filter">×</a>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($category_id > 0): 
+                    $category_name = "";
+                    foreach ($categories as $cat) {
+                        if ($cat['Id_CategorieEvenement'] == $category_id) {
+                            $category_name = $cat['Libelle'];
+                            break;
+                        }
+                    }
+                ?>
+                    <div class="filter-tag">
+                        <?php echo htmlspecialchars($category_name); ?>
+                        <a href="?page=recherche<?php echo !empty($query) ? '&query='.urlencode($query) : ''; ?><?php echo !empty($date_filter) ? '&date='.$date_filter : ''; ?><?php echo $city_id > 0 ? '&city='.$city_id : ''; ?>" class="remove-filter">×</a>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
 
         <!-- Carte des événements -->
@@ -368,7 +414,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Vérifier si la géolocalisation est disponible et si nous n'utilisons pas déjà la position de l'utilisateur
-    if (navigator.geolocation && !usingUserLocation) {
+    // Vérifier également si nous avons déjà demandé la géolocalisation dans cette session
+    const geolocRequested = sessionStorage.getItem('geolocRequested');
+
+    if (navigator.geolocation && !usingUserLocation && !geolocRequested) {
+        // Marquer que nous avons demandé la géolocalisation pour éviter de redemander
+        sessionStorage.setItem('geolocRequested', 'true');
+
         // Demander la position de l'utilisateur
         navigator.geolocation.getCurrentPosition(
             // Succès
@@ -519,14 +571,70 @@ document.addEventListener('DOMContentLoaded', function() {
             event.element.classList.remove('highlight');
         });
 
-        event.element.addEventListener('mouseenter', () => {
-            marker.getElement().classList.add('highlight');
-            marker.togglePopup();
+        // Prevent default behavior on links inside event cards to avoid page reload
+        const links = event.element.querySelectorAll('a');
+        links.forEach(link => {
+            // Store the original href
+            const href = link.getAttribute('href');
+
+            // Add click event listener to handle navigation manually
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Use history.pushState to change the URL without reloading the page
+                window.location.href = href;
+            });
         });
 
-        event.element.addEventListener('mouseleave', () => {
+        // Simplified mouseenter event - only highlight the marker
+        event.element.addEventListener('mouseenter', (e) => {
+            marker.getElement().classList.add('highlight');
+        });
+
+        // Add double-click event to the image part of the event card
+        const imageWrapper = event.element.querySelector('.event-card-image-wrapper');
+        if (imageWrapper) {
+            imageWrapper.addEventListener('dblclick', (e) => {
+                // Prevent click from propagating to parent elements
+                e.stopPropagation();
+
+                // Don't interfere with carousel arrows
+                if (e.target.classList.contains('carousel-arrow')) {
+                    return;
+                }
+
+                // Show popup
+                marker.togglePopup();
+
+                // Smooth fly to the marker location with animation
+                map.flyTo({
+                    center: event.coordinates,
+                    zoom: 14,
+                    speed: 0.8, // Slower for smoother animation
+                    curve: 1, // Smooth animation curve
+                    essential: true // This animation is considered essential for the user experience
+                });
+
+                // Scroll the map into view if it's not already visible
+                const mapRect = mapContainer.getBoundingClientRect();
+                const isMapVisible = (
+                    mapRect.top >= 0 &&
+                    mapRect.left >= 0 &&
+                    mapRect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    mapRect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+
+                if (!isMapVisible) {
+                    // Smooth scroll to the map
+                    mapContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center'
+                    });
+                }
+            });
+        }
+
+        event.element.addEventListener('mouseleave', (e) => {
             marker.getElement().classList.remove('highlight');
-            marker.togglePopup();
         });
     });
 });

@@ -25,6 +25,14 @@ header {
     white-space: nowrap;
 }
 
+/* Sticky header */
+.header-principale {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
 .header-left, .header-right, .logo-container {
     display: flex;
     align-items: center;
@@ -169,6 +177,10 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    transition: transform 0.5s ease-in-out, top 0.5s ease-in-out;
 }
 
 .filter-section {
@@ -673,7 +685,7 @@ main {
 .see-more-container {
     display: flex;
     justify-content: center;
-    padding-bottom: 2rem;
+    padding: 2rem 0 0;
 }
 
 .see-more-link {
@@ -774,7 +786,12 @@ body.mobile-menu-open .mobile-menu-toggle span:nth-child(3) {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 998;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, top 0.3s ease;
+}
+
+/* Adjust overlay position when header is hidden */
+body.header-hidden .mobile-menu-overlay {
+    top: 0;
 }
 
 body.mobile-menu-open .mobile-menu-overlay {
@@ -795,7 +812,13 @@ body.mobile-menu-open .header-nav {
     box-shadow: 0 4px 6px var(--shadow-light);
     z-index: 999;
     transform: translateX(0);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), top 0.3s ease;
+}
+
+/* Adjust mobile menu position when header is hidden */
+body.header-hidden.mobile-menu-open .header-nav {
+    top: 0;
+    height: 100vh;
 }
 
 @keyframes slideDown {
@@ -875,6 +898,11 @@ body.mobile-menu-open .header-nav a:last-child {
         flex-direction: column;
     }
 
+    /* Ensure mobile search is properly positioned when header is hidden */
+    body.header-hidden .mobile-search-section {
+        top: 0;
+    }
+
     .header-nav a {
         opacity: 0;
         transform: translateX(-20px);
@@ -941,7 +969,6 @@ body.mobile-menu-open .header-nav a:last-child {
     }
     body .search-container{
         width: 100%;
-        margin-bottom: 2rem;
     }
 
     .event-card-image {

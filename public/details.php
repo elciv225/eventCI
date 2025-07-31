@@ -183,6 +183,202 @@ $user_id = $user_logged_in ? $_SESSION['utilisateur']['id'] : 0;
                 <!-- Tickets disponibles -->
                 <div class="event-tickets">
                     <h3>Tickets disponibles</h3>
+                    <style>
+                        /* Style pour reproduire le design de l'aperçu */
+                        .ticket-item {
+                            background: var(--bg-secondary);
+                            border-radius: 16px;
+                            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+                            margin-bottom: 16px;
+                            padding: 0;
+                            display: flex;
+                            align-items: stretch;
+                            overflow: hidden;
+                            border: 1px solid #f0f0f0;
+                            transition: all 0.2s ease;
+                            position: relative;
+                        }
+
+                        .ticket-item:hover {
+                            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+                            transform: translateY(-1px);
+                        }
+
+                        /* Barre latérale orange */
+                        .ticket-item::before {
+                            content: '';
+                            width: 4px;
+                            background: var(--text-highlight);
+                            flex-shrink: 0;
+                        }
+
+                        .ticket-info {
+                            flex: 1;
+                            padding: 20px 24px;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-between;
+                        }
+
+                        .ticket-title {
+                            color: var(--text-primary);
+                            font-size: 1.25rem;
+                            font-weight: 600;
+                            margin: 0 0 8px 0;
+                            line-height: 1.4;
+                        }
+
+                        .ticket-desc {
+                            color: #888;
+                            font-size: 0.9rem;
+                            margin: 0 0 20px 0;
+                            line-height: 1.4;
+                            opacity: 0.8;
+                        }
+
+                        /* Section prix et disponibilité */
+                        .ticket-pricing {
+                            display: flex;
+                            align-items: center;
+                            gap: 24px;
+                            margin-top: auto;
+                        }
+
+                        .ticket-price {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        }
+
+                        .price-icon {
+                            font-size: 1.1rem;
+                        }
+
+                        .price-amount {
+                            color: var(--text-highlight);
+                            font-size: 1.5rem;
+                            font-weight: 700;
+                            line-height: 1;
+                        }
+
+                        .price-currency {
+                            color: var(--text-highlight);
+                            font-size: 1rem;
+                            font-weight: 600;
+                        }
+
+                        .ticket-availability {
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            color: #666;
+                            font-size: 0.85rem;
+                            background: #f8f9fa;
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            font-weight: 500;
+                        }
+
+                        .availability-icon {
+                            font-size: 0.9rem;
+                        }
+
+                        .ticket-actions {
+                            display: flex;
+                            align-items: center;
+                            padding: 20px 24px;
+                            background: #fafafa;
+                        }
+
+                        /* Version responsive */
+                        @media (max-width: 768px) {
+                            .ticket-item {
+                                flex-direction: column;
+                            }
+
+                            .ticket-item::before {
+                                width: 100%;
+                                height: 4px;
+                            }
+
+                            .ticket-pricing {
+                                flex-direction: column;
+                                align-items: flex-start;
+                                gap: 12px;
+                            }
+
+                            .ticket-actions {
+                                padding: 16px 24px;
+                                background: transparent;
+                            }
+
+                            .btn-primary {
+                                width: 100%;
+                            }
+                        }
+
+                        @media (max-width: 480px) {
+                            .ticket-item {
+                                margin-bottom: 12px;
+                            }
+
+                            .ticket-info {
+                                padding: 16px 20px;
+                            }
+
+                            .ticket-actions {
+                                padding: 12px 20px;
+                            }
+
+                            .ticket-title {
+                                font-size: 1.1rem;
+                            }
+
+                            .price-amount {
+                                font-size: 1.3rem;
+                            }
+                        }
+
+                        /* Animation d'entrée */
+                        @keyframes fadeInUp {
+                            from {
+                                opacity: 0;
+                                transform: translateY(20px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+
+                        .ticket-item {
+                            animation: fadeInUp 0.4s ease-out;
+                        }
+
+                        /* État épuisé */
+                        .ticket-item.sold-out {
+                            opacity: 0.6;
+                        }
+
+                        .ticket-item.sold-out .btn-primary {
+                            background: #ccc;
+                            cursor: not-allowed;
+                        }
+
+                        .ticket-item.sold-out .btn-primary:hover {
+                            background: #ccc;
+                            transform: none;
+                            box-shadow: none;
+                        }
+
+                        /* Conteneur principal */
+                        .tickets-container {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 16px;
+                            padding: 20px 0;
+                        }
+                    </style>
                     <?php if (empty($tickets)): ?>
                         <p class="no-tickets">Aucun ticket disponible pour cet événement.</p>
                     <?php else: ?>
@@ -192,19 +388,26 @@ $user_id = $user_logged_in ? $_SESSION['utilisateur']['id'] : 0;
                                     <div class="ticket-info">
                                         <h4 class="ticket-title"><?php echo htmlspecialchars($ticket['Titre']); ?></h4>
                                         <p class="ticket-desc"><?php echo htmlspecialchars($ticket['Description']); ?></p>
-                                        <div class="ticket-price"><?php echo number_format($ticket['Prix'], 0, '', ' '); ?>
-                                            FCFA
-                                        </div>
-                                        <div class="ticket-availability"><?php echo $ticket['NombreDisponible']; ?>
-                                            disponibles
+
+                                        <div class="ticket-pricing">
+                                            <div class="ticket-price">
+                                                <span class="price-icon">🎫</span>
+                                                <span class="price-amount"><?php echo number_format($ticket['Prix'], 0, '', ' '); ?></span>
+                                                <span class="price-currency">FCFA</span>
+                                            </div>
+
+                                            <div class="ticket-availability">
+                                                <span class="availability-icon">📊</span>
+                                                <span><?php echo $ticket['NombreDisponible']; ?> disponibles</span>
+                                            </div>
                                         </div>
                                     </div>
 
+                                    <div class="ticket-actions">
                                         <a href="?page=commande&ticket=<?php echo $ticket['Id_TicketEvenement']; ?>"
                                            class="btn-primary">Commander</a>
-
+                                    </div>
                                 </div>
-
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>

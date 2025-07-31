@@ -62,7 +62,14 @@ if ($action === 'checkout') {
                 $ticket_url = "http://" . $_SERVER['HTTP_HOST'] . "/?page=ticket&id=" . $ticket['Id_Achat'];
 
                 // Générer le QR code avec l'URL
-                $qrcode_base64 = generateQrBase64($ticket_url);
+                // Initialiser la variable QR code
+                $qrcode_base64 = '';
+                try {
+                    $qrcode_base64 = generateQrBase64($ticket_url);
+                } catch (Exception $e) {
+                    error_log("Erreur lors de la génération du QR code: " . $e->getMessage());
+                    // Continuer sans QR code
+                }
 
                 // Sauvegarder le QR code et l'URL dans la base de données
                 $qrcode_query = "UPDATE achat SET QRCode = ?, TicketUrl = ?, DatePaiement = NOW() WHERE Id_Achat = ?";
@@ -73,9 +80,8 @@ if ($action === 'checkout') {
                 // Préparer les données pour l'email
                 $ticket_email_data = [
                     'Id_Achat' => $ticket['Id_Achat'],
-                    'Titre_Evenement' => $ticket['Titre_Evenement'],
-                    'Titre_Ticket' => $ticket['Titre_Ticket'],
-                    'Date_Evenement' => (new DateTime($ticket['DateDebut']))->format('d/m/Y à H:i'),
+                    'Titre_Evenement' => $ticket['Titre_Evenement'] ?? 'N/A',
+                    'Titre_Ticket' => $ticket['Titre_Ticket'] ?? 'N/A',
                     'Lieu' => $ticket['Lieu'] ?? 'N/A',
                     'QRCode' => $qrcode_base64,
                     'Prix' => $ticket['Prix'] ?? 0,
@@ -83,11 +89,21 @@ if ($action === 'checkout') {
                     'DatePaiement' => date('Y-m-d H:i:s')
                 ];
 
+                // Formater la date de l'événement
+                try {
+                    $ticket_email_data['Date_Evenement'] = new DateTime($ticket['DateDebut'])->format('d/m/Y à H:i');
+                } catch (Exception $e) {
+                    error_log("Erreur de format de date: " . $e->getMessage());
+                    $ticket_email_data['Date_Evenement'] = 'Date non disponible';
+                }
+
                 // Envoyer l'email avec le ticket
                 $email_sent = sendTicketReceiptEmail($user_email, $user_name, $ticket_email_data, $ticket_url);
 
                 if (!$email_sent) {
                     error_log("Erreur lors de l'envoi de l'email pour le ticket ID: " . $ticket['Id_Achat']);
+                    // Ajouter un message d'erreur dans la session pour informer l'utilisateur
+                    $_SESSION['error_message'] = "Nous n'avons pas pu vous envoyer l'email de confirmation. Veuillez vérifier votre adresse email.";
                 }
             }
 
