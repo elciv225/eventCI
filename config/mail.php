@@ -296,6 +296,16 @@ function sendTicketReceiptEmail($to, $username, $ticketData, $viewTicketUrl = nu
             <p style='color: var(--text-secondary);'><strong>Numéro de commande :</strong> " . htmlspecialchars($ticketData['Id_Achat'] ?? 'N/A') . "</p>
         </div>";
 
+    // Ajout du QR Code si disponible
+    if (isset($ticketData['QRCode']) && !empty($ticketData['QRCode'])) {
+        $content .= "
+        <div style='text-align: center; margin: 30px 0;'>
+            <h3 style='color: #555;'>Votre QR Code d'accès</h3>
+            <p style='color: #666;'>Présentez ce code à l'entrée de l'événement.</p>
+            <img src='" . $ticketData['QRCode'] . "' alt='QR Code de votre ticket' style='max-width: 200px; margin-top: 15px;' />
+        </div>";
+    }
+
     if ($viewTicketUrl) {
         $content .= "
         <div style='text-align: center;'>

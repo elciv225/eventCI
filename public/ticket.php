@@ -1,45 +1,52 @@
 <?php
 // Inclure le fichier de connexion à la base de données
 if (!isset($conn)) {
-    // Assurez-vous que le chemin vers votre fichier de configuration est correct
     require_once __DIR__ . '/../config/base.php';
 }
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['utilisateur']) || empty($_SESSION['utilisateur']['id'])) {
-    // Rediriger vers la page d'authentification si non connecté
     header('Location: authentification.php');
     exit;
 }
 
-// Vérifier si l'ID du ticket est fourni
+// Vérifier si l'ID de l'achat est fourni
 if (!isset($_GET['id']) || empty($_GET['id'])) {
-    // Rediriger vers la page panier si aucun ID n'est fourni
     header('Location: ?page=panier');
     exit;
 }
 
-$ticket_id = intval($_GET['id']);
+$achat_id = intval($_GET['id']);
+$user_id = $_SESSION['utilisateur']['id'];
 
-// Pour les besoins de la démo, utilisons des données statiques
-// Dans une implémentation réelle, on récupérerait les données depuis la base de données
-$ticket_data = [
-    'Id_Achat' => $ticket_id,
-    'Id_TicketEvenement' => 1,
-    'Titre_Ticket' => 'Place Standard',
-    'Prix' => 25.00,
-    'DateAchat' => '2023-11-20 14:30:00',
-    'Titre_Evenement' => 'Concert de musique classique',
-    'Description_Evenement' => 'Un magnifique concert de musique classique avec les plus grands compositeurs.',
-    'DateDebut_Evenement' => '2023-12-15 19:30:00',
-    'DateFin_Evenement' => '2023-12-15 22:00:00',
-    'Adresse_Evenement' => '123 Avenue de la Musique, 75001 Paris',
-    'Lieu_Evenement' => 'Paris',
-    'Code_QR' => 'TICKET-' . $ticket_id . '-' . rand(10000, 99999)
-];
+// Récupérer les données du ticket depuis la base de données
+$query = "SELECT
+            a.Id_Achat,
+            a.DateAchat,
+            a.QRCode,
+            t.Titre AS Titre_Ticket,
+            t.Prix,
+            e.Titre AS Titre_Evenement,
+            e.DateDebut AS DateDebut_Evenement,
+            e.DateFin AS DateFin_Evenement,
+            e.Adresse AS Adresse_Evenement
+          FROM achat a
+          JOIN ticketevenement t ON a.Id_TicketEvenement = t.Id_TicketEvenement
+          JOIN evenement e ON t.Id_Evenement = e.Id_Evenement
+          WHERE a.Id_Achat = ? AND a.Id_Utilisateur = ?";
 
-// Générer un code QR (simulé pour la démo)
-$qr_code_url = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($ticket_data['Code_QR']);
+$stmt = $conn->prepare($query);
+$stmt->bind_param("ii", $achat_id, $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$ticket_data = $result->fetch_assoc();
+
+// Si aucun ticket n'est trouvé ou n'appartient pas à l'utilisateur, afficher une erreur
+if (!$ticket_data) {
+    // Vous pouvez afficher un message d'erreur plus élaboré ici
+    echo "<main class='page-container'><p>Ticket non trouvé ou accès non autorisé.</p></main>";
+    exit;
+}
 
 // Formater les dates
 $date_achat = new DateTime($ticket_data['DateAchat']);
@@ -48,10 +55,14 @@ $date_fin = new DateTime($ticket_data['DateFin_Evenement']);
 
 $format_date = 'd/m/Y';
 $format_time = 'H:i';
+
 $date_achat_formatted = $date_achat->format($format_date);
 $date_evenement_formatted = $date_debut->format($format_date);
 $heure_debut_formatted = $date_debut->format($format_time);
 $heure_fin_formatted = $date_fin->format($format_time);
+
+// Le QR code est déjà en base64
+$qr_code_src = $ticket_data['QRCode'];
 ?>
 
 <main class="page-container">
@@ -87,20 +98,24 @@ $heure_fin_formatted = $date_fin->format($format_time);
                         </div>
                         <div class="ticket-info-item">
                             <span class="ticket-label">Numéro de ticket:</span>
-                            <span class="ticket-value"><?php echo $ticket_data['Code_QR']; ?></span>
+                            <span class="ticket-value">TICKET-<?php echo htmlspecialchars($ticket_data['Id_Achat']); ?></span>
                         </div>
                     </div>
 
                     <div class="ticket-qr">
-                        <img src="<?php echo $qr_code_url; ?>" alt="Code QR du ticket" class="qr-code">
-                        <p class="qr-instructions">Présentez ce code QR à l'entrée de l'événement</p>
+                        <?php if (!empty($qr_code_src)): ?>
+                            <img src="<?php echo $qr_code_src; ?>" alt="Code QR du ticket" class="qr-code">
+                            <p class="qr-instructions">Présentez ce code QR à l'entrée de l'événement</p>
+                        <?php else: ?>
+                            <p class="qr-instructions">QR Code non disponible.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
 
             <div class="ticket-actions">
                 <button class="btn-primary" onclick="window.print()">Imprimer le ticket</button>
-                <a href="mailto:?subject=Mon ticket pour <?php echo htmlspecialchars($ticket_data['Titre_Evenement']); ?>&body=Voici mon ticket pour l'événement: <?php echo htmlspecialchars($ticket_data['Titre_Evenement']); ?> le <?php echo $date_evenement_formatted; ?> à <?php echo $heure_debut_formatted; ?>. Code: <?php echo $ticket_data['Code_QR']; ?>" class="btn-secondary">Envoyer par email</a>
+                <a href="mailto:?subject=Mon ticket pour <?php echo htmlspecialchars($ticket_data['Titre_Evenement']); ?>&body=Voici mon ticket pour l'événement: <?php echo htmlspecialchars($ticket_data['Titre_Evenement']); ?> le <?php echo $date_evenement_formatted; ?> à <?php echo $heure_debut_formatted; ?>. Numéro de ticket: TICKET-<?php echo htmlspecialchars($ticket_data['Id_Achat']); ?>" class="btn-secondary">Envoyer par email</a>
             </div>
         </div>
     </section>

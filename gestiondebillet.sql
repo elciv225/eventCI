@@ -24,6 +24,10 @@ CREATE TABLE IF NOT EXISTS `achat`
     `Id_Utilisateur`     int NOT NULL,
     `Id_TicketEvenement` int NOT NULL,
     `DateAchat`          datetime DEFAULT CURRENT_TIMESTAMP,
+    `Statut`             enum('panier','payé','validé','rejeté') DEFAULT 'panier',
+    `DatePaiement`       datetime DEFAULT NULL,
+    `QRCode`             text,
+    `remarque_rejet`     text,
     PRIMARY KEY (`Id_Achat`),
     KEY `Id_Utilisateur` (`Id_Utilisateur`),
     KEY `Id_TicketEvenement` (`Id_TicketEvenement`)
@@ -138,6 +142,7 @@ CREATE TABLE IF NOT EXISTS `evenement`
     `DateFin`               datetime                                DEFAULT NULL,
     `Id_CategorieEvenement` int NOT NULL,
     `statut_approbation`    enum ('en_attente','approuve','rejete') DEFAULT 'en_attente',
+    `remarque_rejet`        text,
     `Latitude`              decimal(10, 8)                          DEFAULT NULL,
     `Longitude`             decimal(11, 8)                          DEFAULT NULL,
     PRIMARY KEY (`Id_Evenement`),
@@ -230,6 +235,81 @@ CREATE TABLE IF NOT EXISTS `utilisateur`
   COLLATE = utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
+
+--
+-- Structure de la table `notifications`
+--
+
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `message` text NOT NULL,
+  `is_read` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `related_link` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table `achat`
+--
+ALTER TABLE `achat`
+  ADD CONSTRAINT `achat_ibfk_1` FOREIGN KEY (`Id_Utilisateur`) REFERENCES `utilisateur` (`Id_Utilisateur`) ON DELETE CASCADE,
+  ADD CONSTRAINT `achat_ibfk_2` FOREIGN KEY (`Id_TicketEvenement`) REFERENCES `ticketevenement` (`Id_TicketEvenement`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `commentaireevenement`
+--
+ALTER TABLE `commentaireevenement`
+  ADD CONSTRAINT `commentaireevenement_ibfk_1` FOREIGN KEY (`Id_Utilisateur`) REFERENCES `utilisateur` (`Id_Utilisateur`) ON DELETE CASCADE,
+  ADD CONSTRAINT `commentaireevenement_ibfk_2` FOREIGN KEY (`Id_Evenement`) REFERENCES `evenement` (`Id_Evenement`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `creer`
+--
+ALTER TABLE `creer`
+  ADD CONSTRAINT `creer_ibfk_1` FOREIGN KEY (`Id_Utilisateur`) REFERENCES `utilisateur` (`Id_Utilisateur`) ON DELETE CASCADE,
+  ADD CONSTRAINT `creer_ibfk_2` FOREIGN KEY (`Id_Evenement`) REFERENCES `evenement` (`Id_Evenement`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `evenement`
+--
+ALTER TABLE `evenement`
+  ADD CONSTRAINT `evenement_ibfk_1` FOREIGN KEY (`Id_CategorieEvenement`) REFERENCES `categorieevenement` (`Id_CategorieEvenement`);
+
+--
+-- Contraintes pour la table `imageevenement`
+--
+ALTER TABLE `imageevenement`
+  ADD CONSTRAINT `imageevenement_ibfk_1` FOREIGN KEY (`Id_Evenement`) REFERENCES `evenement` (`Id_Evenement`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `noteevenement`
+--
+ALTER TABLE `noteevenement`
+  ADD CONSTRAINT `noteevenement_ibfk_1` FOREIGN KEY (`Id_Utilisateur`) REFERENCES `utilisateur` (`Id_Utilisateur`) ON DELETE CASCADE,
+  ADD CONSTRAINT `noteevenement_ibfk_2` FOREIGN KEY (`Id_Evenement`) REFERENCES `evenement` (`Id_Evenement`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `ticketevenement`
+--
+ALTER TABLE `ticketevenement`
+  ADD CONSTRAINT `ticketevenement_ibfk_1` FOREIGN KEY (`Id_Evenement`) REFERENCES `evenement` (`Id_Evenement`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `utilisateur` (`Id_Utilisateur`) ON DELETE CASCADE;
+
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;

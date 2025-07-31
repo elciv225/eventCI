@@ -75,6 +75,9 @@ switch ($page) {
     case 'gerer_ticket_admin':
         include 'composants/gerer_ticket_admin.php';
         break;
+    case 'gerer_achats':
+        include 'composants/gerer_achats.php';
+        break;
     case 'gerer_categorie_evenement':
         include 'composants/gerer_categorie_evenement.php';
         break;
@@ -167,6 +170,7 @@ if (isset($conn) && $conn) {
                 <li><a href="?page=admin_gerer_evenement" class="<?php echo ($page === 'admin_gerer_evenement') ? 'active' : ''; ?>"><i data-lucide="calendar" class="w-5 h-5"></i> Gérer les Événements</a>
                 </li>
                 <li><a href="?page=gerer_ticket_admin" class="<?php echo ($page === 'gerer_ticket_admin') ? 'active' : ''; ?>"><i data-lucide="ticket" class="w-5 h-5"></i> Gérer les Tickets</a></li>
+                <li><a href="?page=gerer_achats" class="<?php echo ($page === 'gerer_achats') ? 'active' : ''; ?>"><i data-lucide="shopping-cart" class="w-5 h-5"></i> Gérer les Achats</a></li>
                 <li><a href="?page=gerer_categorie_evenement" class="<?php echo ($page === 'gerer_categorie_evenement') ? 'active' : ''; ?>"><i data-lucide="tags" class="w-5 h-5"></i> Gérer les Catégories</a></li>
                 <li><a href="?page=rapport_statistique" class="<?php echo ($page === 'rapport_statistique') ? 'active' : ''; ?>"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> Rapports et Stats</a></li>
                 <li><a href="?page=admin_parametres_site" class="<?php echo ($page === 'admin_parametres_site') ? 'active' : ''; ?>"><i data-lucide="settings" class="w-5 h-5"></i> Paramètres du Site</a></li>

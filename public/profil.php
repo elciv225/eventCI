@@ -280,10 +280,43 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
             <a href="?page=mon-profil&tab=active" class="tab-button <?php echo $active_tab === 'active' ? 'active' : ''; ?>">Événements Actifs</a>
             <a href="?page=mon-profil&tab=en_attente" class="tab-button <?php echo $active_tab === 'en_attente' ? 'active' : ''; ?>">Événements en Attente</a>
             <a href="?page=mon-profil&tab=past" class="tab-button <?php echo $active_tab === 'past' ? 'active' : ''; ?>">Événements Passés</a>
+            <a href="?page=mon-profil&tab=notifications" class="tab-button <?php echo $active_tab === 'notifications' ? 'active' : ''; ?>">Notifications</a>
         </div>
 
         <div class="tab-content-container">
-            <?php if($active_tab === 'active'): ?>
+            <?php if ($active_tab === 'notifications'): ?>
+                <div id="notifications-tab" class="tab-pane active">
+                    <?php
+                    // Marquer les notifications comme lues
+                    $update_notif = $conn->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = ?");
+                    $update_notif->bind_param("i", $user_id);
+                    $update_notif->execute();
+                    $update_notif->close();
+
+                    // Récupérer les notifications
+                    $stmt_notif = $conn->prepare("SELECT message, created_at, related_link FROM notifications WHERE user_id = ? ORDER BY created_at DESC");
+                    $stmt_notif->bind_param("i", $user_id);
+                    $stmt_notif->execute();
+                    $notifications = $stmt_notif->get_result();
+                    ?>
+                    <div class="notifications-list">
+                        <?php if ($notifications->num_rows > 0): ?>
+                            <?php while ($notif = $notifications->fetch_assoc()): ?>
+                                <div class="notification-item">
+                                    <a href="<?php echo htmlspecialchars($notif['related_link']); ?>" class="notification-link">
+                                        <p class="notification-message"><?php echo htmlspecialchars($notif['message']); ?></p>
+                                        <span class="notification-date"><?php echo date('d/m/Y H:i', strtotime($notif['created_at'])); ?></span>
+                                    </a>
+                                </div>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <div class="empty-state">
+                                <p>Vous n'avez aucune notification.</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php elseif($active_tab === 'active'): ?>
                 <div id="active-tab" class="tab-pane active">
                     <?php if (!empty($active_events)): ?>
                         <div class="events-grid">
@@ -298,11 +331,18 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                         </div>
                                         <button class="carousel-arrow prev">&lt;</button>
                                         <button class="carousel-arrow next">&gt;</button>
-                                        <a href="?page=mon-profil&tab=active&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                                <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="event-card-actions">
+                                            <a href="?page=mon-profil&tab=active&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn" title="Modifier">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path></svg>
+                                            </a>
+                                            <form method="POST" action="public/traitement_evenement.php" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible.');" style="display: inline;">
+                                                <input type="hidden" name="action" value="delete_evenement">
+                                                <input type="hidden" name="event_id" value="<?php echo $event['Id_Evenement']; ?>">
+                                                <button type="submit" class="delete-event-btn" title="Supprimer">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
                                     <a href="?info-event=<?php echo $event['Id_Evenement']; ?>">
                                         <div>
@@ -344,11 +384,18 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                         <button class="carousel-arrow prev">&lt;</button>
                                         <button class="carousel-arrow next">&gt;</button>
                                         <div class="event-status-badge pending">En attente d'approbation</div>
-                                        <a href="?page=mon-profil&tab=en_attente&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                                <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="event-card-actions">
+                                            <a href="?page=mon-profil&tab=en_attente&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn" title="Modifier">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path></svg>
+                                            </a>
+                                            <form method="POST" action="public/traitement_evenement.php" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible.');" style="display: inline;">
+                                                <input type="hidden" name="action" value="delete_evenement">
+                                                <input type="hidden" name="event_id" value="<?php echo $event['Id_Evenement']; ?>">
+                                                <button type="submit" class="delete-event-btn" title="Supprimer">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
                                     <div>
                                         <h3 class="event-card-title"><?php echo htmlspecialchars($event['Titre']); ?></h3>
@@ -387,11 +434,18 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
                                         </div>
                                         <button class="carousel-arrow prev">&lt;</button>
                                         <button class="carousel-arrow next">&gt;</button>
-                                        <a href="?page=mon-profil&tab=past&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                                <path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="event-card-actions">
+                                            <a href="?page=mon-profil&tab=past&edit-event=<?php echo $event['Id_Evenement']; ?>" class="edit-event-btn" title="Modifier">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M224,76.68a28,28,0,0,0-8.22-19.46L194.57,36a28,28,0,0,0-39.34,0L36,155.25V208H88.75L208,88.75A28,28,0,0,0,224,76.68ZM184.91,68.34,196,79.43l-11.43,11.43-11.09-11.09ZM52,192V169.37l73.09-73.09,22.63,22.63L74.63,192Z"></path></svg>
+                                            </a>
+                                            <form method="POST" action="public/traitement_evenement.php" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible.');" style="display: inline;">
+                                                <input type="hidden" name="action" value="delete_evenement">
+                                                <input type="hidden" name="event_id" value="<?php echo $event['Id_Evenement']; ?>">
+                                                <button type="submit" class="delete-event-btn" title="Supprimer">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
                                     <a href="?info-event=<?php echo $event['Id_Evenement']; ?>">
                                         <div>
@@ -1065,3 +1119,38 @@ if (isset($_GET['edit-event']) && !empty($_GET['edit-event'])) {
         });
     }
 </script>
+
+<style>
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px;
+}
+.notification-item {
+    background-color: var(--card-bg);
+    border-left: 4px solid var(--accent-blue);
+    padding: 20px;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: background-color 0.3s, transform 0.2s;
+}
+.notification-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+.notification-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.notification-message {
+    margin: 0 0 8px 0;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+.notification-date {
+    font-size: 0.85em;
+    color: var(--text-medium);
+}
+</style>
